@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Volkswagen | Portal Facturación Live</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- ========================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <img src="assets/logo-vw.svg">
+
+            <h2>Aftersales</h2>
+
+            <span>Facturación Live</span>
+
+        </div>
+
+        <nav>
+
+            <button class="menu active">
+
+                📊 Dashboard
+
+            </button>
+
+            <button class="menu">
+
+                💰 Facturación
+
+            </button>
+
+            <button class="menu" disabled>
+
+                🛠 Paso por Taller
+
+            </button>
+
+            <button class="menu" disabled>
+
+                📂 OR Abiertas
+
+            </button>
+
+            <button class="menu" disabled>
+
+                📈 KPI Gerenciales
+
+            </button>
+
+        </nav>
+
+    </aside>
+
+    <!-- ========================= -->
+    <!-- CONTENIDO -->
+    <!-- ========================= -->
+
+    <main>
+
+        <!-- HEADER -->
+
+        <header>
+
+            <div>
+
+                <h1>
+
+                    Dashboard Ejecutivo
+
+                </h1>
+
+                <p>
+
+                    Volkswagen • Aftersales
+
+                </p>
+
+            </div>
+
+            <div class="filters">
+
+                <select id="mes">
+
+                    <option>Julio 2026</option>
+
+                </select>
+
+                <select id="asesor">
+
+                    <option>Todos</option>
+
+                </select>
+
+            </div>
+
+        </header>
+
+        <!-- KPI -->
+
+        <section class="cards">
+
+            <div class="card">
+
+                <h4>Facturación</h4>
+
+                <h2 id="kpiFacturacion">
+
+                    $0
+
+                </h2>
+
+            </div>
+
+            <div class="card">
+
+                <h4>Cliente</h4>
+
+                <h2 id="kpiCliente">
+
+                    $0
+
+                </h2>
+
+            </div>
+
+            <div class="card">
+
+                <h4>Garantía</h4>
+
+                <h2 id="kpiGarantia">
+
+                    $0
+
+                </h2>
+
+            </div>
+
+            <div class="card">
+
+                <h4>Interna</h4>
+
+                <h2 id="kpiInterna">
+
+                    $0
+
+                </h2>
+
+            </div>
+
+            <div class="card">
+
+                <h4>Objetivo</h4>
+
+                <h2 id="kpiObjetivo">
+
+                    $99.200.000
+
+                </h2>
+
+            </div>
+
+            <div class="card">
+
+                <h4>Cumplimiento</h4>
+
+                <h2 id="kpiCumplimiento">
+
+                    0%
+
+                </h2>
+
+            </div>
+
+        </section>
+
+        <!-- GRAFICOS -->
+
+        <section class="charts">
+
+            <div class="chart">
+
+                <h3>
+
+                    Facturación por Asesor
+
+                </h3>
+
+                <canvas id="chartAsesor"></canvas>
+
+            </div>
+
+            <div class="chart">
+
+                <h3>
+
+                    Participación
+
+                </h3>
+
+                <canvas id="chartParticipacion"></canvas>
+
+            </div>
+
+            <div class="chart full">
+
+                <h3>
+
+                    Evolución Diaria
+
+                </h3>
+
+                <canvas id="chartDiario"></canvas>
+
+            </div>
+
+            <div class="chart">
+
+                <h3>
+
+                    Evolución Semanal
+
+                </h3>
+
+                <canvas id="chartSemanal"></canvas>
+
+            </div>
+
+            <div class="chart">
+
+                <h3>
+
+                    Objetivo vs Facturación
+
+                </h3>
+
+                <canvas id="chartObjetivo"></canvas>
+
+            </div>
+
+        </section>
+
+        <!-- TABLA -->
+
+        <section class="tableCard">
+
+            <h3>
+
+                Ranking de Asesores
+
+            </h3>
+
+            <table id="tablaAsesores">
+
+                <thead>
+
+                <tr>
+
+                    <th>Asesor</th>
+
+                    <th>Facturación</th>
+
+                    <th>OR</th>
+
+                    <th>Ticket</th>
+
+                    <th>%</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/app.js"></script>
+
+</body>
+
+</html>
