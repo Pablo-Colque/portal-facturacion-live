@@ -506,16 +506,65 @@ const D = {
     2026:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000},
   },
   OBJ_SUC:{
-    Jujuy:   {2025:{1:60000000,2:60000000,3:62000000,4:62000000,5:62000000,6:65000000,7:66000000},
-              2026:{1:60000000,2:60000000,3:62000000,4:62000000,5:62000000,6:65000000,7:66000000}},
+    Jujuy:   {2025:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000},
+              2026:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000}},
     Salta:   {2025:{1:25000000,2:25000000,3:26000000,4:26000000,5:26000000,6:27000000,7:28000000},
               2026:{1:25000000,2:25000000,3:26000000,4:26000000,5:26000000,6:27000000,7:28000000}},
     Tartagal:{2025:{1:4800000,2:4800000,3:4700000,4:4700000,5:4700000,6:5300000,7:5200000},
               2026:{1:4800000,2:4800000,3:4700000,4:4700000,5:4700000,6:5300000,7:5200000}},
   },
-  DIAS_HAB:{1:22,2:20,3:21,4:22,5:22,6:21,7:23,8:22,9:21,10:23,11:20,12:20},
+  DIAS_HAB:{1:22,2:20,3:21,4:22,5:22,6:21,7:22,8:22,9:21,10:23,11:20,12:20},
   DIAS_MES:{1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31},
-  HOY_DIA:17, HOY_DIA_HAB:12, MES_ACTUAL:7, ANO_ACTUAL:2026,
+  // Feriados nacionales 2026 — formato YYYY-MM-DD
+  FERIADOS:[
+    "2026-01-01","2026-02-16","2026-02-17",
+    "2026-03-24","2026-04-02","2026-04-03","2026-04-09",
+    "2026-05-01","2026-05-25",
+    "2026-06-15","2026-06-20",
+    "2026-07-09",
+    "2026-08-17",
+    "2026-10-12",
+    "2026-11-23",
+    "2026-12-08","2026-12-25",
+  ],
+
+  // Calcula días hábiles entre dos fechas (excluye sáb, dom y feriados)
+  diasHabiles(desde, hasta){
+    let count=0;
+    let d=new Date(desde);
+    d.setHours(0,0,0,0);
+    const h=new Date(hasta);
+    h.setHours(0,0,0,0);
+    while(d<=h){
+      const dow=d.getDay();
+      const str=d.toISOString().slice(0,10);
+      if(dow!==0&&dow!==6&&!this.FERIADOS.includes(str))count++;
+      d.setDate(d.getDate()+1);
+    }
+    return count;
+  },
+
+  // Calcula automáticamente los días del mes actual
+  calcDias(){
+    const hoy=new Date();
+    hoy.setHours(0,0,0,0);
+    const mes=hoy.getMonth()+1;
+    const ano=hoy.getFullYear();
+    const primerDia=new Date(ano,mes-1,1);
+    const ultimoDia=new Date(ano,mes,0);
+    const diasHabMes=this.diasHabiles(primerDia,ultimoDia);
+    const diasHabTrans=this.diasHabiles(primerDia,hoy);
+    return{
+      mes, ano,
+      dia:hoy.getDate(),
+      diasHabMes,
+      diasHabTrans,
+      diasHabRest:diasHabMes-diasHabTrans,
+    };
+  },
+
+  MES_ACTUAL:new Date().getMonth()+1,
+  ANO_ACTUAL:new Date().getFullYear(),
   MESES:["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
   PALETA:["#4d9fff","#00d97e","#ffb020","#ff3b52","#a87eff","#00cce8","#ff8c42","#ffe566"],
   SUC_COL:{Jujuy:"#4d9fff",Salta:"#ffb020",Tartagal:"#00e8c8"},
@@ -663,8 +712,9 @@ const D = {
       objetivo:(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[mes]||92700000,
     };
     t.cumpl=t.objetivo?t.total/t.objetivo*100:0;
-    t.diasHab=mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL?this.HOY_DIA_HAB:this.DIAS_HAB[mes]||22;
-    t.diasHabMes=this.DIAS_HAB[mes]||22;
+    const cd=this.calcDias();
+    t.diasHab=mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL?cd.diasHabTrans:this.DIAS_HAB[mes]||22;
+    t.diasHabMes=mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL?cd.diasHabMes:this.DIAS_HAB[mes]||22;
     t.ritmo=t.diasHab?t.total/t.diasHab:0;
     t.proyeccion=t.ritmo*t.diasHabMes;
     t.ritmoIdeal=t.objetivo/t.diasHabMes;
@@ -692,7 +742,9 @@ const D = {
     const el=document.getElementById("alertaDias");
     if(mes!==this.MES_ACTUAL||ano!==this.ANO_ACTUAL){el.style.display="none";return;}
     el.style.display="flex";
-    const diasHabRest=t.diasHabMes-this.HOY_DIA_HAB;
+    const cd=this.calcDias();
+    const diasHabRest=cd.diasHabRest;
+    const diasHabTrans=cd.diasHabTrans;
     const falta=Math.max(t.objetivo-t.total,0);
     const ritmoNec=diasHabRest>0?falta/diasHabRest:0;
     const cls=diasHabRest<=3?"urgente":diasHabRest<=8?"warn":"ok";
