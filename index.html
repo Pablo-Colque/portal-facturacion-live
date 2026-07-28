@@ -760,7 +760,7 @@ const D = {
       </div>
       <div class="dias-chips">
         <div class="dias-chip ${cls}"><div class="dl">DÍAS HÁB. REST.</div><div class="dv">${diasHabRest}</div></div>
-        <div class="dias-chip ok"><div class="dl">TRANSCURRIDOS</div><div class="dv">${this.HOY_DIA_HAB}</div></div>
+        <div class="dias-chip ok"><div class="dl">TRANSCURRIDOS</div><div class="dv">${diasHabTrans}</div></div>
         <div class="dias-chip ${t.cumpl>=90?"ok":t.cumpl>=60?"warn":"urgente"}"><div class="dl">CUMPL. HOY</div><div class="dv">${t.cumpl.toFixed(0)}%</div></div>
         <div class="dias-chip ${t.proyeccion>=t.objetivo?"ok":"urgente"}"><div class="dl">PROYECCIÓN</div><div class="dv" style="font-size:14px">${this.compacto(t.proyeccion)}</div></div>
       </div>`;
