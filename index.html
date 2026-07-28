@@ -89,7 +89,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .ritmo-mal{color:var(--red);font-weight:800}
 
 /* SUCURSALES — 3 columnas */
-.suc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.suc-row{display:grid;grid-template-columns:1fr;gap:12px}
 .suc-card{border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border);position:relative;overflow:hidden}
 .suc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .suc-card.jujuy{background:linear-gradient(135deg,#071830,#0b1525);border-color:rgba(77,159,255,.25)}
@@ -124,7 +124,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .suc-card.tartagal .suc-prog-fill{background:linear-gradient(90deg,#009a85,var(--teal))}
 
 /* INTERANUAL */
-.interanual-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.interanual-row{display:grid;grid-template-columns:1fr;gap:12px}
 .interanual-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .interanual-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .interanual-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
@@ -169,8 +169,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .kpi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:5px}
 .kpi-label{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
 .kpi-ico{font-size:13px;opacity:.7}
-.kpi-val{font-size:18px;font-weight:900;letter-spacing:-1px;line-height:1}
-.kpi.c-blue .kpi-val,.kpi.c-main .kpi-val{color:var(--vw-light)}
+.kpi-val{font-size:18px;font-weight:900;letter-spacing:-1px;line-height:1}.kpi.c-main .kpi-val{font-size:32px;letter-spacing:-2px}
+.kpi.c-blue .kpi-val,.kpi.c-main .kpi-val{color:var(--vw-light)}.kpi.c-main{grid-column:span 2}
 .kpi.c-green .kpi-val{color:var(--green)}
 .kpi.c-orange .kpi-val{color:var(--orange)}
 .kpi.c-red .kpi-val{color:var(--red)}
@@ -290,7 +290,7 @@ tr:last-child td{border-bottom:0}
 <aside class="sidebar">
   <div class="brand">
     <div class="vw-badge">VW</div>
-    <div class="brand-org">Volkswagen Argentina · Grupo Canoa</div>
+    <div class="brand-org">Volkswagen Argentina · Autosol Jujuy</div>
     <div class="brand-name">Portal de Gestión<br>Postventa</div>
     <div class="brand-mod">Gerencia de Postventa</div>
   </div>
@@ -315,7 +315,7 @@ tr:last-child td{border-bottom:0}
 <div class="main">
   <div class="header">
     <div class="h-left">
-      <div class="h-eyebrow">Volkswagen Argentina · Grupo Canoa</div>
+      <div class="h-eyebrow">Volkswagen Argentina · Autosol Jujuy</div>
       <div class="h-title">Panel de Control — Facturación</div>
     </div>
     <div class="h-right">
@@ -346,8 +346,6 @@ tr:last-child td{border-bottom:0}
     <select id="fSuc" onchange="D.aplicar()">
       <option value="todas">Todas</option>
       <option value="Jujuy">Jujuy</option>
-      <option value="Salta">Salta</option>
-      <option value="Tartagal">Tartagal</option>
     </select>
     <label>ASESOR</label>
     <select id="fAsesor" onchange="D.aplicar()">
@@ -381,8 +379,7 @@ tr:last-child td{border-bottom:0}
       <!-- SUCURSALES: JUJUY · SALTA · TARTAGAL -->
       <div class="suc-row" id="sucRow">
         <div class="suc-card jujuy" id="sucJujuy"></div>
-        <div class="suc-card salta" id="sucSalta"></div>
-        <div class="suc-card tartagal" id="sucTartagal"></div>
+
       </div>
 
       <!-- COMPARATIVA INTERANUAL -->
@@ -493,7 +490,7 @@ tr:last-child td{border-bottom:0}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-// PORTAL FACTURACIÓN LIVE — Autosol Jujuy · Salta · Tartagal
+// PORTAL FACTURACIÓN LIVE — Autosol Jujuy
 // ═══════════════════════════════════════════════════════════════
 
 const D = {
@@ -508,10 +505,7 @@ const D = {
   OBJ_SUC:{
     Jujuy:   {2025:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000},
               2026:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000}},
-    Salta:   {2025:{1:25000000,2:25000000,3:26000000,4:26000000,5:26000000,6:27000000,7:28000000},
-              2026:{1:25000000,2:25000000,3:26000000,4:26000000,5:26000000,6:27000000,7:28000000}},
-    Tartagal:{2025:{1:4800000,2:4800000,3:4700000,4:4700000,5:4700000,6:5300000,7:5200000},
-              2026:{1:4800000,2:4800000,3:4700000,4:4700000,5:4700000,6:5300000,7:5200000}},
+
   },
   DIAS_HAB:{1:22,2:20,3:21,4:22,5:22,6:21,7:22,8:22,9:21,10:23,11:20,12:20},
   DIAS_MES:{1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31},
@@ -567,7 +561,7 @@ const D = {
   ANO_ACTUAL:new Date().getFullYear(),
   MESES:["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
   PALETA:["#4d9fff","#00d97e","#ffb020","#ff3b52","#a87eff","#00cce8","#ff8c42","#ffe566"],
-  SUC_COL:{Jujuy:"#4d9fff",Salta:"#ffb020",Tartagal:"#00e8c8"},
+  SUC_COL:{Jujuy:"#4d9fff"},
 
   // RMST demo — se reemplaza con datos reales de garantías
   RMST_DEMO:{
@@ -634,8 +628,7 @@ const D = {
       {n:"Tatiana Moreno", suc:"Jujuy",  peso:0.55},
       {n:"Pablo Guantay",  suc:"Jujuy",  peso:0.72},
       {n:"Javier Reynoso", suc:"Jujuy",  peso:0.65},
-      {n:"Elbio Benicio",  suc:"Salta",  peso:0.60},
-      {n:"Carlos Fariña",  suc:"Tartagal",peso:0.38},
+
     ];
     const tipos=["Cliente","Cliente","Cliente","Garantía","Garantía","Interna"];
     const base=5500000;
@@ -768,7 +761,7 @@ const D = {
 
   // ── SUCURSALES ────────────────────────────────────────────────
   renderSucursales(mes,ano){
-    ["Jujuy","Salta","Tartagal"].forEach(suc=>{
+    ["Jujuy"].forEach(suc=>{
       const arr=this.raw.filter(r=>r.mes===mes&&r.ano===ano&&r.suc===suc);
       const obj=(this.OBJ_SUC[suc]?.[ano]||this.OBJ_SUC[suc]?.[2026]||{})[mes]||0;
       const total=this.sum(arr);
@@ -802,8 +795,8 @@ const D = {
   // ── COMPARATIVA INTERANUAL ────────────────────────────────────
   renderInteranual(mes,ano){
     document.getElementById("badgeInteranual").textContent=`${this.MESES[mes]} ${ano-1} vs ${ano}`;
-    const sucursales=["Jujuy","Salta","Tartagal"];
-    const cols={Jujuy:["#4d9fff","#0040c8"],Salta:["#ffb020","#c07010"],Tartagal:["#00e8c8","#009a85"]};
+    const sucursales=["Jujuy"];
+    const cols={Jujuy:["#4d9fff","#0040c8"]};
     document.getElementById("interanualRow").innerHTML=sucursales.map(suc=>{
       const prev=this.sum(this.raw.filter(r=>r.mes===mes&&r.ano===ano-1&&r.suc===suc));
       const curr=this.sum(this.raw.filter(r=>r.mes===mes&&r.ano===ano&&r.suc===suc));
@@ -897,7 +890,7 @@ const D = {
       if(color==="amarillo"&&ritmoAct>=ritmoNec&&diasHabRest>3)color="verde";
       if(color==="verde")verde++;else if(color==="amarillo")amarillo++;else rojo++;
       let alerta=color==="rojo"?`⚠️ Necesita ${this.compacto(ritmoNec)}/día`:color==="amarillo"?`↗ Ritmo: ${this.compacto(ritmoAct)}/día`:`✅ En ritmo`;
-      const sucBadgeCls=suc==="Jujuy"?"b-blue":suc==="Salta"?"b-orange":"b-teal";
+      const sucBadgeCls="b-blue";
       return`<div class="sem-card ${color}">
         <div class="sem-top"><span class="sem-name">${a}</span><span class="sem-indicator ${color}"></span></div>
         <div class="sem-suc"><span class="badge ${sucBadgeCls}">${suc}</span></div>
@@ -1031,7 +1024,7 @@ const D = {
       const orDia=(r.ors/t.diasHab).toFixed(1);
       const cls=cumpl>=90?"on-track":cumpl>=55?"at-risk":"behind";
       const badge=cumpl>=90?"b-green":cumpl>=55?"b-orange":"b-red";
-      const sucCls=r.suc==="Jujuy"?"b-blue":r.suc==="Salta"?"b-orange":"b-teal";
+      const sucCls="b-blue";
       return`<tr>
         <td><span class="rank-num ${rankCls(i)}">${i+1}</span></td>
         <td><b>${r.a}</b></td>
