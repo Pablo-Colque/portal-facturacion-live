@@ -394,7 +394,7 @@ tr:last-child td{border-bottom:0}
         <div class="interanual-row" id="interanualRow"></div>
       </div>
 
-      <!-- RMST — GARANTÍAS A COBRAR -->
+      <!-- RMST — GARANTÍAS A COBRAR (desactivado hasta conectar datos reales) -->
       <div class="rmst-card" id="rmstCard"></div>
 
       <!-- KPIs CONSOLIDADOS -->
@@ -727,7 +727,7 @@ const D = {
     this.renderAlerta(mes,ano,t);
     this.renderSucursales(mes,ano);
     this.renderInteranual(mes,ano);
-    this.renderRMST();
+    // this.renderRMST(); — desactivado hasta conectar datos reales
     this.renderKPIs(t,mes,ano);
     this.renderSemaforo(mes,ano);
     this.renderGraficos(mes,ano);
