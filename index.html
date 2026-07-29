@@ -493,6 +493,9 @@ const D = {
     "2026-08-17","2026-10-12","2026-11-23","2026-12-08","2026-12-25",
   ],
 
+  // Asesores que NO aparecen en semáforo/ranking (jefes, internos, etc.)
+  EXCLUIR_SEMAFORO: ["PABLO COLQUE","Pablo Colque"],
+
   MESES: ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
   MESES_CORTO: ["","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
   PALETA: ["#4d9fff","#00d97e","#ffb020","#ff3b52","#a87eff","#00cce8","#ff8c42","#ffe566"],
@@ -771,7 +774,7 @@ const D = {
 
   // ── SEMÁFORO ─────────────────────────────────────────────────
   renderSemaforo(mes, ano, t) {
-    const byAsesor = this.grupo(this.raw.filter(r=>r.mes===mes&&r.ano===ano), "asesor");
+    const byAsesor = this.grupo(this.raw.filter(r=>r.mes===mes&&r.ano===ano&&!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = t.objetivo / nAsesores;
     let verde=0, amarillo=0, rojo=0;
@@ -895,7 +898,7 @@ const D = {
 
   // ── CONCENTRACIÓN ─────────────────────────────────────────────
   renderConcentracion() {
-    const byAsesor = this.grupo(this.fil, "asesor");
+    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
     const total = this.sum(this.fil) || 1;
     const rows = Object.entries(byAsesor).map(([a,arr])=>({a,v:this.sum(arr)})).sort((a,b)=>b.v-a.v);
     const top1Pct = rows[0] ? rows[0].v/total*100 : 0;
@@ -932,7 +935,7 @@ const D = {
 
   // ── RANKING ───────────────────────────────────────────────────
   renderRanking(t, mes, ano) {
-    const byAsesor = this.grupo(this.fil, "asesor");
+    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
     const total    = t.total || 1;
     const objInd   = t.objetivo / Math.max(Object.keys(byAsesor).length, 1);
     const rows = Object.entries(byAsesor).map(([a,arr]) => ({
