@@ -57,6 +57,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .btn-ref{background:rgba(0,64,200,.15);border:1px solid rgba(77,159,255,.3);color:var(--vw-light);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
 .btn-ref:hover{background:rgba(0,64,200,.3)}
 
+/* LOADER */
+.loader-overlay{position:fixed;inset:0;background:rgba(3,8,15,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:18px}
+.loader-spinner{width:44px;height:44px;border:3px solid var(--border2);border-top-color:var(--vw-light);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-txt{font-size:13px;color:var(--muted);font-weight:700}
+.loader-sub{font-size:11px;color:var(--dim)}
+.loader-overlay.hidden{display:none}
+
+/* ERROR BANNER */
+.error-banner{background:rgba(255,59,82,.08);border:1px solid rgba(255,59,82,.3);border-radius:var(--radius);padding:14px 18px;color:var(--red);font-size:12px;font-weight:700;display:none}
+.error-banner.show{display:block}
+
 /* FILTERS */
 .filters{padding:8px 24px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:7px;align-items:center;flex-wrap:wrap;flex-shrink:0}
 .filters label{font-size:9px;font-weight:800;color:var(--muted);letter-spacing:.5px}
@@ -88,47 +100,33 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .ritmo-ok{color:var(--green);font-weight:800}
 .ritmo-mal{color:var(--red);font-weight:800}
 
-/* SUCURSALES — 3 columnas */
+/* SUCURSALES */
 .suc-row{display:grid;grid-template-columns:1fr;gap:12px}
 .suc-card{border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border);position:relative;overflow:hidden}
 .suc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .suc-card.jujuy{background:linear-gradient(135deg,#071830,#0b1525);border-color:rgba(77,159,255,.25)}
 .suc-card.jujuy::before{background:linear-gradient(90deg,var(--vw-blue2),var(--vw-light))}
-.suc-card.salta{background:linear-gradient(135deg,#180a07,#1a0d0a);border-color:rgba(255,176,32,.25)}
-.suc-card.salta::before{background:linear-gradient(90deg,#c07010,var(--orange))}
-.suc-card.tartagal{background:linear-gradient(135deg,#071a10,#0b1f15);border-color:rgba(0,232,200,.25)}
-.suc-card.tartagal::before{background:linear-gradient(90deg,#009a85,var(--teal))}
 .suc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .suc-name{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
 .suc-card.jujuy .suc-name{color:var(--vw-light)}
-.suc-card.salta .suc-name{color:var(--orange)}
-.suc-card.tartagal .suc-name{color:var(--teal)}
 .suc-badge{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px}
 .suc-card.jujuy .suc-badge{background:rgba(77,159,255,.12);color:var(--vw-light);border:1px solid rgba(77,159,255,.2)}
-.suc-card.salta .suc-badge{background:rgba(255,176,32,.12);color:var(--orange);border:1px solid rgba(255,176,32,.2)}
-.suc-card.tartagal .suc-badge{background:rgba(0,232,200,.12);color:var(--teal);border:1px solid rgba(0,232,200,.2)}
 .suc-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .suc-kpi{background:rgba(0,0,0,.2);border-radius:var(--radius-sm);padding:9px 10px;border:1px solid rgba(255,255,255,.04)}
 .suc-kpi .l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
 .suc-kpi .v{font-size:18px;font-weight:900;letter-spacing:-1px;margin-top:3px;line-height:1}
 .suc-kpi .s{font-size:9px;color:var(--muted);margin-top:2px}
 .suc-card.jujuy .suc-kpi .v{color:var(--vw-light)}
-.suc-card.salta .suc-kpi .v{color:var(--orange)}
-.suc-card.tartagal .suc-kpi .v{color:var(--teal)}
 .suc-prog{margin-top:4px}
 .suc-prog-meta{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:4px;font-weight:700}
 .suc-prog-track{height:6px;background:rgba(0,0,0,.3);border-radius:99px;overflow:hidden}
 .suc-prog-fill{height:100%;border-radius:99px;transition:width .9s cubic-bezier(.34,1.1,.64,1)}
 .suc-card.jujuy .suc-prog-fill{background:linear-gradient(90deg,var(--vw-blue2),var(--vw-light))}
-.suc-card.salta .suc-prog-fill{background:linear-gradient(90deg,#c07010,var(--orange))}
-.suc-card.tartagal .suc-prog-fill{background:linear-gradient(90deg,#009a85,var(--teal))}
 
 /* INTERANUAL */
-.interanual-row{display:grid;grid-template-columns:1fr;gap:12px}
 .interanual-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .interanual-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .interanual-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
-.interanual-suc{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px}
 .interanual-years{display:flex;flex-direction:column;gap:8px}
 .year-row{display:flex;align-items:center;gap:10px}
 .year-lbl{font-size:10px;font-weight:800;color:var(--muted);width:36px;flex-shrink:0}
@@ -138,20 +136,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .var-badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;white-space:nowrap}
 .var-up{background:rgba(0,217,126,.12);color:var(--green);border:1px solid rgba(0,217,126,.25)}
 .var-down{background:rgba(255,59,82,.12);color:var(--red);border:1px solid rgba(255,59,82,.25)}
-.var-neutral{background:rgba(107,146,184,.1);color:var(--muted);border:1px solid var(--border)}
-
-/* RMST */
-.rmst-card{background:linear-gradient(135deg,#0a1020,#0d1530);border:1px solid rgba(168,126,255,.25);border-radius:var(--radius);padding:16px 20px}
-.rmst-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.rmst-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--purple)}
-.rmst-subtitle{font-size:10px;color:var(--muted);margin-top:2px}
-.rmst-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.rmst-kpi{background:rgba(168,126,255,.06);border:1px solid rgba(168,126,255,.15);border-radius:var(--radius-sm);padding:12px}
-.rmst-kpi .l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.rmst-kpi .v{font-size:20px;font-weight:900;color:var(--purple);letter-spacing:-1px;margin-top:4px;line-height:1}
-.rmst-kpi .s{font-size:9px;color:var(--muted);margin-top:3px}
-.rmst-alert{margin-top:12px;background:rgba(255,59,82,.07);border:1px solid rgba(255,59,82,.2);border-radius:var(--radius-sm);padding:10px 14px;font-size:11px;color:var(--muted)}
-.rmst-alert b{color:var(--red)}
 
 /* KPI GRID */
 .kpis{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
@@ -169,8 +153,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .kpi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:5px}
 .kpi-label{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
 .kpi-ico{font-size:13px;opacity:.7}
-.kpi-val{font-size:18px;font-weight:900;letter-spacing:-1px;line-height:1}.kpi.c-main .kpi-val{font-size:32px;letter-spacing:-2px}
-.kpi.c-blue .kpi-val,.kpi.c-main .kpi-val{color:var(--vw-light)}.kpi.c-main{grid-column:span 2}
+.kpi-val{font-size:18px;font-weight:900;letter-spacing:-1px;line-height:1}
+.kpi.c-main .kpi-val{font-size:28px;letter-spacing:-2px}
+.kpi.c-main{grid-column:span 2}
+.kpi.c-blue .kpi-val,.kpi.c-main .kpi-val{color:var(--vw-light)}
 .kpi.c-green .kpi-val{color:var(--green)}
 .kpi.c-orange .kpi-val{color:var(--orange)}
 .kpi.c-red .kpi-val{color:var(--red)}
@@ -185,7 +171,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .prog-fill.on-track{background:linear-gradient(90deg,var(--green2),var(--green))}
 .prog-fill.at-risk{background:linear-gradient(90deg,#c07010,var(--orange))}
 .prog-fill.behind{background:linear-gradient(90deg,var(--red2),var(--red))}
-.prog-fill.vw{background:linear-gradient(90deg,var(--vw-blue2),var(--vw-light))}
 
 /* SEMÁFORO */
 .semaforo-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
@@ -249,7 +234,6 @@ tr:last-child td{border-bottom:0}
 .b-orange{background:rgba(255,176,32,.12);color:var(--orange);border:1px solid rgba(255,176,32,.25)}
 .b-red{background:rgba(255,59,82,.12);color:var(--red);border:1px solid rgba(255,59,82,.25)}
 .b-blue{background:rgba(77,159,255,.12);color:var(--vw-light);border:1px solid rgba(77,159,255,.25)}
-.b-teal{background:rgba(0,232,200,.12);color:var(--teal);border:1px solid rgba(0,232,200,.25)}
 
 /* CONCENTRACIÓN */
 .concentracion-bar{display:flex;height:26px;border-radius:var(--radius-sm);overflow:hidden;margin-top:6px}
@@ -262,29 +246,34 @@ tr:last-child td{border-bottom:0}
 .riesgo-medio{background:rgba(255,176,32,.12);color:var(--orange);border:1px solid rgba(255,176,32,.25)}
 .riesgo-bajo{background:rgba(0,217,126,.12);color:var(--green);border:1px solid rgba(0,217,126,.25)}
 
-/* HIST */
+/* HISTÓRICO */
 .hist-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .hist-mes{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px;text-align:center;position:relative;overflow:hidden}
 .hist-mes::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
 .hist-mes.ok::after{background:var(--green)}
 .hist-mes.nok::after{background:var(--red)}
+.hist-mes.fut::after{background:var(--dim)}
 .hist-mes .hm{font-size:8px;font-weight:800;color:var(--muted);letter-spacing:.5px}
 .hist-mes .hv{font-size:12px;font-weight:900;margin:3px 0 2px;line-height:1}
 .hist-mes.ok .hv{color:var(--green)}
 .hist-mes.nok .hv{color:var(--red)}
+.hist-mes.fut .hv{color:var(--dim)}
 .hist-mes .hp{font-size:9px;color:var(--muted)}
 
-/* VIEWS */
-.view{display:none}.view.active{display:contents}
-
-/* RESPONSIVE */
-@media(max-width:1400px){.kpis{grid-template-columns:repeat(4,1fr)}.semaforo-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr 1fr}.suc-row{grid-template-columns:1fr 1fr}.interanual-row{grid-template-columns:1fr 1fr}.rmst-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.suc-row{grid-template-columns:1fr}.interanual-row{grid-template-columns:1fr}.charts-row{grid-template-columns:1fr}.charts-row2{grid-template-columns:1fr}.charts-row3{grid-template-columns:1fr}.semaforo-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1400px){.kpis{grid-template-columns:repeat(4,1fr)}.semaforo-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr 1fr}.suc-row{grid-template-columns:1fr}}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.charts-row2{grid-template-columns:1fr}.charts-row3{grid-template-columns:1fr}.semaforo-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}}
 </style>
 </head>
 <body>
 <div class="app">
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="loader-spinner"></div>
+  <div class="loader-txt">Cargando datos desde Google Sheets…</div>
+  <div class="loader-sub">Esto solo ocurre una vez al abrir el portal</div>
+</div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -296,7 +285,7 @@ tr:last-child td{border-bottom:0}
   </div>
   <nav class="nav">
     <div class="nav-sec">Módulos</div>
-    <button class="active" onclick="showView('fact',this)"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
+    <button class="active"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
     <div class="nav-sec">Próximamente</div>
     <button class="locked" disabled><span class="ico">🔧</span><span class="lbl">Paso por Taller</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span><span class="cnt">pronto</span></button>
@@ -307,7 +296,7 @@ tr:last-child td{border-bottom:0}
   </nav>
   <div class="sidefoot">
     <span class="live-dot"></span><b>En vivo</b> · Google Sheets<br>
-    <span id="lastUpdate">—</span>
+    <span id="lastUpdate">Cargando…</span>
   </div>
 </aside>
 
@@ -321,8 +310,8 @@ tr:last-child td{border-bottom:0}
     <div class="h-right">
       <div class="chip live">🟢 En vivo</div>
       <div class="chip">Vista: <b id="chipVista">Consolidado</b></div>
-      <div class="chip">Período: <b id="chipPeriodo">Julio 2026</b></div>
-      <button class="btn-ref" onclick="D.actualizar()">↻ Actualizar</button>
+      <div class="chip">Período: <b id="chipPeriodo">—</b></div>
+      <button class="btn-ref" onclick="D.recargar()">↻ Actualizar datos</button>
     </div>
   </div>
 
@@ -331,7 +320,7 @@ tr:last-child td{border-bottom:0}
     <select id="fMes" onchange="D.aplicar()">
       <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
       <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
-      <option value="7" selected>Julio</option><option value="8">Agosto</option>
+      <option value="7">Julio</option><option value="8">Agosto</option>
       <option value="9">Septiembre</option><option value="10">Octubre</option>
       <option value="11">Noviembre</option><option value="12">Diciembre</option>
     </select>
@@ -339,23 +328,16 @@ tr:last-child td{border-bottom:0}
     <select id="fAno" onchange="D.aplicar()">
       <option value="2024">2024</option>
       <option value="2025">2025</option>
-      <option value="2026" selected>2026</option>
+      <option value="2026">2026</option>
     </select>
     <div class="fsep"></div>
     <label>SUCURSAL</label>
     <select id="fSuc" onchange="D.aplicar()">
       <option value="todas">Todas</option>
-      <option value="Jujuy">Jujuy</option>
     </select>
     <label>ASESOR</label>
     <select id="fAsesor" onchange="D.aplicar()">
       <option value="todos">Todos</option>
-      <option value="Mauro Gutierrez">Mauro Gutierrez</option>
-      <option value="Tatiana Moreno">Tatiana Moreno</option>
-      <option value="Pablo Guantay">Pablo Guantay</option>
-      <option value="Javier Reynoso">Javier Reynoso</option>
-      <option value="Carlos Fariña">Carlos Fariña</option>
-      <option value="Elbio Benicio">Elbio Benicio</option>
     </select>
     <label>TIPO</label>
     <select id="fTipo" onchange="D.aplicar()">
@@ -365,384 +347,330 @@ tr:last-child td{border-bottom:0}
       <option value="Interna">Interna</option>
     </select>
     <div class="fsep"></div>
-    <span class="f-sum">Vista: <b id="resumenF">Consolidado</b></span>
-    <button class="btn-clr" onclick="D.limpiar()">✕ Limpiar filtros filtros</button>
+    <span class="f-sum">Vista: <b id="resumenF">—</b></span>
+    <button class="btn-clr" onclick="D.limpiar()">✕ Limpiar filtros</button>
     <span class="f-cnt" id="fCnt"></span>
   </div>
 
   <div class="content">
-    <div id="viewFact" class="view active">
+    <div class="error-banner" id="errBanner"></div>
 
-      <!-- ALERTA DÍAS -->
-      <div class="alert-dias" id="alertaDias"></div>
+    <!-- ALERTA DÍAS -->
+    <div class="alert-dias" id="alertaDias" style="display:none"></div>
 
-      <!-- SUCURSALES: JUJUY · SALTA · TARTAGAL -->
-      <div class="suc-row" id="sucRow">
-        <div class="suc-card jujuy" id="sucJujuy"></div>
-
-      </div>
-
-      <!-- COMPARATIVA INTERANUAL -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">📅 Comparativa Interanual — Mismo Mes Año Anterior</div>
-          <div class="card-badge" id="badgeInteranual">—</div>
-        </div>
-        <div class="interanual-row" id="interanualRow"></div>
-      </div>
-
-      <!-- RMST — GARANTÍAS A COBRAR (desactivado hasta conectar datos reales) -->
-      <div class="rmst-card" id="rmstCard"></div>
-
-      <!-- KPIs CONSOLIDADOS -->
-      <div class="kpis" id="kpiGrid"></div>
-
-      <!-- SEMÁFORO -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">🚦 Semáforo de Asesores — Cumplimiento Individual</div>
-          <div id="semResumen" class="card-badge"></div>
-        </div>
-        <div class="semaforo-grid" id="semaforoGrid"></div>
-      </div>
-
-      <!-- CHARTS ROW 1 -->
-      <div class="charts-row">
-        <div class="card">
-          <div class="card-head"><div class="card-title">Facturación por Asesor</div><div class="card-badge" id="badgeMes">—</div></div>
-          <div class="chart-wrap" style="height:190px"><canvas id="chartAsesor"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title">Participación %</div></div>
-          <div class="chart-wrap" style="height:190px"><canvas id="chartPart"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title">Tipo de Cargo</div></div>
-          <div class="chart-wrap" style="height:190px"><canvas id="chartTipo"></canvas></div>
-        </div>
-      </div>
-
-      <!-- CHARTS ROW 2 -->
-      <div class="charts-row2">
-        <div class="card">
-          <div class="card-head"><div class="card-title">Evolución Diaria Acumulada</div></div>
-          <div class="chart-wrap" style="height:150px"><canvas id="chartDiario"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title">Objetivo vs. Facturado 2026</div></div>
-          <div class="chart-wrap" style="height:150px"><canvas id="chartObj"></canvas></div>
-        </div>
-      </div>
-
-      <!-- CHARTS ROW 3 -->
-      <div class="charts-row3">
-        <div class="card">
-          <div class="card-head"><div class="card-title">Tendencia Semanal</div></div>
-          <div class="chart-wrap" style="height:140px"><canvas id="chartSemanal"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title">Concentración · Riesgo Operativo</div>
-            <div id="riesgoBadge"></div>
-          </div>
-          <div id="concBarWrap"></div>
-          <div id="concLegend" class="conc-legend"></div>
-        </div>
-      </div>
-
-      <!-- HISTÓRICO -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">Histórico de Cumplimiento 2026</div>
-          <div class="card-badge" id="histResumen">—</div>
-        </div>
-        <div class="hist-grid" id="histGrid"></div>
-        <div style="margin-top:10px">
-          <div class="chart-wrap" style="height:120px"><canvas id="chartHist"></canvas></div>
-        </div>
-      </div>
-
-      <!-- RANKING -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">Ranking de Asesores</div>
-          <div class="card-badge" id="badgeTotal">—</div>
-        </div>
-        <div class="tablewrap">
-          <table>
-            <thead><tr>
-              <th>#</th><th>Asesor</th><th>Suc.</th>
-              <th class="r">Facturación</th><th class="r">OR</th>
-              <th class="r">Ticket Prom.</th><th class="r">OR/Día Háb.</th>
-              <th class="r">Repuestos</th><th class="r">Terceros</th>
-              <th class="r">Participación</th><th class="r">Cumpl.</th><th>Estado</th>
-            </tr></thead>
-            <tbody id="rankingBody"></tbody>
-          </table>
-        </div>
-      </div>
-
+    <!-- SUCURSAL JUJUY -->
+    <div class="suc-row">
+      <div class="suc-card jujuy" id="sucJujuy"></div>
     </div>
-  </div>
-</div>
-</div>
+
+    <!-- COMPARATIVA INTERANUAL -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📅 Comparativa Interanual — Mismo Mes</div>
+        <div class="card-badge" id="badgeInteranual">—</div>
+      </div>
+      <div id="interanualRow"></div>
+    </div>
+
+    <!-- KPIs CONSOLIDADOS -->
+    <div class="kpis" id="kpiGrid"></div>
+
+    <!-- SEMÁFORO -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">🚦 Semáforo de Asesores — Cumplimiento Individual</div>
+        <div id="semResumen" class="card-badge"></div>
+      </div>
+      <div class="semaforo-grid" id="semaforoGrid"></div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Facturación por Asesor</div><div class="card-badge" id="badgeMes">—</div></div>
+        <div class="chart-wrap" style="height:190px"><canvas id="chartAsesor"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Participación %</div></div>
+        <div class="chart-wrap" style="height:190px"><canvas id="chartPart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Tipo de Cargo</div></div>
+        <div class="chart-wrap" style="height:190px"><canvas id="chartTipo"></canvas></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div class="charts-row2">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Evolución Diaria Acumulada</div></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartDiario"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Objetivo vs. Facturado — Año en curso</div></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartObj"></canvas></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 3 -->
+    <div class="charts-row3">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Tendencia Semanal</div></div>
+        <div class="chart-wrap" style="height:140px"><canvas id="chartSemanal"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Concentración · Riesgo Operativo</div>
+          <div id="riesgoBadge"></div>
+        </div>
+        <div id="concBarWrap"></div>
+        <div id="concLegend" class="conc-legend"></div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Histórico de Cumplimiento — Año en curso</div>
+        <div class="card-badge" id="histResumen">—</div>
+      </div>
+      <div class="hist-grid" id="histGrid"></div>
+      <div style="margin-top:10px">
+        <div class="chart-wrap" style="height:120px"><canvas id="chartHist"></canvas></div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Ranking de Asesores</div>
+        <div class="card-badge" id="badgeTotal">—</div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Asesor</th><th>Suc.</th>
+            <th class="r">Facturación</th><th class="r">OR</th>
+            <th class="r">Ticket Prom.</th><th class="r">Repuestos</th>
+            <th class="r">Terceros</th><th class="r">Participación</th>
+            <th class="r">Cumpl.</th><th>Estado</th>
+          </tr></thead>
+          <tbody id="rankingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-// PORTAL FACTURACIÓN LIVE — Autosol Jujuy
+// PORTAL FACTURACIÓN — Autosol Jujuy
+// v2: carga única, filtrado local, dropdowns dinámicos
 // ═══════════════════════════════════════════════════════════════
-
 const D = {
-  // ── CONFIG ──────────────────────────────────────────────────
-  // Cuando tengas la URL del Apps Script, reemplazá esta línea:
+
   API_URL: "https://script.google.com/macros/s/AKfycbx47gyIvzOZext7tya7yKWXmJQtogc-rXBCKQzSBbCVzGiLW6jyj-XcgpY8fUua37E/exec",
 
-  OBJETIVOS:{
-    2025:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000},
-    2026:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000},
+  // Objetivos mensuales Jujuy 2026 (y 2025 mismo criterio hasta confirmar)
+  OBJETIVOS: {
+    2024: {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000},
+    2025: {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000},
+    2026: {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000},
   },
-  OBJ_SUC:{
-    Jujuy:   {2025:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000},
-              2026:{1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000}},
 
-  },
-  DIAS_HAB:{1:22,2:20,3:21,4:22,5:22,6:21,7:22,8:22,9:21,10:23,11:20,12:20},
-  DIAS_MES:{1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31},
-  // Feriados nacionales 2026 — formato YYYY-MM-DD
-  FERIADOS:[
-    "2026-01-01","2026-02-16","2026-02-17",
-    "2026-03-24","2026-04-02","2026-04-03","2026-04-09",
-    "2026-05-01","2026-05-25",
-    "2026-06-15","2026-06-20",
-    "2026-07-09",
-    "2026-08-17",
-    "2026-10-12",
-    "2026-11-23",
-    "2026-12-08","2026-12-25",
+  FERIADOS: [
+    "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
+    "2024-05-01","2024-05-25","2024-06-17","2024-06-20","2024-07-09","2024-08-19",
+    "2024-10-14","2024-11-18","2024-12-08","2024-12-25",
+    "2025-01-01","2025-03-03","2025-03-04","2025-03-24","2025-04-02","2025-04-18",
+    "2025-05-01","2025-05-25","2025-06-16","2025-06-20","2025-07-09","2025-08-18",
+    "2025-10-13","2025-11-24","2025-12-08","2025-12-25",
+    "2026-01-01","2026-02-16","2026-02-17","2026-03-24","2026-04-02","2026-04-03",
+    "2026-04-09","2026-05-01","2026-05-25","2026-06-15","2026-06-20","2026-07-09",
+    "2026-08-17","2026-10-12","2026-11-23","2026-12-08","2026-12-25",
   ],
 
-  // Calcula días hábiles entre dos fechas (excluye sáb, dom y feriados)
-  diasHabiles(desde, hasta){
-    let count=0;
-    let d=new Date(desde);
+  MESES: ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+  MESES_CORTO: ["","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
+  PALETA: ["#4d9fff","#00d97e","#ffb020","#ff3b52","#a87eff","#00cce8","#ff8c42","#ffe566"],
+
+  raw: [],   // todos los registros cargados una vez
+  fil: [],   // registros filtrados
+  graficos: {},
+  HOY: new Date(),
+
+  // ── DÍAS HÁBILES ──────────────────────────────────────────────
+  diasHab(desde, hasta) {
+    let count = 0, d = new Date(desde);
     d.setHours(0,0,0,0);
-    const h=new Date(hasta);
-    h.setHours(0,0,0,0);
-    while(d<=h){
-      const dow=d.getDay();
-      const str=d.toISOString().slice(0,10);
-      if(dow!==0&&dow!==6&&!this.FERIADOS.includes(str))count++;
+    const h = new Date(hasta); h.setHours(0,0,0,0);
+    while (d <= h) {
+      const dow = d.getDay();
+      const str = d.toISOString().slice(0,10);
+      if (dow !== 0 && dow !== 6 && !this.FERIADOS.includes(str)) count++;
       d.setDate(d.getDate()+1);
     }
     return count;
   },
 
-  // Calcula automáticamente los días del mes actual
-  calcDias(){
-    const hoy=new Date();
-    hoy.setHours(0,0,0,0);
-    const mes=hoy.getMonth()+1;
-    const ano=hoy.getFullYear();
-    const primerDia=new Date(ano,mes-1,1);
-    const ultimoDia=new Date(ano,mes,0);
-    const diasHabMes=this.diasHabiles(primerDia,ultimoDia);
-    const diasHabTrans=this.diasHabiles(primerDia,hoy);
-    return{
-      mes, ano,
-      dia:hoy.getDate(),
+  calcDias(mes, ano) {
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const primerDia = new Date(ano, mes-1, 1);
+    const ultimoDia = new Date(ano, mes, 0);
+    const diasHabMes = this.diasHab(primerDia, ultimoDia);
+    const esMesActual = mes === hoy.getMonth()+1 && ano === hoy.getFullYear();
+    const diasHabTrans = esMesActual ? this.diasHab(primerDia, hoy) : diasHabMes;
+    return {
       diasHabMes,
       diasHabTrans,
-      diasHabRest:diasHabMes-diasHabTrans,
+      diasHabRest: Math.max(diasHabMes - diasHabTrans, 0),
+      esMesActual,
     };
   },
 
-  MES_ACTUAL:new Date().getMonth()+1,
-  ANO_ACTUAL:new Date().getFullYear(),
-  MESES:["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
-  PALETA:["#4d9fff","#00d97e","#ffb020","#ff3b52","#a87eff","#00cce8","#ff8c42","#ffe566"],
-  SUC_COL:{Jujuy:"#4d9fff"},
+  // ── CARGA DESDE API ───────────────────────────────────────────
+  async cargar() {
+    document.getElementById("loaderOverlay").classList.remove("hidden");
+    document.getElementById("errBanner").classList.remove("show");
+    try {
+      const res = await fetch(this.API_URL, { method:"GET", redirect:"follow" });
+      const text = await res.text();
+      const json = JSON.parse(text.trim().replace(/^\uFEFF/,""));
+      if (!json.ok) throw new Error(json.error || "Error desconocido");
 
-  // RMST demo — se reemplaza con datos reales de garantías
-  RMST_DEMO:{
-    totalGarantias: 14367452,
-    alcancePct: 0.10,
-    aCobrar: 1436745,
-    orVencidas: 8,
-    orPendientes: 23,
-    diasPromedio: 47,
-  },
+      this.raw = json.detalle || [];
 
-  raw:[], fil:[], graficos:{},
+      // Poblar dropdowns con datos reales
+      this.poblarDropdowns(json.asesores || [], json.sucursales || []);
 
-  // ── INICIO ──────────────────────────────────────────────────
-  iniciar(){
-    if(this.API_URL){
-      this.cargarDesdeAPI();
-    } else {
-      this.genDemo();
+      // Seleccionar mes/año actual por defecto
+      const hoy = new Date();
+      document.getElementById("fMes").value = String(hoy.getMonth()+1);
+      document.getElementById("fAno").value = String(hoy.getFullYear());
+
+      document.getElementById("lastUpdate").textContent = new Date().toLocaleString("es-AR");
       this.aplicar();
-    }
-    document.getElementById("lastUpdate").textContent=new Date().toLocaleString("es-AR");
-  },
-
-  actualizar(){
-    document.getElementById("lastUpdate").textContent=new Date().toLocaleString("es-AR");
-    if(this.API_URL) this.cargarDesdeAPI(); else this.aplicar();
-  },
-
-  // ── API (cuando esté lista) ──────────────────────────────────
-  async cargarDesdeAPI(){
-    const mes=document.getElementById("fMes").value||7;
-    const ano=document.getElementById("fAno").value||2026;
-    try{
-      const url=`${this.API_URL}?mes=${mes}&ano=${ano}`;
-      // Apps Script requiere mode: no-cors o redirect follow
-      const res=await fetch(url, {
-        method: "GET",
-        redirect: "follow",
-      });
-      const text=await res.text();
-      // Limpiar posible BOM o caracteres extra
-      const clean=text.trim().replace(/^\uFEFF/,"");
-      const json=JSON.parse(clean);
-      if(json.ok && json.detalle){
-        this.raw=json.detalle;
-        this.aplicar();
-        document.querySelector(".sidefoot b").textContent="En vivo";
-        document.getElementById("lastUpdate").textContent=new Date().toLocaleString("es-AR");
-      } else if(json.error){
-        console.error("Error API:",json.error);
-      }
-    }catch(err){
-      console.error("Error API:",err.message);
-      // Fallback a demo si falla
-      if(this.raw.length===0){this.genDemo();this.aplicar();}
+    } catch(err) {
+      const b = document.getElementById("errBanner");
+      b.textContent = "⚠️ No se pudieron cargar los datos: " + err.message + " — Revisá la conexión o el Apps Script.";
+      b.classList.add("show");
+      console.error(err);
+    } finally {
+      document.getElementById("loaderOverlay").classList.add("hidden");
     }
   },
 
-  // ── DATOS DEMO ───────────────────────────────────────────────
-  genDemo(){
-    const asesores=[
-      {n:"Mauro Gutierrez",suc:"Jujuy",  peso:1.00},
-      {n:"Tatiana Moreno", suc:"Jujuy",  peso:0.55},
-      {n:"Pablo Guantay",  suc:"Jujuy",  peso:0.72},
-      {n:"Javier Reynoso", suc:"Jujuy",  peso:0.65},
-
-    ];
-    const tipos=["Cliente","Cliente","Cliente","Garantía","Garantía","Interna"];
-    const base=5500000;
-    const data=[];
-    for(let ano=2024;ano<=2026;ano++){
-      const mesesMax=ano<2026?12:7;
-      for(let mes=1;mes<=mesesMax;mes++){
-        const diasTot=(ano===2026&&mes===7)?this.HOY_DIA:this.DIAS_MES[mes];
-        asesores.forEach(a=>{
-          const ors=Math.round((8+Math.random()*15)*a.peso);
-          for(let i=0;i<ors;i++){
-            const dia=Math.ceil(Math.random()*diasTot);
-            const tipo=tipos[Math.floor(Math.random()*tipos.length)];
-            const imp=Math.round((base*a.peso*(0.55+Math.random()*0.9))/ors);
-            const rep=tipo==="Cliente"?Math.round(imp*0.15):0;
-            const ter=tipo==="Cliente"?Math.round(imp*0.08):0;
-            data.push({mes,ano,dia,sem:Math.ceil(dia/7),
-              fecha:`${ano}-${String(mes).padStart(2,"0")}-${String(dia).padStart(2,"0")}`,
-              asesor:a.n,suc:a.suc,tipo,importe:imp,
-              cliente:tipo==="Cliente"?imp:0,
-              garantia:tipo==="Garantía"?imp:0,
-              interna:tipo==="Interna"?imp:0,
-              repuestos:rep,terceros:ter,
-            });
-          }
-        });
-      }
-    }
-    this.raw=data;
+  recargar() {
+    this.raw = [];
+    this.cargar();
   },
 
-  // ── FILTROS ──────────────────────────────────────────────────
-  aplicar(){
-    const mes=parseInt(document.getElementById("fMes").value)||7;
-    const ano=parseInt(document.getElementById("fAno").value)||2026;
-    const suc=document.getElementById("fSuc").value;
-    const asesor=document.getElementById("fAsesor").value;
-    const tipo=document.getElementById("fTipo").value;
-    this.fil=this.raw.filter(r=>
-      r.mes===mes&&r.ano===ano&&
-      (suc==="todas"||r.suc===suc)&&
-      (asesor==="todos"||r.asesor===asesor)&&
-      (tipo==="todos"||r.tipo===tipo)
+  // ── DROPDOWNS DINÁMICOS ───────────────────────────────────────
+  poblarDropdowns(asesores, sucursales) {
+    // Sucursales
+    const selSuc = document.getElementById("fSuc");
+    selSuc.innerHTML = '<option value="todas">Todas</option>';
+    sucursales.sort().forEach(s => {
+      selSuc.innerHTML += `<option value="${s}">${s}</option>`;
+    });
+
+    // Asesores
+    const selAs = document.getElementById("fAsesor");
+    selAs.innerHTML = '<option value="todos">Todos</option>';
+    asesores.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(a => {
+      selAs.innerHTML += `<option value="${a.nombre}">${a.nombre}</option>`;
+    });
+  },
+
+  // ── FILTROS LOCALES ───────────────────────────────────────────
+  aplicar() {
+    const mes    = parseInt(document.getElementById("fMes").value);
+    const ano    = parseInt(document.getElementById("fAno").value);
+    const suc    = document.getElementById("fSuc").value;
+    const asesor = document.getElementById("fAsesor").value;
+    const tipo   = document.getElementById("fTipo").value;
+
+    this.fil = this.raw.filter(r =>
+      r.mes === mes && r.ano === ano &&
+      (suc    === "todas" || r.suc    === suc) &&
+      (asesor === "todos" || r.asesor === asesor) &&
+      (tipo   === "todos" || r.tipo   === tipo)
     );
-    const vista=asesor!=="todos"?asesor:suc!=="todas"?suc:"Consolidado";
-    document.getElementById("chipPeriodo").textContent=this.MESES[mes]+" "+ano;
-    document.getElementById("chipVista").textContent=vista;
-    document.getElementById("badgeMes").textContent=this.MESES[mes]+" "+ano;
-    document.getElementById("resumenF").textContent=vista;
-    document.getElementById("fCnt").textContent=this.fil.length+" registros";
-    this.render(mes,ano);
+
+    const vista = asesor !== "todos" ? asesor : suc !== "todas" ? suc : "Consolidado";
+    document.getElementById("chipPeriodo").textContent = this.MESES[mes] + " " + ano;
+    document.getElementById("chipVista").textContent   = vista;
+    document.getElementById("badgeMes").textContent    = this.MESES[mes] + " " + ano;
+    document.getElementById("resumenF").textContent    = vista;
+    document.getElementById("fCnt").textContent        = this.fil.length + " registros";
+
+    this.render(mes, ano);
   },
-  limpiar(){
-    document.getElementById("fMes").value="7";
-    document.getElementById("fAno").value="2026";
-    document.getElementById("fSuc").value="todas";
-    document.getElementById("fAsesor").value="todos";
-    document.getElementById("fTipo").value="todos";
+
+  limpiar() {
+    const hoy = new Date();
+    document.getElementById("fMes").value   = String(hoy.getMonth()+1);
+    document.getElementById("fAno").value   = String(hoy.getFullYear());
+    document.getElementById("fSuc").value   = "todas";
+    document.getElementById("fAsesor").value= "todos";
+    document.getElementById("fTipo").value  = "todos";
     this.aplicar();
   },
 
-  // ── CÁLCULOS ─────────────────────────────────────────────────
-  totales(arr,mes,ano){
-    const total=this.sum(arr);
-    const t={
-      total,
-      cliente:  arr.reduce((s,r)=>s+r.cliente,0),
-      garantia: arr.reduce((s,r)=>s+r.garantia,0),
-      interna:  arr.reduce((s,r)=>s+r.interna,0),
-      repuestos:arr.reduce((s,r)=>s+(r.repuestos||0),0),
-      terceros: arr.reduce((s,r)=>s+(r.terceros||0),0),
-      ors:arr.length,
-      ticket:arr.length?Math.round(total/arr.length):0,
-      objetivo:(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[mes]||92700000,
-    };
-    t.cumpl=t.objetivo?t.total/t.objetivo*100:0;
-    const cd=this.calcDias();
-    t.diasHab=mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL?cd.diasHabTrans:this.DIAS_HAB[mes]||22;
-    t.diasHabMes=mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL?cd.diasHabMes:this.DIAS_HAB[mes]||22;
-    t.ritmo=t.diasHab?t.total/t.diasHab:0;
-    t.proyeccion=t.ritmo*t.diasHabMes;
-    t.ritmoIdeal=t.objetivo/t.diasHabMes;
-    return t;
-  },
-
-  // ── RENDER ───────────────────────────────────────────────────
-  render(mes,ano){
-    const t=this.totales(this.fil,mes,ano);
-    this.renderAlerta(mes,ano,t);
-    this.renderSucursales(mes,ano);
-    this.renderInteranual(mes,ano);
-    // this.renderRMST(); — desactivado hasta conectar datos reales
-    this.renderKPIs(t,mes,ano);
-    this.renderSemaforo(mes,ano);
-    this.renderGraficos(mes,ano);
+  // ── RENDER PRINCIPAL ──────────────────────────────────────────
+  render(mes, ano) {
+    const t = this.totales(this.fil, mes, ano);
+    this.renderAlerta(mes, ano, t);
+    this.renderSucursal(mes, ano);
+    this.renderInteranual(mes, ano);
+    this.renderKPIs(t, mes, ano);
+    this.renderSemaforo(mes, ano, t);
+    this.renderGraficos(mes, ano, t);
     this.renderConcentracion();
     this.renderHistorico(ano);
-    this.renderRanking(t,mes,ano);
-    document.getElementById("badgeTotal").textContent="Total: "+this.moneda(t.total);
+    this.renderRanking(t, mes, ano);
+    document.getElementById("badgeTotal").textContent = "Total: " + this.moneda(t.total);
+  },
+
+  // ── TOTALES ───────────────────────────────────────────────────
+  totales(arr, mes, ano) {
+    const total     = arr.reduce((s,r) => s + r.importe, 0);
+    const cd        = this.calcDias(mes, ano);
+    const objetivo  = (this.OBJETIVOS[ano] || this.OBJETIVOS[2026])[mes] || 92700000;
+    const diasHabT  = cd.diasHabTrans || 1;
+    const ritmo     = total / diasHabT;
+    const proyeccion= ritmo * cd.diasHabMes;
+    return {
+      total,
+      cliente:   arr.reduce((s,r) => s + (r.cliente  || 0), 0),
+      garantia:  arr.reduce((s,r) => s + (r.garantia || 0), 0),
+      interna:   arr.reduce((s,r) => s + (r.interna  || 0), 0),
+      repuestos: arr.reduce((s,r) => s + (r.repuestos|| 0), 0),
+      terceros:  arr.reduce((s,r) => s + (r.terceros || 0), 0),
+      ors:       arr.length,
+      ticket:    arr.length ? Math.round(total / arr.length) : 0,
+      objetivo,
+      cumpl:     objetivo ? total / objetivo * 100 : 0,
+      ritmo,
+      ritmoIdeal:objetivo / cd.diasHabMes,
+      proyeccion,
+      ...cd,
+    };
   },
 
   // ── ALERTA DÍAS ──────────────────────────────────────────────
-  renderAlerta(mes,ano,t){
-    const el=document.getElementById("alertaDias");
-    if(mes!==this.MES_ACTUAL||ano!==this.ANO_ACTUAL){el.style.display="none";return;}
-    el.style.display="flex";
-    const cd=this.calcDias();
-    const diasHabRest=cd.diasHabRest;
-    const diasHabTrans=cd.diasHabTrans;
-    const falta=Math.max(t.objetivo-t.total,0);
-    const ritmoNec=diasHabRest>0?falta/diasHabRest:0;
-    const cls=diasHabRest<=3?"urgente":diasHabRest<=8?"warn":"ok";
-    const ritmoOk=t.ritmo>=ritmoNec;
-    el.innerHTML=`
+  renderAlerta(mes, ano, t) {
+    const el = document.getElementById("alertaDias");
+    if (!t.esMesActual) { el.style.display = "none"; return; }
+    el.style.display = "flex";
+    const falta    = Math.max(t.objetivo - t.total, 0);
+    const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
+    const clsRest  = t.diasHabRest <= 3 ? "urgente" : t.diasHabRest <= 8 ? "warn" : "ok";
+    const ritmoOk  = t.ritmo >= ritmoNec;
+    el.innerHTML = `
       <div class="icon">📅</div>
       <div class="txt">
         <b>${this.MESES[mes]} ${ano} — Mes en curso</b>
@@ -752,119 +680,87 @@ const D = {
         · Falta: <b style="color:var(--${falta>0?"red":"green"})">${this.moneda(falta)}</b></p>
       </div>
       <div class="dias-chips">
-        <div class="dias-chip ${cls}"><div class="dl">DÍAS HÁB. REST.</div><div class="dv">${diasHabRest}</div></div>
-        <div class="dias-chip ok"><div class="dl">TRANSCURRIDOS</div><div class="dv">${diasHabTrans}</div></div>
+        <div class="dias-chip ${clsRest}"><div class="dl">DÍAS HÁB. REST.</div><div class="dv">${t.diasHabRest}</div></div>
+        <div class="dias-chip ok"><div class="dl">TRANSCURRIDOS</div><div class="dv">${t.diasHabTrans}</div></div>
         <div class="dias-chip ${t.cumpl>=90?"ok":t.cumpl>=60?"warn":"urgente"}"><div class="dl">CUMPL. HOY</div><div class="dv">${t.cumpl.toFixed(0)}%</div></div>
         <div class="dias-chip ${t.proyeccion>=t.objetivo?"ok":"urgente"}"><div class="dl">PROYECCIÓN</div><div class="dv" style="font-size:14px">${this.compacto(t.proyeccion)}</div></div>
       </div>`;
   },
 
-  // ── SUCURSALES ────────────────────────────────────────────────
-  renderSucursales(mes,ano){
-    ["Jujuy"].forEach(suc=>{
-      const arr=this.raw.filter(r=>r.mes===mes&&r.ano===ano&&r.suc===suc);
-      const obj=(this.OBJ_SUC[suc]?.[ano]||this.OBJ_SUC[suc]?.[2026]||{})[mes]||0;
-      const total=this.sum(arr);
-      const ors=arr.length;
-      const ticket=ors?Math.round(total/ors):0;
-      const cumpl=obj?total/obj*100:0;
-      // Ticket vs mes anterior
-      const arrAnt=this.raw.filter(r=>r.mes===mes-1&&r.ano===ano&&r.suc===suc);
-      const ticketAnt=arrAnt.length?Math.round(this.sum(arrAnt)/arrAnt.length):0;
-      const dif=ticket-ticketAnt;
-      const flecha=dif>=0?"↑":"↓";
-      const col=dif>=0?"var(--green)":"var(--red)";
-      document.getElementById("suc"+suc).innerHTML=`
-        <div class="suc-header">
-          <div class="suc-name">🏢 ${suc}</div>
-          <div class="suc-badge">${cumpl.toFixed(1)}% del objetivo</div>
-        </div>
-        <div class="suc-kpis">
-          <div class="suc-kpi"><div class="l">Facturación</div><div class="v">${this.compacto(total)}</div><div class="s">${this.moneda(total)}</div></div>
-          <div class="suc-kpi"><div class="l">OR</div><div class="v">${ors}</div><div class="s">órdenes</div></div>
-          <div class="suc-kpi"><div class="l">Ticket Prom.</div><div class="v">${this.compacto(ticket)}</div><div class="s" style="color:${col}">${flecha} vs mes ant.</div></div>
-          <div class="suc-kpi"><div class="l">Objetivo</div><div class="v">${this.compacto(obj)}</div><div class="s">meta mensual</div></div>
-        </div>
-        <div class="suc-prog">
-          <div class="suc-prog-meta"><span>Avance hacia el objetivo</span><span>${cumpl.toFixed(1)}%</span></div>
-          <div class="suc-prog-track"><div class="suc-prog-fill" style="width:${Math.min(cumpl,100)}%"></div></div>
-        </div>`;
-    });
+  // ── SUCURSAL JUJUY ───────────────────────────────────────────
+  renderSucursal(mes, ano) {
+    const arr     = this.raw.filter(r => r.mes===mes && r.ano===ano && r.suc==="Jujuy");
+    const obj     = (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[mes] || 0;
+    const total   = arr.reduce((s,r) => s+r.importe, 0);
+    const ors     = arr.length;
+    const ticket  = ors ? Math.round(total/ors) : 0;
+    const cumpl   = obj ? total/obj*100 : 0;
+    const arrAnt  = this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1) && r.suc==="Jujuy");
+    const tickAnt = arrAnt.length ? Math.round(arrAnt.reduce((s,r)=>s+r.importe,0)/arrAnt.length) : 0;
+    const dif = ticket - tickAnt;
+    document.getElementById("sucJujuy").innerHTML = `
+      <div class="suc-header">
+        <div class="suc-name">🏢 Jujuy</div>
+        <div class="suc-badge">${cumpl.toFixed(1)}% del objetivo</div>
+      </div>
+      <div class="suc-kpis">
+        <div class="suc-kpi"><div class="l">Facturación</div><div class="v">${this.compacto(total)}</div><div class="s">${this.moneda(total)}</div></div>
+        <div class="suc-kpi"><div class="l">OR</div><div class="v">${ors}</div><div class="s">órdenes facturadas</div></div>
+        <div class="suc-kpi"><div class="l">Ticket Promedio</div><div class="v">${this.compacto(ticket)}</div><div class="s" style="color:${dif>=0?"var(--green)":"var(--red)"}">${dif>=0?"↑":"↓"} vs mes ant.</div></div>
+        <div class="suc-kpi"><div class="l">Objetivo</div><div class="v">${this.compacto(obj)}</div><div class="s">meta mensual</div></div>
+      </div>
+      <div class="suc-prog">
+        <div class="suc-prog-meta"><span>Avance hacia el objetivo</span><span>${cumpl.toFixed(1)}%</span></div>
+        <div class="suc-prog-track"><div class="suc-prog-fill" style="width:${Math.min(cumpl,100)}%"></div></div>
+      </div>`;
   },
 
-  // ── COMPARATIVA INTERANUAL ────────────────────────────────────
-  renderInteranual(mes,ano){
-    document.getElementById("badgeInteranual").textContent=`${this.MESES[mes]} ${ano-1} vs ${ano}`;
-    const sucursales=["Jujuy"];
-    const cols={Jujuy:["#4d9fff","#0040c8"]};
-    document.getElementById("interanualRow").innerHTML=sucursales.map(suc=>{
-      const prev=this.sum(this.raw.filter(r=>r.mes===mes&&r.ano===ano-1&&r.suc===suc));
-      const curr=this.sum(this.raw.filter(r=>r.mes===mes&&r.ano===ano&&r.suc===suc));
-      const maxVal=Math.max(prev,curr,1);
-      const var_=prev>0?((curr-prev)/prev*100):0;
-      const varCls=var_>=0?"var-up":"var-down";
-      const [c1,c2]=cols[suc];
-      return`<div class="interanual-card">
+  // ── INTERANUAL ───────────────────────────────────────────────
+  renderInteranual(mes, ano) {
+    document.getElementById("badgeInteranual").textContent = `${this.MESES[mes]} ${ano-1} vs ${ano}`;
+    const prev = this.raw.filter(r=>r.mes===mes&&r.ano===ano-1&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0);
+    const curr = this.raw.filter(r=>r.mes===mes&&r.ano===ano  &&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0);
+    const maxV = Math.max(prev, curr, 1);
+    const vari = prev > 0 ? (curr-prev)/prev*100 : 0;
+    document.getElementById("interanualRow").innerHTML = `
+      <div class="interanual-card">
         <div class="interanual-head">
-          <div>
-            <div class="interanual-title">${suc}</div>
-          </div>
-          <span class="var-badge ${varCls}">${var_>=0?"+":""}${var_.toFixed(1)}% vs año ant.</span>
+          <div class="interanual-title">Jujuy · ${this.MESES[mes]}</div>
+          <span class="var-badge ${vari>=0?"var-up":"var-down"}">${vari>=0?"+":""}${vari.toFixed(1)}% vs año ant.</span>
         </div>
         <div class="interanual-years">
           <div class="year-row">
             <div class="year-lbl">${ano-1}</div>
-            <div class="year-bar-wrap"><div class="year-bar" style="width:${(prev/maxVal*100).toFixed(1)}%;background:linear-gradient(90deg,${c2},${c1})">${this.compacto(prev)}</div></div>
+            <div class="year-bar-wrap"><div class="year-bar" style="width:${(prev/maxV*100).toFixed(1)}%;background:linear-gradient(90deg,#0040c8,#4d9fff)">${this.compacto(prev)}</div></div>
             <div class="year-val">${this.moneda(prev)}</div>
           </div>
           <div class="year-row">
             <div class="year-lbl">${ano}</div>
-            <div class="year-bar-wrap"><div class="year-bar" style="width:${(curr/maxVal*100).toFixed(1)}%;background:linear-gradient(90deg,${c2}aa,${c1})">${this.compacto(curr)}</div></div>
+            <div class="year-bar-wrap"><div class="year-bar" style="width:${(curr/maxV*100).toFixed(1)}%;background:linear-gradient(90deg,#0040c8aa,#4d9fff)">${this.compacto(curr)}</div></div>
             <div class="year-val">${this.moneda(curr)}</div>
           </div>
         </div>
       </div>`;
-    }).join("");
-  },
-
-  // ── RMST ─────────────────────────────────────────────────────
-  renderRMST(){
-    const r=this.RMST_DEMO;
-    const vencAlert=r.orVencidas>5;
-    document.getElementById("rmstCard").innerHTML=`
-      <div class="rmst-head">
-        <div>
-          <div class="rmst-title">🛡️ RMST — Garantías Reclamadas a Volkswagen Argentina</div>
-          <div class="rmst-subtitle">Monto reclamado pendiente de cobro · Mes actual</div>
-        </div>
-        <span class="badge" style="background:rgba(168,126,255,.12);color:var(--purple);border:1px solid rgba(168,126,255,.25)">Módulo demo</span>
-      </div>
-      <div class="rmst-grid">
-        <div class="rmst-kpi"><div class="l">Total garantías facturadas</div><div class="v">${this.compacto(r.totalGarantias)}</div><div class="s">${this.moneda(r.totalGarantias)}</div></div>
-        <div class="rmst-kpi"><div class="l">Alcance RMST</div><div class="v">${(r.alcancePct*100).toFixed(0)}%</div><div class="s">del total reclamado</div></div>
-        <div class="rmst-kpi"><div class="l">Monto a cobrar de VW</div><div class="v">${this.compacto(r.aCobrar)}</div><div class="s">${this.moneda(r.aCobrar)}</div></div>
-        <div class="rmst-kpi"><div class="l">Días promedio cobro</div><div class="v">${r.diasPromedio}</div><div class="s">días hábiles</div></div>
-      </div>
-      ${vencAlert?`<div class="rmst-alert">⚠️ <b>${r.orVencidas} OR vencidas</b> sin respuesta de VW · ${r.orPendientes} OR pendientes de aprobación — requiere seguimiento inmediato</div>`:""}`;
   },
 
   // ── KPIs ─────────────────────────────────────────────────────
-  renderKPIs(t,mes,ano){
-    const pc=t.cumpl,cls=pc>=90?"on-track":pc>=60?"at-risk":"behind";
-    const badge=pc>=90?"b-green":pc>=60?"b-orange":"b-red";
-    const cards=[
+  renderKPIs(t, mes, ano) {
+    const pc  = t.cumpl;
+    const cls = pc>=90?"on-track":pc>=60?"at-risk":"behind";
+    const bdg = pc>=90?"b-green":pc>=60?"b-orange":"b-red";
+    const cards = [
       {label:"Facturación total",val:this.moneda(t.total),sub:this.pct(t.cumpl)+" del objetivo",ico:"💰",cls:"c-main",
-       extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. ${this.compacto(t.objetivo)}</span><span class="badge ${badge}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div></div>`},
+       extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. ${this.compacto(t.objetivo)}</span><span class="badge ${bdg}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div></div>`},
       {label:"Cliente",val:this.moneda(t.cliente),sub:this.pct(t.total?t.cliente/t.total*100:0)+" del total",ico:"👤",cls:"c-cyan"},
       {label:"Garantía",val:this.moneda(t.garantia),sub:this.pct(t.total?t.garantia/t.total*100:0)+" del total",ico:"🛡️",cls:"c-purple"},
       {label:"Interna",val:this.moneda(t.interna),sub:this.pct(t.total?t.interna/t.total*100:0)+" del total",ico:"🏭",cls:"c-orange"},
-      {label:"Repuestos",val:this.compacto(t.repuestos),sub:"sin mano de obra",ico:"🔩",cls:"c-teal"},
+      {label:"Repuestos",val:this.compacto(t.repuestos),sub:"incluido en total",ico:"🔩",cls:"c-teal"},
       {label:"OR Facturadas",val:t.ors,sub:"órdenes del período",ico:"📋",cls:"c-green"},
       {label:"Ticket promedio",val:this.compacto(t.ticket),sub:"por orden",ico:"📊",cls:"c-cyan"},
-      {label:"Proyección fin mes",val:this.compacto(t.proyeccion),sub:t.proyeccion>=t.objetivo?"✅ Llegaríamos":"⚠️ En riesgo",ico:"📐",cls:t.proyeccion>=t.objetivo?"c-green":"c-red",
+      {label:"Proyección fin mes",val:this.compacto(t.proyeccion),sub:t.proyeccion>=t.objetivo?"✅ Objetivo alcanzable":"⚠️ En riesgo",ico:"📐",cls:t.proyeccion>=t.objetivo?"c-green":"c-red",
        extra:`<div class="prog-wrap"><div class="prog-track"><div class="prog-fill ${t.proyeccion>=t.objetivo?"on-track":"behind"}" style="width:${Math.min(t.proyeccion/t.objetivo*100,100)}%"></div></div></div>`},
     ];
-    document.getElementById("kpiGrid").innerHTML=cards.map(c=>`
+    document.getElementById("kpiGrid").innerHTML = cards.map(c=>`
       <div class="kpi ${c.cls}">
         <div class="kpi-head"><div class="kpi-label">${c.label}</div><div class="kpi-ico">${c.ico}</div></div>
         <div class="kpi-val">${c.val}</div>
@@ -874,98 +770,122 @@ const D = {
   },
 
   // ── SEMÁFORO ─────────────────────────────────────────────────
-  renderSemaforo(mes,ano){
-    const byAsesor=this.grupo(this.raw.filter(r=>r.mes===mes&&r.ano===ano),"asesor");
-    const objPorAsesor=(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[mes]/Math.max(Object.keys(byAsesor).length,1);
-    let verde=0,amarillo=0,rojo=0;
-    const cards=Object.entries(byAsesor).map(([a,arr])=>{
-      const total=this.sum(arr);
-      const cumpl=objPorAsesor?total/objPorAsesor*100:0;
-      const suc=arr[0]?.suc||"";
-      const diasHabRest=this.DIAS_HAB[mes]-(mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL?this.HOY_DIA_HAB:this.DIAS_HAB[mes]);
-      const falta=Math.max(objPorAsesor-total,0);
-      const ritmoNec=diasHabRest>0?falta/diasHabRest:0;
-      const ritmoAct=(mes===this.MES_ACTUAL&&ano===this.ANO_ACTUAL&&this.HOY_DIA_HAB>0)?total/this.HOY_DIA_HAB:total/this.DIAS_HAB[mes];
-      let color=cumpl>=90?"verde":cumpl>=55?"amarillo":"rojo";
-      if(color==="amarillo"&&ritmoAct>=ritmoNec&&diasHabRest>3)color="verde";
-      if(color==="verde")verde++;else if(color==="amarillo")amarillo++;else rojo++;
-      let alerta=color==="rojo"?`⚠️ Necesita ${this.compacto(ritmoNec)}/día`:color==="amarillo"?`↗ Ritmo: ${this.compacto(ritmoAct)}/día`:`✅ En ritmo`;
-      const sucBadgeCls="b-blue";
-      return`<div class="sem-card ${color}">
+  renderSemaforo(mes, ano, t) {
+    const byAsesor = this.grupo(this.raw.filter(r=>r.mes===mes&&r.ano===ano), "asesor");
+    const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
+    const objInd = t.objetivo / nAsesores;
+    let verde=0, amarillo=0, rojo=0;
+    const cards = Object.entries(byAsesor).map(([a, arr]) => {
+      const total = arr.reduce((s,r)=>s+r.importe,0);
+      const cumpl = objInd ? total/objInd*100 : 0;
+      const suc   = arr[0]?.suc || "";
+      const ritmoAct = t.diasHabTrans > 0 ? total/t.diasHabTrans : 0;
+      const falta    = Math.max(objInd - total, 0);
+      const ritmoNec = t.diasHabRest > 0 ? falta/t.diasHabRest : 0;
+      let color = cumpl>=90?"verde":cumpl>=55?"amarillo":"rojo";
+      if (color==="amarillo" && ritmoAct>=ritmoNec && t.diasHabRest>3) color="verde";
+      if (color==="verde") verde++; else if (color==="amarillo") amarillo++; else rojo++;
+      const alerta = color==="rojo" ? `⚠️ Necesita ${this.compacto(ritmoNec)}/día`
+                   : color==="amarillo" ? `↗ Ritmo: ${this.compacto(ritmoAct)}/día`
+                   : `✅ En ritmo`;
+      return `<div class="sem-card ${color}">
         <div class="sem-top"><span class="sem-name">${a}</span><span class="sem-indicator ${color}"></span></div>
-        <div class="sem-suc"><span class="badge ${sucBadgeCls}">${suc}</span></div>
+        <div class="sem-suc"><span class="badge b-blue">${suc}</span></div>
         <div class="sem-val">${this.compacto(total)}</div>
         <div class="sem-pct">${cumpl.toFixed(1)}% del obj. individual</div>
         <div class="sem-prog"><div class="sem-prog-track"><div class="sem-prog-fill" style="width:${Math.min(cumpl,100)}%"></div></div></div>
         <div class="sem-alerta">${alerta}</div>
       </div>`;
     });
-    document.getElementById("semaforoGrid").innerHTML=cards.join("");
-    document.getElementById("semResumen").innerHTML=`🟢 ${verde} &nbsp;🟡 ${amarillo} &nbsp;🔴 ${rojo}`;
+    document.getElementById("semaforoGrid").innerHTML = cards.join("");
+    document.getElementById("semResumen").innerHTML = `🟢 ${verde} &nbsp;🟡 ${amarillo} &nbsp;🔴 ${rojo}`;
   },
 
   // ── GRÁFICOS ─────────────────────────────────────────────────
-  renderGraficos(mes,ano){
+  renderGraficos(mes, ano, t) {
     this.killCharts();
-    const d=this.fil;
-    const byAsesor=this.grupo(d,"asesor");
-    const aKeys=Object.keys(byAsesor).sort((a,b)=>this.sum(byAsesor[b])-this.sum(byAsesor[a]));
-    const aVals=aKeys.map(k=>this.sum(byAsesor[k]));
-    const base={responsive:true,maintainAspectRatio:false,
+    const d = this.fil;
+    const byAsesor = this.grupo(d, "asesor");
+    const aKeys = Object.keys(byAsesor).sort((a,b) => this.sum(byAsesor[b]) - this.sum(byAsesor[a]));
+    const aVals = aKeys.map(k => this.sum(byAsesor[k]));
+
+    const baseOpts = {
+      responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8}},
-      scales:{x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:"#6b92b8",font:{size:10,weight:"700"}}},
-        y:{grid:{color:"rgba(30,51,80,.4)"},border:{display:false},ticks:{color:"#6b92b8",font:{size:10},callback:v=>"$"+this.compacto(v)}}}};
-    const donut={responsive:true,maintainAspectRatio:false,cutout:"65%",
-      plugins:{legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+      scales:{
+        x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:"#6b92b8",font:{size:10,weight:"700"}}},
+        y:{grid:{color:"rgba(30,51,80,.4)"},border:{display:false},ticks:{color:"#6b92b8",font:{size:10},callback:v=>"$"+this.compacto(v)}},
+      },
+    };
+    const donutOpts = {
+      responsive:true, maintainAspectRatio:false, cutout:"65%",
+      plugins:{
+        legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
         tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
-          callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return` ${ctx.label}: ${this.moneda(ctx.parsed)} (${this.pct(ctx.parsed/tot*100)})`;}}}}};
+          callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return` ${ctx.label}: ${this.moneda(ctx.parsed)} (${this.pct(ctx.parsed/tot*100)})`;}}},
+      },
+    };
 
-    this.graficos.a=new Chart(document.getElementById("chartAsesor"),{type:"bar",
+    // Asesor
+    this.graficos.a = new Chart(document.getElementById("chartAsesor"),{type:"bar",
       data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA.map(c=>c+"28"),borderColor:this.PALETA,borderWidth:2,borderRadius:7,borderSkipped:false,maxBarThickness:50}]},
-      options:{...base,plugins:{...base.plugins,tooltip:{...base.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
+      options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
 
-    this.graficos.p=new Chart(document.getElementById("chartPart"),{type:"doughnut",
-      data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA,borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:{...donut}});
+    // Participación
+    this.graficos.p = new Chart(document.getElementById("chartPart"),{type:"doughnut",
+      data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA,borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:donutOpts});
 
-    const byTipo=this.grupo(d,"tipo");const tKeys=Object.keys(byTipo);
-    this.graficos.t=new Chart(document.getElementById("chartTipo"),{type:"doughnut",
-      data:{labels:tKeys,datasets:[{data:tKeys.map(k=>this.sum(byTipo[k])),backgroundColor:["#4d9fff","#00d97e","#ffb020"],borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:{...donut}});
+    // Tipo
+    const byTipo = this.grupo(d,"tipo"); const tKeys = Object.keys(byTipo);
+    this.graficos.t = new Chart(document.getElementById("chartTipo"),{type:"doughnut",
+      data:{labels:tKeys,datasets:[{data:tKeys.map(k=>this.sum(byTipo[k])),backgroundColor:["#4d9fff","#00d97e","#ffb020"],borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:donutOpts});
 
-    const byF={};d.forEach(r=>{byF[r.fecha]=(byF[r.fecha]||0)+r.importe;});
-    const fechas=Object.keys(byF).sort();let ac=0;
-    const acV=fechas.map(f=>{ac+=byF[f];return ac;});
-    const obj=(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[mes]||92700000;
-    const diasMes=this.DIAS_MES[mes]||30;
-    const objLine=fechas.map((_,i)=>Math.round(obj/diasMes*(i+1)));
-    this.graficos.d=new Chart(document.getElementById("chartDiario"),{type:"line",
+    // Diario acumulado — solo el mes actual filtrado
+    const byFecha = {};
+    d.forEach(r => { byFecha[r.fecha] = (byFecha[r.fecha]||0) + r.importe; });
+    const fechas = Object.keys(byFecha).sort();
+    let ac = 0;
+    const acV = fechas.map(f => { ac += byFecha[f]; return ac; });
+    const diasMes = new Date(ano, mes, 0).getDate();
+    const objLine = fechas.map((_,i) => Math.round(t.objetivo / diasMes * (i+1)));
+    this.graficos.d = new Chart(document.getElementById("chartDiario"),{type:"line",
       data:{labels:fechas.map(f=>f.slice(8)),datasets:[
         {label:"Facturado",data:acV,borderColor:"#4d9fff",backgroundColor:"rgba(77,159,255,.07)",borderWidth:2,pointRadius:1,tension:.4,fill:true},
         {label:"Ritmo ideal",data:objLine,borderColor:"#00d97e",backgroundColor:"transparent",borderWidth:1.5,pointRadius:0,tension:.4,borderDash:[5,4]},
       ]},
-      options:{...base,plugins:{...base.plugins,legend:{display:true,position:"top",labels:{color:"#6b92b8",font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
+      options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:"#6b92b8",font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
 
-    const meses=["Ene","Feb","Mar","Abr","May","Jun","Jul"];
-    const reales=[1,2,3,4,5,6,7].map(m=>this.sum(this.raw.filter(r=>r.mes===m&&r.ano===ano)));
-    const objs=[1,2,3,4,5,6,7].map(m=>(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m]);
-    this.graficos.o=new Chart(document.getElementById("chartObj"),{type:"bar",
-      data:{labels:meses,datasets:[
-        {label:"Objetivo",data:objs,backgroundColor:"rgba(77,159,255,.12)",borderColor:"rgba(77,159,255,.5)",borderWidth:1.5,borderRadius:4,borderSkipped:false},
-        {label:"Facturado",data:reales,backgroundColor:reales.map((v,i)=>v>=objs[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),borderColor:reales.map((v,i)=>v>=objs[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),borderWidth:1.5,borderRadius:4,borderSkipped:false},
+    // Objetivo vs Facturado año completo — con datos reales de TODOS los meses
+    const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
+    const mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]);
+    const realesAno = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0));
+    const objsAno   = mesesAno.map(m => (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m] || 0);
+    this.graficos.o = new Chart(document.getElementById("chartObj"),{type:"bar",
+      data:{labels:mesesLabels,datasets:[
+        {label:"Objetivo",data:objsAno,backgroundColor:"rgba(77,159,255,.12)",borderColor:"rgba(77,159,255,.5)",borderWidth:1.5,borderRadius:4,borderSkipped:false},
+        {label:"Facturado",data:realesAno,
+          backgroundColor:realesAno.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=objsAno[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
+          borderColor:realesAno.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=objsAno[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
+          borderWidth:1.5,borderRadius:4,borderSkipped:false},
       ]},
-      options:{...base,plugins:{...base.plugins,legend:{display:true,position:"top",labels:{color:"#6b92b8",font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
+      options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:"#6b92b8",font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
 
-    const bySem={};d.forEach(r=>{const k="Sem "+r.sem;bySem[k]=(bySem[k]||0)+r.importe;});
-    const semKeys=Object.keys(bySem).sort();
-    this.graficos.s=new Chart(document.getElementById("chartSemanal"),{type:"line",
+    // Semanal
+    const bySem = {};
+    d.forEach(r => { const k="Sem "+r.sem; bySem[k]=(bySem[k]||0)+r.importe; });
+    const semKeys = Object.keys(bySem).sort();
+    this.graficos.s = new Chart(document.getElementById("chartSemanal"),{type:"line",
       data:{labels:semKeys,datasets:[{label:"Facturación semanal",data:semKeys.map(k=>bySem[k]),borderColor:"#a87eff",backgroundColor:"rgba(168,126,255,.08)",borderWidth:2.5,pointRadius:4,pointBackgroundColor:"#a87eff",tension:.4,fill:true}]},
-      options:{...base,plugins:{...base.plugins,tooltip:{...base.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
+      options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
 
-    const histR=[1,2,3,4,5,6,7].map(m=>this.sum(this.raw.filter(r=>r.mes===m&&r.ano===ano)));
-    const histO=[1,2,3,4,5,6,7].map(m=>(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m]);
-    this.graficos.h=new Chart(document.getElementById("chartHist"),{type:"bar",
-      data:{labels:meses,datasets:[{label:"Cumplimiento %",data:histR.map((v,i)=>histO[i]?+(v/histO[i]*100).toFixed(1):0),
-        backgroundColor:histR.map((v,i)=>v>=histO[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
-        borderColor:histR.map((v,i)=>v>=histO[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
+    // Histórico
+    const histR = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0));
+    const histO = mesesAno.map(m => (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m] || 0);
+    this.graficos.h = new Chart(document.getElementById("chartHist"),{type:"bar",
+      data:{labels:mesesLabels,datasets:[{label:"Cumplimiento %",
+        data:histR.map((v,i)=>histO[i]?+(v/histO[i]*100).toFixed(1):0),
+        backgroundColor:histR.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=histO[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
+        borderColor:histR.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=histO[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
         borderWidth:1.5,borderRadius:4,borderSkipped:false}]},
       options:{responsive:true,maintainAspectRatio:false,
         plugins:{legend:{display:false},tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,callbacks:{label:ctx=>` Cumplimiento: ${ctx.raw}%`}}},
@@ -974,65 +894,68 @@ const D = {
   },
 
   // ── CONCENTRACIÓN ─────────────────────────────────────────────
-  renderConcentracion(){
-    const byAsesor=this.grupo(this.fil,"asesor");
-    const total=this.sum(this.fil)||1;
-    const rows=Object.entries(byAsesor).map(([a,arr])=>({a,v:this.sum(arr)})).sort((a,b)=>b.v-a.v);
-    const top1Pct=rows[0]?rows[0].v/total*100:0;
-    const riesgo=top1Pct>=60?"alto":top1Pct>=40?"medio":"bajo";
-    document.getElementById("riesgoBadge").innerHTML=`<span class="riesgo-badge riesgo-${riesgo}">Riesgo ${riesgo.toUpperCase()} — top asesor: ${top1Pct.toFixed(0)}%</span>`;
-    document.getElementById("concBarWrap").innerHTML=`<div class="concentracion-bar">
+  renderConcentracion() {
+    const byAsesor = this.grupo(this.fil, "asesor");
+    const total = this.sum(this.fil) || 1;
+    const rows = Object.entries(byAsesor).map(([a,arr])=>({a,v:this.sum(arr)})).sort((a,b)=>b.v-a.v);
+    const top1Pct = rows[0] ? rows[0].v/total*100 : 0;
+    const riesgo  = top1Pct>=60?"alto":top1Pct>=40?"medio":"bajo";
+    document.getElementById("riesgoBadge").innerHTML = `<span class="riesgo-badge riesgo-${riesgo}">Riesgo ${riesgo.toUpperCase()} — top asesor: ${top1Pct.toFixed(0)}%</span>`;
+    document.getElementById("concBarWrap").innerHTML = `<div class="concentracion-bar">
       ${rows.map((r,i)=>`<div class="conc-seg" style="width:${(r.v/total*100).toFixed(1)}%;background:${this.PALETA[i]||"#444"}">${(r.v/total*100).toFixed(0)}%</div>`).join("")}
     </div>`;
-    document.getElementById("concLegend").innerHTML=rows.map((r,i)=>`
+    document.getElementById("concLegend").innerHTML = rows.map((r,i)=>`
       <div class="conc-item"><div class="conc-dot" style="background:${this.PALETA[i]||"#444"}"></div>${r.a}: ${this.pct(r.v/total*100)}</div>`).join("");
   },
 
   // ── HISTÓRICO ─────────────────────────────────────────────────
-  renderHistorico(ano){
-    const meses=["Ene","Feb","Mar","Abr","May","Jun","Jul"];
-    let cumplidos=0;
-    document.getElementById("histGrid").innerHTML=[1,2,3,4,5,6,7].map((m,i)=>{
-      const real=this.sum(this.raw.filter(r=>r.mes===m&&r.ano===ano));
-      const obj=(this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m]||92700000;
-      const pct=obj?real/obj*100:0;
-      const ok=real>=obj;if(ok)cumplidos++;
-      return`<div class="hist-mes ${ok?"ok":"nok"}">
-        <div class="hm">${meses[i]}</div>
+  renderHistorico(ano) {
+    const hoy = new Date();
+    const mesCierre = ano < hoy.getFullYear() ? 12 : hoy.getMonth()+1;
+    let cumplidos = 0;
+    document.getElementById("histGrid").innerHTML = [1,2,3,4,5,6,7,8,9,10,11,12].map(m => {
+      const real = this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0);
+      const obj  = (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m] || 0;
+      const pct  = obj ? real/obj*100 : 0;
+      if (m > mesCierre) {
+        return `<div class="hist-mes fut"><div class="hm">${this.MESES_CORTO[m]}</div><div class="hv">—</div><div class="hp">pendiente</div></div>`;
+      }
+      const ok = real >= obj; if(ok) cumplidos++;
+      return `<div class="hist-mes ${ok?"ok":"nok"}">
+        <div class="hm">${this.MESES_CORTO[m]}</div>
         <div class="hv">${this.compacto(real)}</div>
         <div class="hp">${pct.toFixed(0)}% obj.</div>
       </div>`;
     }).join("");
-    document.getElementById("histResumen").textContent=`${cumplidos}/7 meses con objetivo cumplido`;
+    document.getElementById("histResumen").textContent = `${cumplidos}/${mesCierre} meses con objetivo cumplido`;
   },
 
   // ── RANKING ───────────────────────────────────────────────────
-  renderRanking(t,mes,ano){
-    const byAsesor=this.grupo(this.fil,"asesor");
-    const total=t.total||1;
-    const objInd=t.objetivo/Math.max(Object.keys(byAsesor).length,1);
-    const rows=Object.entries(byAsesor).map(([a,arr])=>({
-      a,suc:arr[0]?.suc||"",total:this.sum(arr),ors:arr.length,
-      ticket:arr.length?Math.round(this.sum(arr)/arr.length):0,
+  renderRanking(t, mes, ano) {
+    const byAsesor = this.grupo(this.fil, "asesor");
+    const total    = t.total || 1;
+    const objInd   = t.objetivo / Math.max(Object.keys(byAsesor).length, 1);
+    const rows = Object.entries(byAsesor).map(([a,arr]) => ({
+      a, suc:arr[0]?.suc||"",
+      total: arr.reduce((s,r)=>s+r.importe,0),
+      ors:   arr.length,
+      ticket:arr.length?Math.round(arr.reduce((s,r)=>s+r.importe,0)/arr.length):0,
       repuestos:arr.reduce((s,r)=>s+(r.repuestos||0),0),
-      terceros:arr.reduce((s,r)=>s+(r.terceros||0),0),
+      terceros: arr.reduce((s,r)=>s+(r.terceros||0),0),
     })).sort((a,b)=>b.total-a.total);
-    const rankCls=i=>i===0?"gold":i===1?"silver":i===2?"bronze":"";
-    document.getElementById("rankingBody").innerHTML=rows.map((r,i)=>{
-      const part=r.total/total*100;
-      const cumpl=objInd?r.total/objInd*100:0;
-      const orDia=(r.ors/t.diasHab).toFixed(1);
-      const cls=cumpl>=90?"on-track":cumpl>=55?"at-risk":"behind";
-      const badge=cumpl>=90?"b-green":cumpl>=55?"b-orange":"b-red";
-      const sucCls="b-blue";
-      return`<tr>
+    const rankCls = i => i===0?"gold":i===1?"silver":i===2?"bronze":"";
+    document.getElementById("rankingBody").innerHTML = rows.map((r,i) => {
+      const part  = r.total/total*100;
+      const cumpl = objInd ? r.total/objInd*100 : 0;
+      const cls   = cumpl>=90?"on-track":cumpl>=55?"at-risk":"behind";
+      const bdg   = cumpl>=90?"b-green":cumpl>=55?"b-orange":"b-red";
+      return `<tr>
         <td><span class="rank-num ${rankCls(i)}">${i+1}</span></td>
         <td><b>${r.a}</b></td>
-        <td><span class="badge ${sucCls}">${r.suc}</span></td>
+        <td><span class="badge b-blue">${r.suc}</span></td>
         <td class="r" style="font-weight:800;color:var(--vw-light)">${this.moneda(r.total)}</td>
         <td class="r">${r.ors}</td>
         <td class="r">${this.moneda(r.ticket)}</td>
-        <td class="r">${orDia}</td>
         <td class="r">${this.compacto(r.repuestos)}</td>
         <td class="r">${this.compacto(r.terceros)}</td>
         <td class="r">
@@ -1043,29 +966,21 @@ const D = {
           </div>
         </td>
         <td class="r"><div style="width:70px;height:4px;background:var(--surface);border-radius:99px;overflow:hidden"><div class="prog-fill ${cls}" style="width:${Math.min(cumpl,100)}%;height:100%"></div></div></td>
-        <td><span class="badge ${badge}">${cumpl.toFixed(0)}%</span></td>
+        <td><span class="badge ${bdg}">${cumpl.toFixed(0)}%</span></td>
       </tr>`;
     }).join("");
   },
 
   // ── HELPERS ──────────────────────────────────────────────────
-  killCharts(){Object.values(this.graficos).forEach(g=>{try{g.destroy();}catch(e){}});this.graficos={};},
-  grupo(arr,k){return arr.reduce((o,r)=>{const key=r[k]||"—";(o[key]||(o[key]=[])).push(r);return o;},{});},
-  sum(arr){return arr.reduce((s,r)=>s+(r.importe||0),0);},
-  moneda(v){return(+v||0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});},
-  compacto(v){v=+v||0;if(v>=1000000)return"$"+(v/1000000).toFixed(1)+"M";if(v>=1000)return"$"+(v/1000).toFixed(0)+"K";return"$"+Math.round(v).toLocaleString("es-AR");},
-  pct(v){return(+v||0).toFixed(1)+"%";},
+  killCharts(){ Object.values(this.graficos).forEach(g=>{try{g.destroy();}catch(e){}}); this.graficos={}; },
+  grupo(arr,k){ return arr.reduce((o,r)=>{const key=r[k]||"—";(o[key]||(o[key]=[])).push(r);return o;},{}); },
+  sum(arr){ return arr.reduce((s,r)=>s+(r.importe||0),0); },
+  moneda(v){ return(+v||0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); },
+  compacto(v){ v=+v||0; if(v>=1000000)return"$"+(v/1000000).toFixed(1)+"M"; if(v>=1000)return"$"+(v/1000).toFixed(0)+"K"; return"$"+Math.round(v).toLocaleString("es-AR"); },
+  pct(v){ return(+v||0).toFixed(1)+"%"; },
 };
 
-function showView(id,btn){
-  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-  const el=document.getElementById("view"+id.charAt(0).toUpperCase()+id.slice(1));
-  if(el)el.classList.add("active");
-  btn.classList.add("active");
-}
-
-window.addEventListener("DOMContentLoaded",()=>D.iniciar());
+window.addEventListener("DOMContentLoaded", () => D.cargar());
 </script>
 </body>
 </html>
