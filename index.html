@@ -648,6 +648,7 @@ const D = {
     const proyeccion= ritmo * cd.diasHabMes;
     return {
       total,
+      mo:        arr.reduce((s,r) => s + (r.mo       || 0), 0),
       cliente:   arr.reduce((s,r) => s + (r.cliente  || 0), 0),
       garantia:  arr.reduce((s,r) => s + (r.garantia || 0), 0),
       interna:   arr.reduce((s,r) => s + (r.interna  || 0), 0),
@@ -754,12 +755,12 @@ const D = {
     const cards = [
       {label:"Facturación total",val:this.moneda(t.total),sub:this.pct(t.cumpl)+" del objetivo",ico:"💰",cls:"c-main",
        extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. ${this.compacto(t.objetivo)}</span><span class="badge ${bdg}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div></div>`},
-      {label:"Cliente",val:this.moneda(t.cliente),sub:this.pct(t.total?t.cliente/t.total*100:0)+" del total",ico:"👤",cls:"c-cyan"},
+      {label:"Mano de Obra",val:this.moneda(t.mo),sub:this.pct(t.total?t.mo/t.total*100:0)+" del total",ico:"🔧",cls:"c-blue"},
+      {label:"Terceros",val:this.moneda(t.terceros),sub:this.pct(t.total?t.terceros/t.total*100:0)+" del total",ico:"🤝",cls:"c-cyan"},
       {label:"Garantía",val:this.moneda(t.garantia),sub:this.pct(t.total?t.garantia/t.total*100:0)+" del total",ico:"🛡️",cls:"c-purple"},
       {label:"Interna",val:this.moneda(t.interna),sub:this.pct(t.total?t.interna/t.total*100:0)+" del total",ico:"🏭",cls:"c-orange"},
-      {label:"Repuestos",val:this.compacto(t.repuestos),sub:"incluido en total",ico:"🔩",cls:"c-teal"},
+      {label:"Repuestos",val:this.compacto(t.repuestos),sub:"informativo · no suma",ico:"🔩",cls:"c-teal"},
       {label:"OR Facturadas",val:t.ors,sub:"órdenes del período",ico:"📋",cls:"c-green"},
-      {label:"Ticket promedio",val:this.compacto(t.ticket),sub:"por orden",ico:"📊",cls:"c-cyan"},
       {label:"Proyección fin mes",val:this.compacto(t.proyeccion),sub:t.proyeccion>=t.objetivo?"✅ Objetivo alcanzable":"⚠️ En riesgo",ico:"📐",cls:t.proyeccion>=t.objetivo?"c-green":"c-red",
        extra:`<div class="prog-wrap"><div class="prog-track"><div class="prog-fill ${t.proyeccion>=t.objetivo?"on-track":"behind"}" style="width:${Math.min(t.proyeccion/t.objetivo*100,100)}%"></div></div></div>`},
     ];
