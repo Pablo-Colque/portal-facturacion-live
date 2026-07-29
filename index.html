@@ -210,7 +210,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .charts-row{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:12px}
 .charts-row2{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
 .charts-row3{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow:visible}
 .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .card-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted)}
 .card-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(77,159,255,.1);color:var(--vw-light);border:1px solid rgba(77,159,255,.2)}
@@ -320,7 +320,7 @@ tr:last-child td{border-bottom:0}
     <select id="fMes" onchange="D.aplicar()">
       <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
       <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
-      <option value="7">Julio</option><option value="8">Agosto</option>
+      <option value="7" selected>Julio</option><option value="8">Agosto</option>
       <option value="9">Septiembre</option><option value="10">Octubre</option>
       <option value="11">Noviembre</option><option value="12">Diciembre</option>
     </select>
@@ -328,7 +328,7 @@ tr:last-child td{border-bottom:0}
     <select id="fAno" onchange="D.aplicar()">
       <option value="2024">2024</option>
       <option value="2025">2025</option>
-      <option value="2026">2026</option>
+      <option value="2026" selected>2026</option>
     </select>
     <div class="fsep"></div>
     <label>SUCURSAL</label>
