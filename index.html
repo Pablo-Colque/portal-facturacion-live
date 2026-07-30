@@ -1066,7 +1066,8 @@ const D = {
   renderGraficos(mes, ano, t) {
     this.killCharts();
     const d = this.fil;
-    const byAsesor = this.grupo(d, "asesor");
+    const filSinJefe = d.filter(r => !this.EXCLUIR_SEMAFORO.includes(r.asesor));
+    const byAsesor = this.grupo(filSinJefe, "asesor");
     const aKeys = Object.keys(byAsesor).sort((a,b) => this.sum(byAsesor[b]) - this.sum(byAsesor[a]));
     const aVals = aKeys.map(k => this.sum(byAsesor[k]));
 
