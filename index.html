@@ -260,6 +260,71 @@ tr:last-child td{border-bottom:0}
 .hist-mes.fut .hv{color:var(--dim)}
 .hist-mes .hp{font-size:9px;color:var(--muted)}
 
+/* CENTRO DE DECISIONES */
+.cdec{border-radius:var(--radius);padding:16px 20px;margin-bottom:0;border:1px solid var(--border2);position:relative;overflow:visible}
+.cdec.estado-ok{background:linear-gradient(135deg,rgba(0,168,95,.08),rgba(0,217,126,.04));border-color:rgba(0,217,126,.3)}
+.cdec.estado-warn{background:linear-gradient(135deg,rgba(192,112,16,.08),rgba(255,176,32,.04));border-color:rgba(255,176,32,.3)}
+.cdec.estado-riesgo{background:linear-gradient(135deg,rgba(192,32,48,.1),rgba(255,59,82,.05));border-color:rgba(255,59,82,.35)}
+.cdec.estado-cierre{background:linear-gradient(135deg,rgba(192,32,48,.18),rgba(255,59,82,.1));border-color:rgba(255,59,82,.6);animation:borderPulse 2s infinite}
+@keyframes borderPulse{0%,100%{border-color:rgba(255,59,82,.6)}50%{border-color:rgba(255,59,82,1);box-shadow:0 0 20px rgba(255,59,82,.2)}}
+.cdec-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.cdec-estado{display:flex;align-items:center;gap:10px}
+.cdec-semaforo{width:14px;height:14px;border-radius:50%}
+.estado-ok .cdec-semaforo{background:var(--green);box-shadow:0 0 10px var(--green)}
+.estado-warn .cdec-semaforo{background:var(--orange);box-shadow:0 0 10px var(--orange)}
+.estado-riesgo .cdec-semaforo,.estado-cierre .cdec-semaforo{background:var(--red);box-shadow:0 0 10px var(--red);animation:pulseRed 1.2s infinite}
+.cdec-titulo{font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.estado-ok .cdec-titulo{color:var(--green)}
+.estado-warn .cdec-titulo{color:var(--orange)}
+.estado-riesgo .cdec-titulo,.estado-cierre .cdec-titulo{color:var(--red)}
+.cdec-prob{font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px}
+.estado-ok .cdec-prob{background:rgba(0,217,126,.15);color:var(--green);border:1px solid rgba(0,217,126,.3)}
+.estado-warn .cdec-prob{background:rgba(255,176,32,.15);color:var(--orange);border:1px solid rgba(255,176,32,.3)}
+.estado-riesgo .cdec-prob,.estado-cierre .cdec-prob{background:rgba(255,59,82,.15);color:var(--red);border:1px solid rgba(255,59,82,.3)}
+.cdec-metricas{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.cdec-met{background:rgba(0,0,0,.25);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid rgba(255,255,255,.05)}
+.cdec-met .lbl{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.cdec-met .val{font-size:20px;font-weight:900;letter-spacing:-1px;line-height:1}
+.cdec-met .sub{font-size:9px;color:var(--muted);margin-top:3px}
+.cdec-met.destacado .val{color:var(--vw-light)}
+.cdec-met.positivo .val{color:var(--green)}
+.cdec-met.negativo .val{color:var(--red)}
+.cdec-met.warn .val{color:var(--orange)}
+.cdec-barra{margin-bottom:14px}
+.cdec-barra-meta{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.cdec-barra-track{height:8px;background:rgba(0,0,0,.4);border-radius:99px;overflow:hidden;position:relative}
+.cdec-barra-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.34,1.1,.64,1)}
+.estado-ok .cdec-barra-fill{background:linear-gradient(90deg,var(--green2),var(--green))}
+.estado-warn .cdec-barra-fill{background:linear-gradient(90deg,#c07010,var(--orange))}
+.estado-riesgo .cdec-barra-fill,.estado-cierre .cdec-barra-fill{background:linear-gradient(90deg,var(--red2),var(--red))}
+.cdec-barra-marker{position:absolute;top:-2px;height:12px;width:2px;background:rgba(255,255,255,.5);border-radius:99px}
+
+/* INTELIGENCIA GERENCIAL */
+.intel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.intel-head{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.intel-items{display:flex;flex-direction:column;gap:6px}
+.intel-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;padding:6px 10px;border-radius:var(--radius-sm);font-weight:600}
+.intel-item.alerta{background:rgba(255,59,82,.07);border:1px solid rgba(255,59,82,.15);color:var(--txt)}
+.intel-item.warn{background:rgba(255,176,32,.07);border:1px solid rgba(255,176,32,.15);color:var(--txt)}
+.intel-item.ok{background:rgba(0,217,126,.07);border:1px solid rgba(0,217,126,.15);color:var(--txt)}
+.intel-item.info{background:rgba(77,159,255,.07);border:1px solid rgba(77,159,255,.15);color:var(--txt)}
+.intel-ico{flex-shrink:0;font-size:13px}
+
+/* MODO CIERRE */
+.cierre-banner{background:linear-gradient(135deg,rgba(192,32,48,.2),rgba(255,59,82,.1));border:2px solid rgba(255,59,82,.5);border-radius:var(--radius);padding:16px 20px;display:none;align-items:center;gap:20px;animation:borderPulse 1.5s infinite}
+.cierre-banner.show{display:flex}
+.cierre-num{text-align:center;flex-shrink:0}
+.cierre-num .cn{font-size:52px;font-weight:900;color:var(--red);line-height:1;letter-spacing:-3px}
+.cierre-num .cl{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.cierre-sep{width:1px;height:60px;background:rgba(255,59,82,.3);flex-shrink:0}
+.cierre-info{flex:1}
+.cierre-info .ci-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cierre-info .ci-val{font-size:28px;font-weight:900;color:var(--red);letter-spacing:-1px;line-height:1}
+.cierre-info .ci-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.cierre-riesgo{text-align:center;flex-shrink:0}
+.cierre-riesgo .cr-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.cierre-riesgo .cr-val{font-size:13px;font-weight:900;padding:6px 14px;border-radius:99px;background:rgba(255,59,82,.2);color:var(--red);border:1px solid rgba(255,59,82,.4)}
+
 @media(max-width:1400px){.kpis{grid-template-columns:repeat(4,1fr)}.semaforo-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr 1fr}.suc-row{grid-template-columns:1fr}}
 @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.charts-row2{grid-template-columns:1fr}.charts-row3{grid-template-columns:1fr}.semaforo-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}}
@@ -354,6 +419,50 @@ tr:last-child td{border-bottom:0}
 
   <div class="content">
     <div class="error-banner" id="errBanner"></div>
+
+    <!-- MODO CIERRE -->
+    <div class="cierre-banner" id="cierreBanner">
+      <div class="cierre-num"><div class="cn" id="cierreNum">—</div><div class="cl">Días hábiles</div></div>
+      <div class="cierre-sep"></div>
+      <div class="cierre-info">
+        <div class="ci-label">Necesitás por día</div>
+        <div class="ci-val" id="cierreNecDia">—</div>
+        <div class="ci-sub" id="cierreFalta">—</div>
+      </div>
+      <div class="cierre-sep"></div>
+      <div class="cierre-riesgo">
+        <div class="cr-label">Riesgo</div>
+        <div class="cr-val" id="cierreRiesgo">ALTO</div>
+      </div>
+    </div>
+
+    <!-- CENTRO DE DECISIONES -->
+    <div class="cdec" id="cdecPanel">
+      <div class="cdec-top">
+        <div class="cdec-estado">
+          <div class="cdec-semaforo"></div>
+          <div class="cdec-titulo" id="cdecTitulo">ESTADO DEL MES</div>
+        </div>
+        <div class="cdec-prob" id="cdecProb">—</div>
+      </div>
+      <div class="cdec-metricas" id="cdecMetricas"></div>
+      <div class="cdec-barra">
+        <div class="cdec-barra-meta">
+          <span id="cdecBarraIzq">Facturado</span>
+          <span id="cdecBarraDer">Objetivo</span>
+        </div>
+        <div class="cdec-barra-track">
+          <div class="cdec-barra-fill" id="cdecBarraFill" style="width:0%"></div>
+          <div class="cdec-barra-marker" id="cdecBarraMarker" style="left:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTELIGENCIA GERENCIAL -->
+    <div class="intel" id="intelPanel">
+      <div class="intel-head">🧠 Acciones Prioritarias — Inteligencia Gerencial</div>
+      <div class="intel-items" id="intelItems"></div>
+    </div>
 
     <!-- ALERTA DÍAS -->
     <div class="alert-dias" id="alertaDias" style="display:none"></div>
@@ -626,6 +735,8 @@ const D = {
   // ── RENDER PRINCIPAL ──────────────────────────────────────────
   render(mes, ano) {
     const t = this.totales(this.fil, mes, ano);
+    this.renderCentroDecisiones(mes, ano, t);
+    this.renderInteligencia(mes, ano, t);
     this.renderAlerta(mes, ano, t);
     this.renderSucursal(mes, ano);
     this.renderInteranual(mes, ano);
@@ -663,6 +774,152 @@ const D = {
       proyeccion,
       ...cd,
     };
+  },
+
+  // ── CENTRO DE DECISIONES ─────────────────────────────────────
+  renderCentroDecisiones(mes, ano, t) {
+    const panel = document.getElementById("cdecPanel");
+    const falta = Math.max(t.objetivo - t.total, 0);
+    const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
+    const prob = this.calcProbabilidad(t);
+    const desvio = t.total - t.objetivo;
+
+    // Estado
+    let estado = "estado-ok", label = "✅ EN OBJETIVO";
+    if (t.cumpl < 90 && t.diasHabRest > 5)  { estado="estado-warn";   label="⚠️ EN SEGUIMIENTO"; }
+    if (t.cumpl < 60 || (t.diasHabRest<=5 && t.cumpl<90)) { estado="estado-riesgo"; label="🔴 RIESGO ALTO"; }
+    if (t.diasHabRest <= 3 && t.cumpl < 90) { estado="estado-cierre";  label="🚨 MODO CIERRE"; }
+
+    panel.className = "cdec " + estado;
+    document.getElementById("cdecTitulo").textContent = label;
+    document.getElementById("cdecProb").textContent   = "Probabilidad: " + prob + "%";
+
+    // Modo cierre
+    const banner = document.getElementById("cierreBanner");
+    if (t.esMesActual && t.diasHabRest <= 3 && t.cumpl < 100) {
+      banner.classList.add("show");
+      document.getElementById("cierreNum").textContent    = t.diasHabRest;
+      document.getElementById("cierreNecDia").textContent = this.compacto(ritmoNec) + "/día";
+      document.getElementById("cierreFalta").textContent  = "Falta: " + this.moneda(falta);
+      document.getElementById("cierreRiesgo").textContent = prob < 30 ? "CRÍTICO" : prob < 60 ? "ALTO" : "MEDIO";
+    } else {
+      banner.classList.remove("show");
+    }
+
+    // Métricas
+    document.getElementById("cdecMetricas").innerHTML = `
+      <div class="cdec-met destacado">
+        <div class="lbl">Objetivo</div>
+        <div class="val">${this.compacto(t.objetivo)}</div>
+        <div class="sub">meta mensual</div>
+      </div>
+      <div class="cdec-met ${t.cumpl>=90?"positivo":t.cumpl>=60?"warn":"negativo"}">
+        <div class="lbl">Facturado</div>
+        <div class="val">${this.compacto(t.total)}</div>
+        <div class="sub">${t.cumpl.toFixed(1)}% del objetivo</div>
+      </div>
+      <div class="cdec-met ${t.proyeccion>=t.objetivo?"positivo":"negativo"}">
+        <div class="lbl">Proyección</div>
+        <div class="val">${this.compacto(t.proyeccion)}</div>
+        <div class="sub">${t.proyeccion>=t.objetivo?"alcanzaría el obj.":"no llegaría"}</div>
+      </div>
+      <div class="cdec-met ${desvio>=0?"positivo":"negativo"}">
+        <div class="lbl">Desvío</div>
+        <div class="val">${desvio>=0?"+":""}${this.compacto(desvio)}</div>
+        <div class="sub">vs objetivo</div>
+      </div>
+      <div class="cdec-met ${t.diasHabRest<=3?"negativo":t.diasHabRest<=8?"warn":"destacado"}">
+        <div class="lbl">Días hábiles rest.</div>
+        <div class="val">${t.diasHabRest}</div>
+        <div class="sub">Nec. ${this.compacto(ritmoNec)}/día</div>
+      </div>`;
+
+    // Barra
+    const pct = Math.min(t.cumpl, 100);
+    document.getElementById("cdecBarraFill").style.width   = pct + "%";
+    document.getElementById("cdecBarraMarker").style.left  = pct + "%";
+    document.getElementById("cdecBarraIzq").textContent    = "Facturado: " + this.moneda(t.total);
+    document.getElementById("cdecBarraDer").textContent    = "Objetivo: " + this.moneda(t.objetivo);
+  },
+
+  calcProbabilidad(t) {
+    if (t.cumpl >= 100) return 100;
+    if (!t.esMesActual) return t.cumpl >= 100 ? 100 : 0;
+    if (t.diasHabRest === 0) return t.cumpl >= 100 ? 100 : 0;
+    // Proyección basada en ritmo actual vs necesario
+    const ratio = t.ritmo > 0 ? t.ritmo / (t.objetivo / t.diasHabMes) : 0;
+    const diasRestPct = t.diasHabRest / t.diasHabMes;
+    let prob = Math.min(ratio * 100 * (1 - diasRestPct) + t.cumpl * diasRestPct, 100);
+    // Penalizar si ritmo actual < ritmo necesario
+    if (t.ritmo < (t.objetivo - t.total) / Math.max(t.diasHabRest, 1)) {
+      prob = prob * 0.6;
+    }
+    return Math.max(Math.round(prob), 0);
+  },
+
+  // ── INTELIGENCIA GERENCIAL ────────────────────────────────────
+  renderInteligencia(mes, ano, t) {
+    const alertas = [];
+    const falta   = Math.max(t.objetivo - t.total, 0);
+    const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
+
+    // Alerta de días
+    if (t.esMesActual) {
+      if (t.diasHabRest <= 3)
+        alertas.push({cls:"alerta", ico:"🚨", txt:`Quedan solo <b>${t.diasHabRest} días hábiles</b> — necesitás <b>${this.compacto(ritmoNec)}/día</b>`});
+      else if (t.diasHabRest <= 7)
+        alertas.push({cls:"warn", ico:"⚠️", txt:`Restan <b>${t.diasHabRest} días hábiles</b> — necesitás <b>${this.compacto(ritmoNec)}/día</b> para cerrar el mes`});
+    }
+
+    // Falta
+    if (falta > 0)
+      alertas.push({cls: falta > t.objetivo*0.5 ? "alerta":"warn", ico:"💰", txt:`Falta facturar <b>${this.moneda(falta)}</b> para alcanzar el objetivo`});
+    else
+      alertas.push({cls:"ok", ico:"✅", txt:`Objetivo cumplido — superaste la meta en <b>${this.moneda(-falta)}</b>`});
+
+    // Ritmo vs necesario
+    if (t.esMesActual && t.ritmo < ritmoNec * 0.7)
+      alertas.push({cls:"alerta", ico:"📉", txt:`Ritmo actual <b>${this.compacto(t.ritmo)}/día</b> muy por debajo del necesario <b>${this.compacto(ritmoNec)}/día</b>`});
+    else if (t.esMesActual && t.ritmo < ritmoNec)
+      alertas.push({cls:"warn", ico:"📊", txt:`Ritmo actual <b>${this.compacto(t.ritmo)}/día</b> — necesitás acelerar a <b>${this.compacto(ritmoNec)}/día</b>`});
+    else if (t.esMesActual && t.ritmo >= ritmoNec)
+      alertas.push({cls:"ok", ico:"📈", txt:`Ritmo actual <b>${this.compacto(t.ritmo)}/día</b> — en línea con el objetivo`});
+
+    // Proyección
+    if (t.proyeccion < t.objetivo * 0.85)
+      alertas.push({cls:"alerta", ico:"🎯", txt:`Proyección <b>${this.compacto(t.proyeccion)}</b> — <b>no llegarías</b> al objetivo con el ritmo actual`});
+    else if (t.proyeccion < t.objetivo)
+      alertas.push({cls:"warn", ico:"🎯", txt:`Proyección <b>${this.compacto(t.proyeccion)}</b> — necesitás mejorar el ritmo para llegar`});
+
+    // Asesores — alertas individuales
+    const byAsesor = this.grupo(this.raw.filter(r=>r.mes===mes&&r.ano===ano&&!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const nAs = Math.max(Object.keys(byAsesor).length, 1);
+    const objInd = t.objetivo / nAs;
+    Object.entries(byAsesor).forEach(([a, arr]) => {
+      const tot = arr.reduce((s,r)=>s+r.importe,0);
+      const cumpl = objInd ? tot/objInd*100 : 0;
+      const faltaAs = Math.max(objInd - tot, 0);
+      if (cumpl >= 100)
+        alertas.push({cls:"ok", ico:"⭐", txt:`<b>${a}</b> superó su objetivo individual`});
+      else if (cumpl < 40 && t.esMesActual)
+        alertas.push({cls:"alerta", ico:"🆘", txt:`<b>${a}</b> necesita <b>${this.moneda(faltaAs)}</b> — cumplimiento crítico (${cumpl.toFixed(0)}%)`});
+      else if (cumpl < 70 && t.esMesActual)
+        alertas.push({cls:"warn", ico:"⚠️", txt:`<b>${a}</b> lleva <b>${this.compacto(tot)}</b> — ${cumpl.toFixed(0)}% del objetivo individual`});
+    });
+
+    // Composición
+    if (t.total > 0) {
+      const pctMO = t.mo / t.total * 100;
+      if (pctMO < 50)
+        alertas.push({cls:"info", ico:"🔧", txt:`Mano de Obra representa solo <b>${pctMO.toFixed(0)}%</b> del total — revisar productividad`});
+      const pctGar = t.garantia / t.total * 100;
+      if (pctGar > 40)
+        alertas.push({cls:"info", ico:"🛡️", txt:`Garantía representa <b>${pctGar.toFixed(0)}%</b> del total — alta dependencia de VW Argentina`});
+    }
+
+    document.getElementById("intelItems").innerHTML = alertas.slice(0,8).map(a =>
+      `<div class="intel-item ${a.cls}"><span class="intel-ico">${a.ico}</span><span>${a.txt}</span></div>`
+    ).join("");
   },
 
   // ── ALERTA DÍAS ──────────────────────────────────────────────
