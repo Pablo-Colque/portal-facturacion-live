@@ -1098,9 +1098,18 @@ const D = {
       data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA,borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:donutOpts});
 
     // Tipo
-    const byTipo = this.grupo(d,"tipo"); const tKeys = Object.keys(byTipo);
+    const byTipo = this.grupo(d,"tipo");
+    const tKeys = Object.keys(byTipo);
+    const coloresTipo = {
+      "Cliente":  "#4d9fff",
+      "Garantía": "#00d97e",
+      "Mixto":    "#ffb020",
+      "Interna":  "#a87eff",
+    };
     this.graficos.t = new Chart(document.getElementById("chartTipo"),{type:"doughnut",
-      data:{labels:tKeys,datasets:[{data:tKeys.map(k=>this.sum(byTipo[k])),backgroundColor:["#4d9fff","#00d97e","#ffb020"],borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:donutOpts});
+      data:{labels:tKeys,datasets:[{data:tKeys.map(k=>this.sum(byTipo[k])),
+        backgroundColor:tKeys.map(k=>coloresTipo[k]||"#00cce8"),
+        borderColor:"#0b1525",borderWidth:3,hoverOffset:5}]},options:donutOpts});
 
     // Diario acumulado — solo el mes actual filtrado
     const byFecha = {};
