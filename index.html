@@ -328,6 +328,61 @@ tr:last-child td{border-bottom:0}
 @media(max-width:1400px){.kpis{grid-template-columns:repeat(4,1fr)}.semaforo-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr 1fr}.suc-row{grid-template-columns:1fr}}
 @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.charts-row2{grid-template-columns:1fr}.charts-row3{grid-template-columns:1fr}.semaforo-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}}
+
+/* ── GARANTÍAS VIÑETA ──────────────────────────────────────── */
+.gar-header{background:linear-gradient(90deg,rgba(168,126,255,.12),rgba(0,0,0,0));border:1px solid rgba(168,126,255,.25);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.gar-header-ico{font-size:28px;flex-shrink:0}
+.gar-header-info{flex:1}
+.gar-header-title{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:2px}
+.gar-header-sub{font-size:12px;color:var(--muted)}
+.gar-header-chips{display:flex;gap:8px;flex-wrap:wrap}
+.gar-chip{background:rgba(0,0,0,.3);border:1px solid rgba(168,126,255,.2);border-radius:var(--radius-sm);padding:8px 14px;text-align:center;min-width:90px}
+.gar-chip .gcl{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px}
+.gar-chip .gcv{font-size:16px;font-weight:900;color:var(--purple);letter-spacing:-1px}
+.gar-chip .gcs{font-size:9px;color:var(--muted);margin-top:1px}
+.gar-chip.debito .gcv{color:var(--red)}
+.gar-chip.neto .gcv{color:var(--green)}
+
+.gar-avance-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.gar-avance-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.gar-avance-title{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.gar-prog-wrap{margin-bottom:16px}
+.gar-prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.gar-prog-track{height:14px;background:var(--surface);border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+.gar-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#6040c0,var(--purple));transition:width .9s cubic-bezier(.34,1.1,.64,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.gar-prog-fill span{font-size:9px;font-weight:800;color:#fff;white-space:nowrap}
+
+.gar-lotes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+.gar-lote{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;position:relative;overflow:hidden}
+.gar-lote::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.gar-lote.lote-facturado::before{background:linear-gradient(90deg,#6040c0,var(--purple))}
+.gar-lote.lote-debito::before{background:linear-gradient(90deg,var(--red2),var(--red))}
+.gar-lote.lote-pendiente::before{background:var(--border2)}
+.gar-lote.lote-proximo::before{background:linear-gradient(90deg,#c07010,var(--orange))}
+.gar-lote-num{font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.gar-lote-fecha{font-size:10px;font-weight:700;color:var(--txt);margin-bottom:6px}
+.gar-lote-estado{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:99px;margin-bottom:8px}
+.gar-lote-estado.facturado{background:rgba(168,126,255,.12);color:var(--purple);border:1px solid rgba(168,126,255,.25)}
+.gar-lote-estado.con-debito{background:rgba(255,59,82,.12);color:var(--red);border:1px solid rgba(255,59,82,.25)}
+.gar-lote-estado.pendiente{background:rgba(107,146,184,.08);color:var(--muted);border:1px solid var(--border)}
+.gar-lote-estado.proximo{background:rgba(255,176,32,.12);color:var(--orange);border:1px solid rgba(255,176,32,.25)}
+.gar-lote-monto{font-size:17px;font-weight:900;letter-spacing:-1px;line-height:1;margin-bottom:2px}
+.gar-lote.lote-facturado .gar-lote-monto,.gar-lote.lote-debito .gar-lote-monto{color:var(--purple)}
+.gar-lote.lote-pendiente .gar-lote-monto{color:var(--dim)}
+.gar-lote.lote-proximo .gar-lote-monto{color:var(--orange)}
+.gar-lote-debito{font-size:10px;font-weight:700;color:var(--red);margin-top:3px}
+.gar-lote-dias{font-size:9px;color:var(--muted);margin-top:4px}
+.gar-lote-dias b{color:var(--orange)}
+
+.gar-resumen{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.gar-res-item{display:flex;flex-direction:column;gap:2px}
+.gar-res-lbl{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.gar-res-val{font-size:16px;font-weight:900;letter-spacing:-1px}
+.gar-res-val.bruto{color:var(--purple)}
+.gar-res-val.debito{color:var(--red)}
+.gar-res-val.neto{color:var(--green)}
+.gar-res-sep{width:1px;background:var(--border);align-self:stretch}
+.gar-formula{font-size:11px;color:var(--muted);margin-left:auto;font-style:italic}
 </style>
 </head>
 <body>
@@ -350,7 +405,8 @@ tr:last-child td{border-bottom:0}
   </div>
   <nav class="nav">
     <div class="nav-sec">Módulos</div>
-    <button class="active"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
+    <button class="active" onclick="D.navTo('facturacion',this)"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
+    <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
     <div class="nav-sec">Próximamente</div>
     <button class="locked" disabled><span class="ico">🔧</span><span class="lbl">Paso por Taller</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span><span class="cnt">pronto</span></button>
@@ -570,6 +626,61 @@ tr:last-child td{border-bottom:0}
     </div>
 
   </div><!-- /content -->
+
+  <!-- PANEL GARANTÍAS (oculto por defecto) -->
+  <div class="content" id="panelGarantias" style="display:none">
+
+    <!-- Encabezado -->
+    <div class="gar-header">
+      <div class="gar-header-ico">🛡️</div>
+      <div class="gar-header-info">
+        <div class="gar-header-title">Garantías — Facturación Benicio</div>
+        <div class="gar-header-sub" id="garHeaderSub">Seleccioná un período para ver el detalle de lotes</div>
+      </div>
+      <div class="gar-header-chips" id="garChips"></div>
+    </div>
+
+    <!-- Avance del mes -->
+    <div class="gar-avance-card">
+      <div class="gar-avance-head">
+        <div class="gar-avance-title">📊 Avance de Facturación — Lotes del Mes</div>
+        <div class="card-badge" id="garAvanceBadge">—</div>
+      </div>
+      <div class="gar-prog-wrap">
+        <div class="gar-prog-labels">
+          <span id="garProgIzq">Facturado</span>
+          <span id="garProgDer">Promedio estimado</span>
+        </div>
+        <div class="gar-prog-track">
+          <div class="gar-prog-fill" id="garProgFill" style="width:0%"><span id="garProgPct">0%</span></div>
+        </div>
+      </div>
+
+      <!-- Tabla de lotes -->
+      <div class="gar-lotes" id="garLotes"></div>
+    </div>
+
+    <!-- Resumen neto -->
+    <div class="gar-resumen" id="garResumen">
+      <div class="gar-res-item">
+        <div class="gar-res-lbl">Bruto facturado</div>
+        <div class="gar-res-val bruto" id="garResBruto">—</div>
+      </div>
+      <div class="gar-res-sep"></div>
+      <div class="gar-res-item">
+        <div class="gar-res-lbl">Débitos VW</div>
+        <div class="gar-res-val debito" id="garResDebito">—</div>
+      </div>
+      <div class="gar-res-sep"></div>
+      <div class="gar-res-item">
+        <div class="gar-res-lbl">Neto del mes</div>
+        <div class="gar-res-val neto" id="garResNeto">—</div>
+      </div>
+      <div class="gar-formula">Bruto − Débitos = Neto</div>
+    </div>
+
+  </div><!-- /panelGarantias -->
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -577,18 +688,21 @@ tr:last-child td{border-bottom:0}
 <script>
 // ═══════════════════════════════════════════════════════════════
 // PORTAL FACTURACIÓN — Autosol Jujuy
-// v2: carga única, filtrado local, dropdowns dinámicos
+// v4: objetivos y débitos desde Portal_Config · viñeta Garantías
 // ═══════════════════════════════════════════════════════════════
 const D = {
 
   API_URL: "https://script.google.com/macros/s/AKfycbx47gyIvzOZext7tya7yKWXmJQtogc-rXBCKQzSBbCVzGiLW6jyj-XcgpY8fUua37E/exec",
 
-  // Objetivos mensuales Jujuy 2026 (y 2025 mismo criterio hasta confirmar)
+  // Objetivos — se sobreescriben con los datos de Portal_Config al cargar
   OBJETIVOS: {
     2024: {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000},
     2025: {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000},
     2026: {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000},
   },
+
+  // Débitos de garantía por lote — cargados desde Portal_Config
+  debitosConfig: [],  // [{ mes, ano, lote, fecha, monto }]
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -613,6 +727,28 @@ const D = {
   fil: [],   // registros filtrados
   graficos: {},
   HOY: new Date(),
+  vistaActual: "facturacion",
+
+  // ── NAVEGACIÓN ────────────────────────────────────────────────
+  navTo(vista, btn) {
+    this.vistaActual = vista;
+    // Highlight nav
+    document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    // Mostrar panel correcto
+    const panelFac = document.querySelector(".content:not(#panelGarantias)");
+    const panelGar = document.getElementById("panelGarantias");
+    if (vista === "garantias") {
+      panelFac.style.display = "none";
+      panelGar.style.display = "flex";
+      const mes = parseInt(document.getElementById("fMes").value);
+      const ano = parseInt(document.getElementById("fAno").value);
+      this.renderGarantias(mes, ano);
+    } else {
+      panelFac.style.display = "flex";
+      panelGar.style.display = "none";
+    }
+  },
 
   // ── DÍAS HÁBILES ──────────────────────────────────────────────
   diasHab(desde, hasta) {
@@ -654,6 +790,20 @@ const D = {
       if (!json.ok) throw new Error(json.error || "Error desconocido");
 
       this.raw = json.detalle || [];
+      this.debitosConfig = json.debitos || [];
+
+      // Sobreescribir objetivos 2026 con los de Portal_Config
+      if (json.objetivos && Object.keys(json.objetivos).length > 0) {
+        this.OBJETIVOS[2026] = {};
+        Object.entries(json.objetivos).forEach(([m, v]) => {
+          this.OBJETIVOS[2026][parseInt(m)] = v;
+        });
+        // Fallback si algún mes no tiene objetivo en la hoja
+        const base = {1:89800000,2:89800000,3:92700000,4:92700000,5:92700000,6:97300000,7:99200000,8:99200000,9:99200000,10:99200000,11:99200000,12:99200000};
+        for (let m = 1; m <= 12; m++) {
+          if (!this.OBJETIVOS[2026][m]) this.OBJETIVOS[2026][m] = base[m];
+        }
+      }
 
       // Poblar dropdowns con datos reales
       this.poblarDropdowns(json.asesores || [], json.sucursales || []);
@@ -720,6 +870,7 @@ const D = {
     document.getElementById("fCnt").textContent        = this.fil.length + " registros";
 
     this.render(mes, ano);
+    if (this.vistaActual === "garantias") this.renderGarantias(mes, ano);
   },
 
   limpiar() {
@@ -1014,7 +1165,14 @@ const D = {
        extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. ${this.compacto(t.objetivo)}</span><span class="badge ${bdg}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div></div>`},
       {label:"Mano de Obra",val:this.moneda(t.mo),sub:this.pct(t.total?t.mo/t.total*100:0)+" del total",ico:"🔧",cls:"c-blue"},
       {label:"Terceros",val:this.moneda(t.terceros),sub:this.pct(t.total?t.terceros/t.total*100:0)+" del total",ico:"🤝",cls:"c-cyan"},
-      {label:"Garantía",val:this.moneda(t.garantia),sub:this.pct(t.total?t.garantia/t.total*100:0)+" del total",ico:"🛡️",cls:"c-purple"},
+      {label:"Garantía",val:this.moneda(t.garantia),sub:this.pct(t.total?t.garantia/t.total*100:0)+" del total",ico:"🛡️",cls:"c-purple",
+       extra: (() => {
+         const mes = parseInt(document.getElementById("fMes").value);
+         const ano = parseInt(document.getElementById("fAno").value);
+         const debs = this.debitosConfig.filter(d => d.mes === mes && d.ano === ano && d.monto > 0);
+         if (!debs.length) return "";
+         return debs.map(d => `<div style="font-size:9px;color:var(--red);font-weight:700;margin-top:2px">🔻 Débito lote ${d.lote}: ${this.compacto(d.monto)}</div>`).join("");
+       })()},
       {label:"Interna",val:this.moneda(t.interna),sub:this.pct(t.total?t.interna/t.total*100:0)+" del total",ico:"🏭",cls:"c-orange"},
       {label:"Repuestos",val:this.compacto(t.repuestos),sub:"informativo · no suma",ico:"🔩",cls:"c-teal"},
       {label:"OR Facturadas",val:t.ors,sub:"órdenes del período",ico:"📋",cls:"c-green"},
@@ -1240,6 +1398,102 @@ const D = {
         <td><span class="badge ${bdg}">${cumpl.toFixed(0)}%</span></td>
       </tr>`;
     }).join("");
+  },
+
+  // ── GARANTÍAS ─────────────────────────────────────────────────
+  renderGarantias(mes, ano) {
+    const MESES_CORTE = [7, 14, 21, 28]; // días de corte de lote
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const esMesActual = mes === hoy.getMonth()+1 && ano === hoy.getFullYear();
+
+    // Facturación bruta del mes (tipo Garantía)
+    const arrGar = this.raw.filter(r => r.mes === mes && r.ano === ano && r.tipo === "Garantía");
+    const bruto  = arrGar.reduce((s,r) => s + r.importe, 0);
+
+    // Débitos del mes
+    const debs = this.debitosConfig.filter(d => d.mes === mes && d.ano === ano);
+    const totalDebito = debs.reduce((s,d) => s + d.monto, 0);
+    const neto = bruto - totalDebito;
+
+    // Actualizar encabezado
+    document.getElementById("garHeaderSub").textContent =
+      `${this.MESES[mes]} ${ano} — Facturación de garantías por lotes de Benicio`;
+
+    // Chips de resumen en header
+    document.getElementById("garChips").innerHTML = `
+      <div class="gar-chip"><div class="gcl">Bruto</div><div class="gcv">${this.compacto(bruto)}</div><div class="gcs">facturado</div></div>
+      <div class="gar-chip debito"><div class="gcl">Débito</div><div class="gcv">${totalDebito > 0 ? "-"+this.compacto(totalDebito) : "$0"}</div><div class="gcs">descontado por VW</div></div>
+      <div class="gar-chip neto"><div class="gcl">Neto</div><div class="gcv">${this.compacto(neto)}</div><div class="gcs">resultado real</div></div>`;
+
+    // Barra de avance: bruto vs promedio histórico o último mes con datos
+    const mesesAnt = [1,2,3,4,5,6,7,8,9,10,11,12].filter(m2 => {
+      if (m2 === mes && ano === new Date().getFullYear()) return false; // no incluir mes actual
+      return this.raw.some(r => r.mes === m2 && r.ano === ano && r.tipo === "Garantía");
+    });
+    const promedioRef = mesesAnt.length
+      ? mesesAnt.reduce((s,m2) => s + this.raw.filter(r=>r.mes===m2&&r.ano===ano&&r.tipo==="Garantía").reduce((ss,r)=>ss+r.importe,0), 0) / mesesAnt.length
+      : bruto || 1;
+
+    const pctAvance = promedioRef > 0 ? Math.min(bruto / promedioRef * 100, 150) : 0;
+    document.getElementById("garProgFill").style.width = Math.min(pctAvance, 100) + "%";
+    document.getElementById("garProgPct").textContent  = pctAvance.toFixed(0) + "%";
+    document.getElementById("garProgIzq").textContent  = "Facturado: " + this.moneda(bruto);
+    document.getElementById("garProgDer").textContent  = "Ref. promedio: " + this.compacto(promedioRef);
+    document.getElementById("garAvanceBadge").textContent = pctAvance >= 100 ? "✅ Por encima del promedio" : pctAvance >= 70 ? "📊 En línea" : "⚠️ Por debajo del promedio";
+
+    // Lotes
+    const lotesHTML = MESES_CORTE.map((dia, idx) => {
+      const loteNum  = idx + 1;
+      const fechaLote = new Date(ano, mes - 1, dia);
+      const fechaStr  = `${String(dia).padStart(2,"0")}/${String(mes).padStart(2,"0")}/${ano}`;
+      const pasado    = fechaLote <= hoy;
+      const esSig     = !pasado && esMesActual;
+
+      // Facturación de OR con fecha cierre <= día de corte y > día de corte anterior
+      const diaAnterior = idx === 0 ? 0 : MESES_CORTE[idx - 1];
+      const arrLote = arrGar.filter(r => r.dia > diaAnterior && r.dia <= dia);
+      const montoLote = arrLote.reduce((s,r) => s + r.importe, 0);
+
+      // Débito de este lote
+      const debLote = debs.find(d => d.lote === loteNum);
+      const debMonto = debLote ? debLote.monto : 0;
+
+      // Estado
+      let estadoCls, estadoLabel, loteCls;
+      if (!pasado && !esSig) {
+        estadoCls = "pendiente"; estadoLabel = "⏳ Pendiente"; loteCls = "lote-pendiente";
+      } else if (!pasado && esSig) {
+        estadoCls = "proximo"; estadoLabel = "⏰ Próximo corte"; loteCls = "lote-proximo";
+      } else if (debMonto > 0) {
+        estadoCls = "con-debito"; estadoLabel = "🔻 Con débito"; loteCls = "lote-debito";
+      } else {
+        estadoCls = "facturado"; estadoLabel = "✅ Facturado"; loteCls = "lote-facturado";
+      }
+
+      // Días para el próximo corte (si es el siguiente)
+      let diasInfo = "";
+      if (esSig) {
+        const diff = Math.ceil((fechaLote - hoy) / 86400000);
+        diasInfo = `<div class="gar-lote-dias">${diff <= 1 ? "⚡" : diff <= 3 ? "⚠️" : "📅"} Faltan <b>${diff} día${diff!==1?"s":""}</b></div>`;
+      }
+
+      return `<div class="gar-lote ${loteCls}">
+        <div class="gar-lote-num">Lote ${loteNum}</div>
+        <div class="gar-lote-fecha">📅 ${fechaStr}</div>
+        <div class="gar-lote-estado ${estadoCls}">${estadoLabel}</div>
+        <div class="gar-lote-monto">${montoLote > 0 ? this.compacto(montoLote) : "—"}</div>
+        <div style="font-size:9px;color:var(--muted)">${montoLote > 0 ? this.moneda(montoLote) : (pasado ? "Sin OR en período" : "")}</div>
+        ${debMonto > 0 ? `<div class="gar-lote-debito">🔻 Débito: ${this.compacto(debMonto)}</div>` : ""}
+        ${diasInfo}
+      </div>`;
+    }).join("");
+
+    document.getElementById("garLotes").innerHTML = lotesHTML;
+
+    // Resumen neto
+    document.getElementById("garResBruto").textContent = this.moneda(bruto);
+    document.getElementById("garResDebito").textContent = totalDebito > 0 ? "−" + this.moneda(totalDebito) : "$0";
+    document.getElementById("garResNeto").textContent = this.moneda(neto);
   },
 
   // ── HELPERS ──────────────────────────────────────────────────
