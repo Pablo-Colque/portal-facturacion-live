@@ -1,14 +1,4 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Portal de Gestión Postventa — Volkswagen Autosol</title>
-<style>
-:root{
-  --bg:#03080f;--surface:#070e1a;--card:#0b1525;--card2:#0e1b2e;
-  --border:#152238;--border2:#1e3350;
-  --txt:#ddeeff;--muted:#6b92b8;--dim:#2e4f70;
+
   --vw-blue:#001e50;--vw-blue2:#0040c8;--vw-light:#4d9fff;
   --green:#00d97e;--green2:#00a85f;--red:#ff3b52;--red2:#c02030;
   --orange:#ffb020;--cyan:#00cce8;--purple:#a87eff;--yellow:#ffe566;
@@ -407,6 +397,7 @@ tr:last-child td{border-bottom:0}
     <div class="nav-sec">Módulos</div>
     <button class="active" onclick="D.navTo('facturacion',this)"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
+    <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
     <div class="nav-sec">Próximamente</div>
     <button class="locked" disabled><span class="ico">🔧</span><span class="lbl">Paso por Taller</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span><span class="cnt">pronto</span></button>
@@ -681,6 +672,79 @@ tr:last-child td{border-bottom:0}
 
   </div><!-- /panelGarantias -->
 
+  <!-- ═══ PANEL PASO POR TALLER ═══ -->
+  <div class="content" id="panelTaller" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">🔧 Paso por Taller — Jujuy</div>
+      <div class="h-sub" id="tallerSubtitulo">Cargando datos…</div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpis" id="tallerKpis" style="margin-bottom:20px">
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">🚗</div>
+        <div class="kpi-val" id="tallerTotalMes">—</div>
+        <div class="kpi-lbl">Pasos del mes</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">📅</div>
+        <div class="kpi-val" id="tallerSemanaActual">—</div>
+        <div class="kpi-lbl">Pasos esta semana</div>
+      </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">📊</div>
+        <div class="kpi-val" id="tallerPromedioSem">—</div>
+        <div class="kpi-lbl">Promedio semanal</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">🛡️</div>
+        <div class="kpi-val" id="tallerPctGar">—</div>
+        <div class="kpi-lbl">% Garantía</div>
+      </div>
+    </div>
+
+    <!-- Tabla semana a semana -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">Pasos por semana</div>
+        <div class="card-badge" id="tallerBadgeMes">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Semana</th>
+            <th class="r">Total pasos</th>
+            <th class="r">Garantía</th>
+            <th class="r">Cliente</th>
+            <th class="r">Interna</th>
+          </tr></thead>
+          <tbody id="tallerTablaSem"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabla por asesor -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Pasos por asesor</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Asesor</th>
+            <th class="r">Total pasos</th>
+            <th class="r">Garantía</th>
+            <th class="r">Cliente</th>
+            <th class="r">Interna</th>
+          </tr></thead>
+          <tbody id="tallerTablaAsesor"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /panelTaller -->
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -703,6 +767,9 @@ const D = {
 
   // Débitos de garantía por lote — cargados desde Portal_Config
   debitosConfig: [],  // [{ mes, ano, lote, fecha, monto }]
+
+  // Paso por Taller — cargados desde Base PPT (libro externo)
+  pptData: [],  // [{ ano, mes, sem, chasis, asesor, cargo, tipoOp, orNum, importe }]
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -732,21 +799,23 @@ const D = {
   // ── NAVEGACIÓN ────────────────────────────────────────────────
   navTo(vista, btn) {
     this.vistaActual = vista;
-    // Highlight nav
     document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    // Mostrar panel correcto
-    const panelFac = document.querySelector(".content:not(#panelGarantias)");
-    const panelGar = document.getElementById("panelGarantias");
+    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller)");
+    const panelGar    = document.getElementById("panelGarantias");
+    const panelTaller = document.getElementById("panelTaller");
+    const mes = parseInt(document.getElementById("fMes").value);
+    const ano = parseInt(document.getElementById("fAno").value);
+    // Ocultar todos
+    [panelFac, panelGar, panelTaller].forEach(p => { if (p) p.style.display = "none"; });
     if (vista === "garantias") {
-      panelFac.style.display = "none";
       panelGar.style.display = "flex";
-      const mes = parseInt(document.getElementById("fMes").value);
-      const ano = parseInt(document.getElementById("fAno").value);
       this.renderGarantias(mes, ano);
+    } else if (vista === "taller") {
+      panelTaller.style.display = "flex";
+      this.renderTaller(mes, ano);
     } else {
       panelFac.style.display = "flex";
-      panelGar.style.display = "none";
     }
   },
 
@@ -791,6 +860,7 @@ const D = {
 
       this.raw = json.detalle || [];
       this.debitosConfig = json.debitos || [];
+      this.pptData = json.ppt || [];
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -871,6 +941,7 @@ const D = {
 
     this.render(mes, ano);
     if (this.vistaActual === "garantias") this.renderGarantias(mes, ano);
+    if (this.vistaActual === "taller")    this.renderTaller(mes, ano);
   },
 
   limpiar() {
@@ -1494,6 +1565,88 @@ const D = {
     document.getElementById("garResBruto").textContent = this.moneda(bruto);
     document.getElementById("garResDebito").textContent = totalDebito > 0 ? "−" + this.moneda(totalDebito) : "$0";
     document.getElementById("garResNeto").textContent = this.moneda(neto);
+  },
+
+  // ── RENDER PASO POR TALLER ────────────────────────────────────
+  renderTaller(mes, ano) {
+    const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+    // Filtrar por mes y año
+    const filas = this.pptData.filter(r => r.mes === mes && r.ano === ano);
+
+    if (filas.length === 0) {
+      document.getElementById("tallerSubtitulo").textContent = MESES[mes] + " " + ano + " — Sin datos cargados";
+      ["tallerTotalMes","tallerSemanaActual","tallerPromedioSem","tallerPctGar"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      document.getElementById("tallerTablaSem").innerHTML     = "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+      document.getElementById("tallerTablaAsesor").innerHTML  = "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+      document.getElementById("tallerBadgeMes").textContent   = MESES[mes] + " " + ano;
+      return;
+    }
+
+    // Totales
+    const total  = filas.length;
+    const garN   = filas.filter(r => r.cargo === "Garantía").length;
+    const pctGar = total > 0 ? (garN / total * 100).toFixed(0) : 0;
+
+    // Semana actual
+    const hoy      = new Date();
+    const semActual = (mes === hoy.getMonth()+1 && ano === hoy.getFullYear())
+      ? Math.min(Math.ceil(hoy.getDate() / 7), 4)
+      : 4;
+    const filasEstaSem = filas.filter(r => r.sem === semActual);
+    const totalEstaSem = filasEstaSem.length;
+
+    // Promedio semanal (semanas con al menos 1 paso)
+    const bySem = {};
+    filas.forEach(r => { bySem[r.sem] = (bySem[r.sem] || 0) + 1; });
+    const semsConDatos = Object.keys(bySem).length || 1;
+    const promSem = (total / semsConDatos).toFixed(1);
+
+    // KPIs
+    document.getElementById("tallerSubtitulo").textContent   = MESES[mes] + " " + ano + " — Chasis únicos por semana";
+    document.getElementById("tallerTotalMes").textContent    = total;
+    document.getElementById("tallerSemanaActual").textContent = totalEstaSem;
+    document.getElementById("tallerPromedioSem").textContent = promSem;
+    document.getElementById("tallerPctGar").textContent      = pctGar + "%";
+    document.getElementById("tallerBadgeMes").textContent    = MESES[mes] + " " + ano;
+
+    // Tabla por semana
+    const semKeys = [1,2,3,4];
+    let htmlSem = "";
+    semKeys.forEach(s => {
+      const fs  = filas.filter(r => r.sem === s);
+      const tot = fs.length;
+      if (tot === 0 && s > semActual) return; // no mostrar semanas futuras vacías
+      const gar = fs.filter(r => r.cargo === "Garantía").length;
+      const cli = fs.filter(r => r.cargo === "Cliente").length;
+      const inn = fs.filter(r => r.cargo === "Interna").length;
+      const esActual = s === semActual ? " style=\"font-weight:600;color:var(--accent)\"" : "";
+      htmlSem += `<tr${esActual}><td>Semana ${s}</td><td class="r">${tot}</td><td class="r">${gar}</td><td class="r">${cli}</td><td class="r">${inn}</td></tr>`;
+    });
+    // Fila total
+    const tGar = filas.filter(r => r.cargo === "Garantía").length;
+    const tCli = filas.filter(r => r.cargo === "Cliente").length;
+    const tInn = filas.filter(r => r.cargo === "Interna").length;
+    htmlSem += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${total}</td><td class="r">${tGar}</td><td class="r">${tCli}</td><td class="r">${tInn}</td></tr>`;
+    document.getElementById("tallerTablaSem").innerHTML = htmlSem;
+
+    // Tabla por asesor
+    const byAsesor = {};
+    filas.forEach(r => {
+      if (!byAsesor[r.asesor]) byAsesor[r.asesor] = { tot:0, gar:0, cli:0, inn:0 };
+      byAsesor[r.asesor].tot++;
+      if (r.cargo === "Garantía") byAsesor[r.asesor].gar++;
+      else if (r.cargo === "Cliente") byAsesor[r.asesor].cli++;
+      else byAsesor[r.asesor].inn++;
+    });
+    const asesoresOrd = Object.entries(byAsesor).sort((a,b) => b[1].tot - a[1].tot);
+    let htmlAsesor = "";
+    asesoresOrd.forEach(([nombre, v]) => {
+      htmlAsesor += `<tr><td>${nombre}</td><td class="r">${v.tot}</td><td class="r">${v.gar}</td><td class="r">${v.cli}</td><td class="r">${v.inn}</td></tr>`;
+    });
+    document.getElementById("tallerTablaAsesor").innerHTML = htmlAsesor || "<tr><td colspan='5'>Sin datos</td></tr>";
   },
 
   // ── HELPERS ──────────────────────────────────────────────────
