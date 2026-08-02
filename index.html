@@ -434,9 +434,10 @@ tr:last-child td{border-bottom:0}
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
     <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
     <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span></button>
-    <button onclick="D.navTo('amp',this)"><span class="ico">📈</span><span class="lbl">Productividad</span></button>
+    <button onclick="D.navTo('amp',this)"><span class="ico">🔧</span><span class="lbl">Ampliaciones</span></button>
     <div class="nav-sec">Próximamente</div>
     <button class="locked" disabled><span class="ico">🛡️</span><span class="lbl">Garantías · RMST</span><span class="cnt">pronto</span></button>
+    <button class="locked" disabled><span class="ico">📈</span><span class="lbl">Productividad</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🎯</span><span class="lbl">KPI Gerenciales</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🔩</span><span class="lbl">Repuestos</span><span class="cnt">pronto</span></button>
   </nav>
@@ -946,7 +947,7 @@ tr:last-child td{border-bottom:0}
   <div class="content" id="panelAmp" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
-      <div class="h-title">📈 Productividad — Ampliaciones detectadas en Taller</div>
+      <div class="h-title">🔧 Ampliaciones — Trabajos adicionales detectados en Taller</div>
       <div class="h-sub" id="ampSubtitulo">Cargando datos…</div>
     </div>
 
@@ -1112,7 +1113,7 @@ const D = {
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
     [panelFac, panelGar, panelTaller, panelOR, panelAmp].forEach(p => { if (p) p.style.display = "none"; });
-    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Productividad — son foto/serie histórica propia
+    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Ampliaciones — son foto/serie histórica propia
     if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "amp") ? "none" : "flex";
     if (vista === "garantias") {
       panelGar.style.display = "flex";
