@@ -434,9 +434,9 @@ tr:last-child td{border-bottom:0}
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
     <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
     <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span></button>
+    <button onclick="D.navTo('amp',this)"><span class="ico">📈</span><span class="lbl">Productividad</span></button>
     <div class="nav-sec">Próximamente</div>
     <button class="locked" disabled><span class="ico">🛡️</span><span class="lbl">Garantías · RMST</span><span class="cnt">pronto</span></button>
-    <button class="locked" disabled><span class="ico">📈</span><span class="lbl">Productividad</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🎯</span><span class="lbl">KPI Gerenciales</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🔩</span><span class="lbl">Repuestos</span><span class="cnt">pronto</span></button>
   </nav>
@@ -942,6 +942,107 @@ tr:last-child td{border-bottom:0}
 
   </div><!-- /panelOR -->
 
+  <!-- ═══ PANEL PRODUCTIVIDAD (AMPLIACIONES) ═══ -->
+  <div class="content" id="panelAmp" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">📈 Productividad — Ampliaciones detectadas en Taller</div>
+      <div class="h-sub" id="ampSubtitulo">Cargando datos…</div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpis" id="ampKpis" style="margin-bottom:20px">
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">🔍</div>
+        <div class="kpi-val" id="ampTotalDetec">—</div>
+        <div class="kpi-lbl">Ampliaciones detectadas</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">✅</div>
+        <div class="kpi-val" id="ampPctConv">—</div>
+        <div class="kpi-lbl">% Conversión</div>
+      </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">💵</div>
+        <div class="kpi-val" id="ampImpAprobado">—</div>
+        <div class="kpi-lbl">$ generado (aprobadas)</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">⏳</div>
+        <div class="kpi-val" id="ampPendientes">—</div>
+        <div class="kpi-lbl">Pendientes de resolver</div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Conversión por mes</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartAmpMes"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Ampliaciones por categoría</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartAmpCategoria"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tabla: por Asesor -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">Por Asesor de Servicio</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Asesor</th>
+            <th class="r">Detectadas</th>
+            <th class="r">Aprobadas</th>
+            <th class="r">% Conversión</th>
+            <th class="r">$ Generado</th>
+          </tr></thead>
+          <tbody id="ampTablaAsesor"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabla: por Técnico -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">Por Técnico</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Técnico</th>
+            <th class="r">Propuestas</th>
+            <th class="r">Aprobadas</th>
+            <th class="r">% Conversión</th>
+            <th class="r">$ Generado</th>
+          </tr></thead>
+          <tbody id="ampTablaTecnico"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabla: motivos de rechazo -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Principales motivos de rechazo</div>
+        <div class="card-badge" id="ampBadgeRechazo">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Motivo</th>
+            <th class="r">Cantidad</th>
+          </tr></thead>
+          <tbody id="ampTablaRechazo"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /panelAmp -->
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -969,6 +1070,7 @@ const D = {
   pptData: [],  // [{ ano, mes, sem, chasis, asesor, cargo, tipoOp, orNum, importe }]
   orData:  [],  // [{ ano, mes, dias, orNum, cliente, servicio, importe, cargo, estado, chasis, recepcionista, suc }]
   garDetalle: [], // [{ ano, mes, orNum, importe, cargo, estado, saga, sinOrigen, lote, cmNp, estadoGestion, seguimiento }]
+  ampData: [], // [{ ano, mes, orNum, prioridad, categoria, asesor, tecnico, estado, hsTaller, importe, motivoRechazo, ... }]
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -1004,13 +1106,14 @@ const D = {
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
     const panelOR     = document.getElementById("panelOR");
+    const panelAmp    = document.getElementById("panelAmp");
     const filtersBar  = document.getElementById("filtersBar");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
-    [panelFac, panelGar, panelTaller, panelOR].forEach(p => { if (p) p.style.display = "none"; });
-    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas — es una foto actual
-    if (filtersBar) filtersBar.style.display = (vista === "or") ? "none" : "flex";
+    [panelFac, panelGar, panelTaller, panelOR, panelAmp].forEach(p => { if (p) p.style.display = "none"; });
+    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Productividad — son foto/serie histórica propia
+    if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "amp") ? "none" : "flex";
     if (vista === "garantias") {
       panelGar.style.display = "flex";
       this.renderGarantias(mes, ano);
@@ -1020,6 +1123,9 @@ const D = {
     } else if (vista === "or") {
       panelOR.style.display = "flex";
       this.renderOR();
+    } else if (vista === "amp") {
+      panelAmp.style.display = "flex";
+      this.renderAmp();
     } else {
       panelFac.style.display = "flex";
     }
@@ -1066,9 +1172,10 @@ const D = {
 
       this.raw = json.detalle || [];
       this.debitosConfig = json.debitos || [];
-      this.pptData    = json.ppt        || [];
-      this.orData     = json.or         || [];
-      this.garDetalle = json.garDetalle || [];
+      this.pptData    = json.ppt          || [];
+      this.orData     = json.or           || [];
+      this.garDetalle = json.garDetalle   || [];
+      this.ampData    = json.ampliaciones || [];
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -1166,6 +1273,7 @@ const D = {
     if (this.vistaActual === "garantias") this.renderGarantias(mes, ano);
     if (this.vistaActual === "taller")    this.renderTaller(mes, ano);
     if (this.vistaActual === "or")        this.renderOR();
+    if (this.vistaActual === "amp")       this.renderAmp();
   },
 
   limpiar() {
@@ -2096,6 +2204,129 @@ const D = {
       html += `<tr><td>${dot}${nombre}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
     });
     html += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tCant}</td><td class="r">${this.moneda(tImp)}</td></tr>`;
+    return html;
+  },
+
+  // ── RENDER PRODUCTIVIDAD (AMPLIACIONES) ─────────────────────────
+  renderAmp() {
+    const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const datos = this.ampData || [];
+
+    if (datos.length === 0) {
+      document.getElementById("ampSubtitulo").textContent = "Sin datos cargados";
+      ["ampTotalDetec","ampPctConv","ampImpAprobado","ampPendientes"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      ["ampTablaAsesor","ampTablaTecnico","ampTablaRechazo"].forEach(id => {
+        document.getElementById(id).innerHTML = "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+      });
+      ["chartAmpMes","chartAmpCategoria"].forEach(id => {
+        if (this.graficos[id]) { try { this.graficos[id].destroy(); } catch(e){} delete this.graficos[id]; }
+      });
+      return;
+    }
+
+    // ── KPIs generales ──
+    const total     = datos.length;
+    const aprobadas = datos.filter(r => r.estado === "Aprobada");
+    const pendientes= datos.filter(r => r.estado === "Pendiente");
+    const pctConv   = total > 0 ? (aprobadas.length / total * 100) : 0;
+    const impAprob  = this.sum(aprobadas);
+
+    document.getElementById("ampSubtitulo").textContent = `${total} ampliaciones detectadas — actualizado al cargar`;
+    document.getElementById("ampTotalDetec").textContent  = total;
+    document.getElementById("ampPctConv").textContent     = this.pct(pctConv);
+    document.getElementById("ampImpAprobado").textContent = this.compacto(impAprob);
+    document.getElementById("ampPendientes").textContent  = pendientes.length;
+
+    // ── Gráfico: conversión por mes ──
+    if (this.graficos.chartAmpMes) { try { this.graficos.chartAmpMes.destroy(); } catch(e){} }
+    const byMes = {};
+    datos.forEach(r => {
+      if (!r.ano || !r.mes) return;
+      const clave = r.ano + "-" + String(r.mes).padStart(2, "0");
+      if (!byMes[clave]) byMes[clave] = { det: 0, apr: 0, ano: r.ano, mes: r.mes };
+      byMes[clave].det++;
+      if (r.estado === "Aprobada") byMes[clave].apr++;
+    });
+    const mesesOrd = Object.entries(byMes).sort((a, b) => a[0].localeCompare(b[0]));
+    this.graficos.chartAmpMes = new Chart(document.getElementById("chartAmpMes"), {
+      type: "bar",
+      data: {
+        labels: mesesOrd.map(([,v]) => MESES[v.mes].slice(0,3)),
+        datasets: [
+          { type:"bar",  label:"Detectadas", data: mesesOrd.map(([,v]) => v.det), backgroundColor:"#1e3350", borderRadius:4 },
+          { type:"bar",  label:"Aprobadas",  data: mesesOrd.map(([,v]) => v.apr), backgroundColor:"#00d97e", borderRadius:4 },
+        ],
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8}},
+        scales:{
+          x:{grid:{display:false},ticks:{color:"#6b92b8",font:{size:10,weight:"700"}}},
+          y:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:"#6b92b8",font:{size:10}}},
+        },
+      },
+    });
+
+    // ── Gráfico: por categoría (donut, top 6) ──
+    if (this.graficos.chartAmpCategoria) { try { this.graficos.chartAmpCategoria.destroy(); } catch(e){} }
+    const byCat = {};
+    datos.forEach(r => { const k = r.categoria || "Sin categorizar"; byCat[k] = (byCat[k]||0) + 1; });
+    const catOrd = Object.entries(byCat).sort((a,b) => b[1]-a[1]).slice(0, 6);
+    this.graficos.chartAmpCategoria = new Chart(document.getElementById("chartAmpCategoria"), {
+      type: "doughnut",
+      data: { labels: catOrd.map(x=>x[0]), datasets: [{ data: catOrd.map(x=>x[1]), backgroundColor: this.PALETA, borderColor: "#0b1525", borderWidth: 3, hoverOffset: 5 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false, cutout:"60%",
+        plugins:{
+          legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
+            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+        },
+      },
+    });
+
+    // ── Tabla: por Asesor ──
+    document.getElementById("ampTablaAsesor").innerHTML = this.tablaAmpPorGrupo(datos, "asesor");
+
+    // ── Tabla: por Técnico ──
+    document.getElementById("ampTablaTecnico").innerHTML = this.tablaAmpPorGrupo(datos, "tecnico");
+
+    // ── Tabla: motivos de rechazo ──
+    const rechazadas = datos.filter(r => r.motivoRechazo);
+    document.getElementById("ampBadgeRechazo").textContent = rechazadas.length + " casos";
+    const byMotivo = {};
+    rechazadas.forEach(r => { byMotivo[r.motivoRechazo] = (byMotivo[r.motivoRechazo]||0) + 1; });
+    const motivoOrd = Object.entries(byMotivo).sort((a,b) => b[1]-a[1]).slice(0, 10);
+    let htmlMot = "";
+    motivoOrd.forEach(([motivo, cant]) => {
+      htmlMot += `<tr><td>${motivo}</td><td class="r">${cant}</td></tr>`;
+    });
+    document.getElementById("ampTablaRechazo").innerHTML = htmlMot || "<tr><td colspan='2' style='text-align:center;color:var(--muted)'>Sin rechazos registrados</td></tr>";
+  },
+
+  tablaAmpPorGrupo(datos, campo) {
+    const byGrupo = {};
+    datos.forEach(r => {
+      const k = r[campo] || "Sin asignar";
+      if (!byGrupo[k]) byGrupo[k] = { det: 0, apr: 0, imp: 0 };
+      byGrupo[k].det++;
+      if (r.estado === "Aprobada") { byGrupo[k].apr++; byGrupo[k].imp += r.importe || 0; }
+    });
+    const ord = Object.entries(byGrupo).sort((a, b) => b[1].det - a[1].det);
+    if (ord.length === 0) return "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos</td></tr>";
+    let html = "";
+    let tDet = 0, tApr = 0, tImp = 0;
+    ord.forEach(([nombre, v]) => {
+      tDet += v.det; tApr += v.apr; tImp += v.imp;
+      const pct = v.det > 0 ? (v.apr / v.det * 100) : 0;
+      const color = pct >= 50 ? "var(--green)" : pct >= 25 ? "var(--orange)" : "var(--red)";
+      html += `<tr><td>${nombre}</td><td class="r">${v.det}</td><td class="r">${v.apr}</td><td class="r" style="color:${color};font-weight:800">${this.pct(pct)}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
+    });
+    const pctT = tDet > 0 ? (tApr / tDet * 100) : 0;
+    html += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tDet}</td><td class="r">${tApr}</td><td class="r">${this.pct(pctT)}</td><td class="r">${this.moneda(tImp)}</td></tr>`;
     return html;
   },
 
