@@ -1114,7 +1114,7 @@ const D = {
     // Ocultar todos
     [panelFac, panelGar, panelTaller, panelOR, panelAmp].forEach(p => { if (p) p.style.display = "none"; });
     // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Ampliaciones — son foto/serie histórica propia
-    if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "amp") ? "none" : "flex";
+    if (filtersBar) filtersBar.style.display = (vista === "or") ? "none" : "flex";
     if (vista === "garantias") {
       panelGar.style.display = "flex";
       this.renderGarantias(mes, ano);
@@ -1126,7 +1126,7 @@ const D = {
       this.renderOR();
     } else if (vista === "amp") {
       panelAmp.style.display = "flex";
-      this.renderAmp();
+      this.renderAmp(mes, ano);
     } else {
       panelFac.style.display = "flex";
     }
@@ -1274,7 +1274,7 @@ const D = {
     if (this.vistaActual === "garantias") this.renderGarantias(mes, ano);
     if (this.vistaActual === "taller")    this.renderTaller(mes, ano);
     if (this.vistaActual === "or")        this.renderOR();
-    if (this.vistaActual === "amp")       this.renderAmp();
+    if (this.vistaActual === "amp")       this.renderAmp(mes, ano);
   },
 
   limpiar() {
@@ -2208,42 +2208,85 @@ const D = {
     return html;
   },
 
-  // ── RENDER PRODUCTIVIDAD (AMPLIACIONES) ─────────────────────────
-  renderAmp() {
+  // ── RENDER AMPLIACIONES ──────────────────────────────────────────
+  renderAmp(mes, ano) {
     const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const datos = this.ampData || [];
+    const datosAll = this.ampData || [];
+    const datos    = datosAll.filter(r => r.ano === ano && r.mes === mes);
+
+    document.getElementById("ampSubtitulo").textContent = datos.length > 0
+      ? `${datos.length} ampliaciones detectadas en ${MESES[mes]} ${ano}`
+      : `Sin ampliaciones registradas en ${MESES[mes]} ${ano}`;
 
     if (datos.length === 0) {
-      document.getElementById("ampSubtitulo").textContent = "Sin datos cargados";
       ["ampTotalDetec","ampPctConv","ampImpAprobado","ampPendientes"].forEach(id => {
         document.getElementById(id).textContent = "—";
       });
       ["ampTablaAsesor","ampTablaTecnico","ampTablaRechazo"].forEach(id => {
         document.getElementById(id).innerHTML = "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
       });
-      ["chartAmpMes","chartAmpCategoria"].forEach(id => {
-        if (this.graficos[id]) { try { this.graficos[id].destroy(); } catch(e){} delete this.graficos[id]; }
-      });
+      if (this.graficos.chartAmpCategoria) { try { this.graficos.chartAmpCategoria.destroy(); } catch(e){} delete this.graficos.chartAmpCategoria; }
+      // el gráfico de tendencia sigue mostrando el histórico completo aunque el mes esté vacío
+      this.renderAmpTendencia(datosAll, MESES);
       return;
     }
 
-    // ── KPIs generales ──
+    // ── KPIs generales (del mes filtrado) ──
     const total     = datos.length;
     const aprobadas = datos.filter(r => r.estado === "Aprobada");
     const pendientes= datos.filter(r => r.estado === "Pendiente");
     const pctConv   = total > 0 ? (aprobadas.length / total * 100) : 0;
     const impAprob  = this.sum(aprobadas);
 
-    document.getElementById("ampSubtitulo").textContent = `${total} ampliaciones detectadas — actualizado al cargar`;
     document.getElementById("ampTotalDetec").textContent  = total;
     document.getElementById("ampPctConv").textContent     = this.pct(pctConv);
     document.getElementById("ampImpAprobado").textContent = this.compacto(impAprob);
     document.getElementById("ampPendientes").textContent  = pendientes.length;
 
-    // ── Gráfico: conversión por mes ──
+    // ── Gráfico: conversión por mes (histórico completo, no se filtra) ──
+    this.renderAmpTendencia(datosAll, MESES);
+
+    // ── Gráfico: por categoría (donut, top 6, del mes filtrado) ──
+    if (this.graficos.chartAmpCategoria) { try { this.graficos.chartAmpCategoria.destroy(); } catch(e){} }
+    const byCat = {};
+    datos.forEach(r => { const k = r.categoria || "Sin categorizar"; byCat[k] = (byCat[k]||0) + 1; });
+    const catOrd = Object.entries(byCat).sort((a,b) => b[1]-a[1]).slice(0, 6);
+    this.graficos.chartAmpCategoria = new Chart(document.getElementById("chartAmpCategoria"), {
+      type: "doughnut",
+      data: { labels: catOrd.map(x=>x[0]), datasets: [{ data: catOrd.map(x=>x[1]), backgroundColor: this.PALETA, borderColor: "#0b1525", borderWidth: 3, hoverOffset: 5 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false, cutout:"60%",
+        plugins:{
+          legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
+            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+        },
+      },
+    });
+
+    // ── Tabla: por Asesor (del mes filtrado) ──
+    document.getElementById("ampTablaAsesor").innerHTML = this.tablaAmpPorGrupo(datos, "asesor");
+
+    // ── Tabla: por Técnico (del mes filtrado) ──
+    document.getElementById("ampTablaTecnico").innerHTML = this.tablaAmpPorGrupo(datos, "tecnico");
+
+    // ── Tabla: motivos de rechazo (del mes filtrado) ──
+    const rechazadas = datos.filter(r => r.motivoRechazo);
+    document.getElementById("ampBadgeRechazo").textContent = rechazadas.length + " casos";
+    const byMotivo = {};
+    rechazadas.forEach(r => { byMotivo[r.motivoRechazo] = (byMotivo[r.motivoRechazo]||0) + 1; });
+    const motivoOrd = Object.entries(byMotivo).sort((a,b) => b[1]-a[1]).slice(0, 10);
+    let htmlMot = "";
+    motivoOrd.forEach(([motivo, cant]) => {
+      htmlMot += `<tr><td>${motivo}</td><td class="r">${cant}</td></tr>`;
+    });
+    document.getElementById("ampTablaRechazo").innerHTML = htmlMot || "<tr><td colspan='2' style='text-align:center;color:var(--muted)'>Sin rechazos registrados</td></tr>";
+  },
+
+  renderAmpTendencia(datosAll, MESES) {
     if (this.graficos.chartAmpMes) { try { this.graficos.chartAmpMes.destroy(); } catch(e){} }
     const byMes = {};
-    datos.forEach(r => {
+    datosAll.forEach(r => {
       if (!r.ano || !r.mes) return;
       const clave = r.ano + "-" + String(r.mes).padStart(2, "0");
       if (!byMes[clave]) byMes[clave] = { det: 0, apr: 0, ano: r.ano, mes: r.mes };
@@ -2270,42 +2313,6 @@ const D = {
         },
       },
     });
-
-    // ── Gráfico: por categoría (donut, top 6) ──
-    if (this.graficos.chartAmpCategoria) { try { this.graficos.chartAmpCategoria.destroy(); } catch(e){} }
-    const byCat = {};
-    datos.forEach(r => { const k = r.categoria || "Sin categorizar"; byCat[k] = (byCat[k]||0) + 1; });
-    const catOrd = Object.entries(byCat).sort((a,b) => b[1]-a[1]).slice(0, 6);
-    this.graficos.chartAmpCategoria = new Chart(document.getElementById("chartAmpCategoria"), {
-      type: "doughnut",
-      data: { labels: catOrd.map(x=>x[0]), datasets: [{ data: catOrd.map(x=>x[1]), backgroundColor: this.PALETA, borderColor: "#0b1525", borderWidth: 3, hoverOffset: 5 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false, cutout:"60%",
-        plugins:{
-          legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-          tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
-            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
-        },
-      },
-    });
-
-    // ── Tabla: por Asesor ──
-    document.getElementById("ampTablaAsesor").innerHTML = this.tablaAmpPorGrupo(datos, "asesor");
-
-    // ── Tabla: por Técnico ──
-    document.getElementById("ampTablaTecnico").innerHTML = this.tablaAmpPorGrupo(datos, "tecnico");
-
-    // ── Tabla: motivos de rechazo ──
-    const rechazadas = datos.filter(r => r.motivoRechazo);
-    document.getElementById("ampBadgeRechazo").textContent = rechazadas.length + " casos";
-    const byMotivo = {};
-    rechazadas.forEach(r => { byMotivo[r.motivoRechazo] = (byMotivo[r.motivoRechazo]||0) + 1; });
-    const motivoOrd = Object.entries(byMotivo).sort((a,b) => b[1]-a[1]).slice(0, 10);
-    let htmlMot = "";
-    motivoOrd.forEach(([motivo, cant]) => {
-      htmlMot += `<tr><td>${motivo}</td><td class="r">${cant}</td></tr>`;
-    });
-    document.getElementById("ampTablaRechazo").innerHTML = htmlMot || "<tr><td colspan='2' style='text-align:center;color:var(--muted)'>Sin rechazos registrados</td></tr>";
   },
 
   tablaAmpPorGrupo(datos, campo) {
