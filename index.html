@@ -408,8 +408,8 @@ tr:last-child td{border-bottom:0}
     <button class="active" onclick="D.navTo('facturacion',this)"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
     <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
+    <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span></button>
     <div class="nav-sec">Próximamente</div>
-    <button class="locked" disabled><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🛡️</span><span class="lbl">Garantías · RMST</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">📈</span><span class="lbl">Productividad</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🎯</span><span class="lbl">KPI Gerenciales</span><span class="cnt">pronto</span></button>
@@ -754,6 +754,108 @@ tr:last-child td{border-bottom:0}
 
   </div><!-- /panelTaller -->
 
+  <!-- ═══ PANEL ÓRDENES ABIERTAS ═══ -->
+  <div class="content" id="panelOR" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">📋 Órdenes Abiertas — Jujuy</div>
+      <div class="h-sub" id="orSubtitulo">Cargando datos…</div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpis" id="orKpis" style="margin-bottom:20px">
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">📋</div>
+        <div class="kpi-val" id="orTotalCant">—</div>
+        <div class="kpi-lbl">OR abiertas (total)</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">💵</div>
+        <div class="kpi-val" id="orTotalImp">—</div>
+        <div class="kpi-lbl">Importe total</div>
+      </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">🛡️</div>
+        <div class="kpi-val" id="orPctGar">—</div>
+        <div class="kpi-lbl">% Garantía</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">⏳</div>
+        <div class="kpi-val" id="orMas30">—</div>
+        <div class="kpi-lbl">Con más de 30 días</div>
+      </div>
+    </div>
+
+    <!-- Chips de antigüedad -->
+    <div class="alert-dias" style="margin-bottom:18px">
+      <div class="icon">⏱️</div>
+      <div class="txt">
+        <b>Antigüedad de las OR abiertas</b>
+        <p>Cantidad de órdenes según días transcurridos desde la Apertura</p>
+      </div>
+      <div class="dias-chips">
+        <div class="dias-chip ok"><div class="dl">0-30 días</div><div class="dv" id="orAnt0">—</div></div>
+        <div class="dias-chip warn"><div class="dl">31-60 días</div><div class="dv" id="orAnt30">—</div></div>
+        <div class="dias-chip warn"><div class="dl">61-90 días</div><div class="dv" id="orAnt60">—</div></div>
+        <div class="dias-chip urgente"><div class="dl">+90 días</div><div class="dv" id="orAnt90">—</div></div>
+      </div>
+    </div>
+
+    <!-- Tabla: OR Pendiente de Facturación -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">OR Pendiente de Facturación (por Recepcionista)</div>
+        <div class="card-badge" id="orBadgePend">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Recepcionista</th>
+            <th class="r">Cantidad OR</th>
+            <th class="r">Importe</th>
+          </tr></thead>
+          <tbody id="orTablaPendiente"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabla: X Garantía Pendiente -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">X Garantía — Pendiente (por Recepcionista)</div>
+        <div class="card-badge" id="orBadgeGar">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Recepcionista</th>
+            <th class="r">Cantidad OR</th>
+            <th class="r">Importe</th>
+          </tr></thead>
+          <tbody id="orTablaGarantia"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabla: detalle por Año-Mes de Apertura -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">OR abiertas por mes de Apertura</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Año-Mes Apertura</th>
+            <th class="r">Cantidad</th>
+            <th class="r">Importe</th>
+          </tr></thead>
+          <tbody id="orTablaMeses"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /panelOR -->
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -779,6 +881,7 @@ const D = {
 
   // Paso por Taller — cargados desde Base PPT (libro externo)
   pptData: [],  // [{ ano, mes, sem, chasis, asesor, cargo, tipoOp, orNum, importe }]
+  orData:  [],  // [{ ano, mes, dias, orNum, cliente, servicio, importe, cargo, estado, chasis, recepcionista, suc }]
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -810,19 +913,23 @@ const D = {
     this.vistaActual = vista;
     document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller)");
+    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR)");
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
+    const panelOR     = document.getElementById("panelOR");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
-    [panelFac, panelGar, panelTaller].forEach(p => { if (p) p.style.display = "none"; });
+    [panelFac, panelGar, panelTaller, panelOR].forEach(p => { if (p) p.style.display = "none"; });
     if (vista === "garantias") {
       panelGar.style.display = "flex";
       this.renderGarantias(mes, ano);
     } else if (vista === "taller") {
       panelTaller.style.display = "flex";
       this.renderTaller(mes, ano);
+    } else if (vista === "or") {
+      panelOR.style.display = "flex";
+      this.renderOR();
     } else {
       panelFac.style.display = "flex";
     }
@@ -870,6 +977,7 @@ const D = {
       this.raw = json.detalle || [];
       this.debitosConfig = json.debitos || [];
       this.pptData = json.ppt || [];
+      this.orData  = json.or  || [];
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -951,6 +1059,7 @@ const D = {
     this.render(mes, ano);
     if (this.vistaActual === "garantias") this.renderGarantias(mes, ano);
     if (this.vistaActual === "taller")    this.renderTaller(mes, ano);
+    if (this.vistaActual === "or")        this.renderOR();
   },
 
   limpiar() {
@@ -1656,6 +1765,89 @@ const D = {
       htmlAsesor += `<tr><td>${nombre}</td><td class="r">${v.tot}</td><td class="r">${v.gar}</td><td class="r">${v.cli}</td><td class="r">${v.inn}</td></tr>`;
     });
     document.getElementById("tallerTablaAsesor").innerHTML = htmlAsesor || "<tr><td colspan='5'>Sin datos</td></tr>";
+  },
+
+  // ── RENDER ÓRDENES ABIERTAS ────────────────────────────────────
+  renderOR() {
+    const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const datos = this.orData || [];
+
+    if (datos.length === 0) {
+      document.getElementById("orSubtitulo").textContent = "Sin datos cargados";
+      ["orTotalCant","orTotalImp","orPctGar","orMas30","orAnt0","orAnt30","orAnt60","orAnt90"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      ["orTablaPendiente","orTablaGarantia","orTablaMeses"].forEach(id => {
+        document.getElementById(id).innerHTML = "<tr><td colspan='3' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+      });
+      return;
+    }
+
+    // ── KPIs generales ──
+    const total    = datos.length;
+    const impTotal = this.sum(datos);
+    const garN     = datos.filter(r => r.cargo === "Garantía").length;
+    const pctGar   = total > 0 ? (garN / total * 100).toFixed(0) : 0;
+    const mas30    = datos.filter(r => r.dias > 30).length;
+
+    document.getElementById("orSubtitulo").textContent = `${total} OR abiertas — actualizado al cargar`;
+    document.getElementById("orTotalCant").textContent = total;
+    document.getElementById("orTotalImp").textContent  = this.compacto(impTotal);
+    document.getElementById("orPctGar").textContent    = pctGar + "%";
+    document.getElementById("orMas30").textContent     = mas30;
+
+    // ── Antigüedad ──
+    document.getElementById("orAnt0").textContent  = datos.filter(r => r.dias <= 30).length;
+    document.getElementById("orAnt30").textContent = datos.filter(r => r.dias > 30 && r.dias <= 60).length;
+    document.getElementById("orAnt60").textContent = datos.filter(r => r.dias > 60 && r.dias <= 90).length;
+    document.getElementById("orAnt90").textContent = datos.filter(r => r.dias > 90).length;
+
+    // ── Tabla: Pendiente de Facturación (Cargo != Garantía, Estado = Pendiente Factura) ──
+    const pend = datos.filter(r => r.cargo !== "Garantía" && r.estado === "Pendiente Factura");
+    document.getElementById("orBadgePend").textContent = pend.length + " OR";
+    document.getElementById("orTablaPendiente").innerHTML = this.tablaPorRecepcionista(pend);
+
+    // ── Tabla: X Garantía Pendiente (Cargo = Garantía, Estado = Abierta) ──
+    const gar = datos.filter(r => r.cargo === "Garantía" && r.estado === "Abierta");
+    document.getElementById("orBadgeGar").textContent = gar.length + " OR";
+    document.getElementById("orTablaGarantia").innerHTML = this.tablaPorRecepcionista(gar);
+
+    // ── Tabla: por mes de Apertura (todas las abiertas) ──
+    const byMes = {};
+    datos.forEach(r => {
+      const clave = r.ano + "-" + String(r.mes).padStart(2, "0");
+      if (!byMes[clave]) byMes[clave] = { cant: 0, imp: 0, ano: r.ano, mes: r.mes };
+      byMes[clave].cant++;
+      byMes[clave].imp += r.importe || 0;
+    });
+    const mesesOrd = Object.entries(byMes).sort((a, b) => a[0].localeCompare(b[0]));
+    let htmlMeses = "";
+    mesesOrd.forEach(([clave, v]) => {
+      htmlMeses += `<tr><td>${MESES[v.mes]} ${v.ano}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
+    });
+    const tCant = datos.length, tImp = impTotal;
+    htmlMeses += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tCant}</td><td class="r">${this.moneda(tImp)}</td></tr>`;
+    document.getElementById("orTablaMeses").innerHTML = htmlMeses;
+  },
+
+  tablaPorRecepcionista(lista) {
+    if (lista.length === 0) return "<tr><td colspan='3' style='text-align:center;color:var(--muted)'>Sin OR en esta categoría</td></tr>";
+    const byRecep = {};
+    lista.forEach(r => {
+      const k = r.recepcionista || "Sin asignar";
+      if (!byRecep[k]) byRecep[k] = { cant: 0, imp: 0 };
+      byRecep[k].cant++;
+      byRecep[k].imp += r.importe || 0;
+    });
+    const ord = Object.entries(byRecep).sort((a, b) => b[1].cant - a[1].cant);
+    let html = "";
+    let tCant = 0, tImp = 0;
+    ord.forEach(([nombre, v]) => {
+      tCant += v.cant; tImp += v.imp;
+      html += `<tr><td>${nombre}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
+    });
+    html += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tCant}</td><td class="r">${this.moneda(tImp)}</td></tr>`;
+    return html;
   },
 
   // ── HELPERS ──────────────────────────────────────────────────
