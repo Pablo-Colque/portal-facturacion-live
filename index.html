@@ -65,6 +65,19 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Aria
 .loader-sub{font-size:11px;color:var(--dim)}
 .loader-overlay.hidden{display:none}
 
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 20%,#0a1730,#03080f 70%);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-overlay.hidden{display:none}
+.login-box{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:34px 32px;width:300px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.login-box .vw-badge{width:48px;height:48px;font-size:18px;margin:0 auto 14px}
+.login-box h2{font-size:15px;font-weight:900;margin-bottom:3px}
+.login-box p{font-size:11px;color:var(--muted);margin-bottom:20px}
+.login-box input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;color:var(--txt);font-size:14px;text-align:center;letter-spacing:3px;outline:none;margin-bottom:10px}
+.login-box input:focus{border-color:var(--vw-light)}
+.login-box button{width:100%;background:linear-gradient(90deg,var(--vw-blue2),var(--vw-light));border:0;border-radius:var(--radius-sm);padding:10px;color:#fff;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.5px}
+.login-box button:hover{opacity:.9}
+.login-err{color:var(--red);font-size:11px;font-weight:700;margin-top:10px;min-height:14px}
+
 /* ERROR BANNER */
 .error-banner{background:rgba(255,59,82,.08);border:1px solid rgba(255,59,82,.3);border-radius:var(--radius);padding:14px 18px;color:var(--red);font-size:12px;font-weight:700;display:none}
 .error-banner.show{display:block}
@@ -388,8 +401,20 @@ tr:last-child td{border-bottom:0}
 <body>
 <div class="app">
 
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="vw-badge">VW</div>
+    <h2>Portal de Gestión Postventa</h2>
+    <p>Volkswagen Autosol Jujuy · Acceso restringido</p>
+    <input type="password" id="loginPass" placeholder="Clave de acceso" maxlength="20" autocomplete="off">
+    <button onclick="D.login()">Ingresar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
 <!-- LOADER -->
-<div class="loader-overlay" id="loaderOverlay">
+<div class="loader-overlay hidden" id="loaderOverlay">
   <div class="loader-spinner"></div>
   <div class="loader-txt">Cargando datos desde Google Sheets…</div>
   <div class="loader-sub">Esto solo ocurre una vez al abrir el portal</div>
@@ -1081,6 +1106,21 @@ const D = {
   recargar() {
     this.raw = [];
     this.cargar();
+  },
+
+  // ── LOGIN ──────────────────────────────────────────────────────
+  login() {
+    const CLAVE = "1122334455";
+    const val = document.getElementById("loginPass").value.trim();
+    if (val === CLAVE) {
+      localStorage.setItem("portalAuth", "ok");
+      document.getElementById("loginOverlay").classList.add("hidden");
+      this.cargar();
+    } else {
+      document.getElementById("loginErr").textContent = "Clave incorrecta";
+      document.getElementById("loginPass").value = "";
+      document.getElementById("loginPass").focus();
+    }
   },
 
   // ── DROPDOWNS DINÁMICOS ───────────────────────────────────────
@@ -2068,7 +2108,15 @@ const D = {
   pct(v){ return(+v||0).toFixed(1)+"%"; },
 };
 
-window.addEventListener("DOMContentLoaded", () => D.cargar());
+window.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("portalAuth") === "ok") {
+    document.getElementById("loginOverlay").classList.add("hidden");
+    D.cargar();
+  } else {
+    document.getElementById("loginPass").addEventListener("keydown", e => { if (e.key === "Enter") D.login(); });
+    document.getElementById("loginPass").focus();
+  }
+});
 </script>
 </body>
 </html>
