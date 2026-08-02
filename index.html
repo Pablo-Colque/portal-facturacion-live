@@ -436,7 +436,7 @@ tr:last-child td{border-bottom:0}
     </div>
   </div>
 
-  <div class="filters">
+  <div class="filters" id="filtersBar">
     <label>MES</label>
     <select id="fMes" onchange="D.aplicar()">
       <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
@@ -713,6 +713,18 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Gráficos -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Pasos por semana — composición por cargo</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartTallerSem"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Distribución por asesor</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartTallerAsesor"></canvas></div>
+      </div>
+    </div>
+
     <!-- Tabla semana a semana -->
     <div class="card" style="margin-bottom:18px">
       <div class="card-head">
@@ -780,9 +792,9 @@ tr:last-child td{border-bottom:0}
         <div class="kpi-lbl">% Garantía</div>
       </div>
       <div class="kpi-card c-int">
-        <div class="kpi-ico">⏳</div>
-        <div class="kpi-val" id="orMas30">—</div>
-        <div class="kpi-lbl">Con más de 30 días</div>
+        <div class="kpi-ico">⚠️</div>
+        <div class="kpi-val" id="orImpRiesgo">—</div>
+        <div class="kpi-lbl">$ en riesgo (+60 días hábiles)</div>
       </div>
     </div>
 
@@ -798,6 +810,37 @@ tr:last-child td{border-bottom:0}
         <div class="dias-chip warn"><div class="dl">31-60 días</div><div class="dv" id="orAnt30">—</div></div>
         <div class="dias-chip warn"><div class="dl">61-90 días</div><div class="dv" id="orAnt60">—</div></div>
         <div class="dias-chip urgente"><div class="dl">+90 días</div><div class="dv" id="orAnt90">—</div></div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Concentración por antigüedad</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartOrAntiguedad"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Importe pendiente por Recepcionista</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartOrRecepcionista"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tabla: tiempo promedio de resolución -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">⏱️ Tiempo promedio de resolución (días hábiles) — por Responsable</div>
+        <div class="card-badge" id="orBadgeProm">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Responsable</th>
+            <th>Estado</th>
+            <th class="r">Cant. OR</th>
+            <th class="r">Promedio días hábiles</th>
+          </tr></thead>
+          <tbody id="orTablaPromedio"></tbody>
+        </table>
       </div>
     </div>
 
@@ -854,6 +897,24 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Tabla: Garantías sin Origen -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">🛡️ Garantías sin Origen SAGA (por mes de Apertura)</div>
+        <div class="card-badge" id="orBadgeSinOrigen">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Año-Mes Apertura</th>
+            <th class="r">Cantidad OR</th>
+            <th class="r">Importe</th>
+          </tr></thead>
+          <tbody id="orTablaSinOrigen"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- /panelOR -->
 
 </div><!-- /main -->
@@ -882,6 +943,7 @@ const D = {
   // Paso por Taller — cargados desde Base PPT (libro externo)
   pptData: [],  // [{ ano, mes, sem, chasis, asesor, cargo, tipoOp, orNum, importe }]
   orData:  [],  // [{ ano, mes, dias, orNum, cliente, servicio, importe, cargo, estado, chasis, recepcionista, suc }]
+  garDetalle: [], // [{ ano, mes, orNum, importe, cargo, estado, saga, sinOrigen, lote, cmNp, estadoGestion, seguimiento }]
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -917,10 +979,13 @@ const D = {
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
     const panelOR     = document.getElementById("panelOR");
+    const filtersBar  = document.getElementById("filtersBar");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
     [panelFac, panelGar, panelTaller, panelOR].forEach(p => { if (p) p.style.display = "none"; });
+    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas — es una foto actual
+    if (filtersBar) filtersBar.style.display = (vista === "or") ? "none" : "flex";
     if (vista === "garantias") {
       panelGar.style.display = "flex";
       this.renderGarantias(mes, ano);
@@ -976,8 +1041,9 @@ const D = {
 
       this.raw = json.detalle || [];
       this.debitosConfig = json.debitos || [];
-      this.pptData = json.ppt || [];
-      this.orData  = json.or  || [];
+      this.pptData    = json.ppt        || [];
+      this.orData     = json.or         || [];
+      this.garDetalle = json.garDetalle || [];
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -1700,6 +1766,9 @@ const D = {
       document.getElementById("tallerTablaSem").innerHTML     = "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
       document.getElementById("tallerTablaAsesor").innerHTML  = "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
       document.getElementById("tallerBadgeMes").textContent   = MESES[mes] + " " + ano;
+      ["chartTallerSem","chartTallerAsesor"].forEach(id => {
+        if (this.graficos[id]) { try { this.graficos[id].destroy(); } catch(e){} delete this.graficos[id]; }
+      });
       return;
     }
 
@@ -1750,6 +1819,31 @@ const D = {
     htmlSem += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${total}</td><td class="r">${tGar}</td><td class="r">${tCli}</td><td class="r">${tInn}</td></tr>`;
     document.getElementById("tallerTablaSem").innerHTML = htmlSem;
 
+    // ── Gráfico: pasos por semana, apilado por cargo ──
+    if (this.graficos.chartTallerSem) { try { this.graficos.chartTallerSem.destroy(); } catch(e){} }
+    const semLabels  = semKeys.filter(s => bySem[s] || s <= semActual).map(s => "Sem " + s);
+    const garPorSem  = semKeys.filter(s => bySem[s] || s <= semActual).map(s => filas.filter(r => r.sem === s && r.cargo === "Garantía").length);
+    const cliPorSem  = semKeys.filter(s => bySem[s] || s <= semActual).map(s => filas.filter(r => r.sem === s && r.cargo === "Cliente").length);
+    const intPorSem  = semKeys.filter(s => bySem[s] || s <= semActual).map(s => filas.filter(r => r.sem === s && r.cargo === "Interna").length);
+    const chartOptsBase = {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+        tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8}},
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:{color:"#6b92b8",font:{size:10,weight:"700"}}},
+        y:{stacked:true,grid:{color:"rgba(30,51,80,.4)"},border:{display:false},ticks:{color:"#6b92b8",font:{size:10}}},
+      },
+    };
+    this.graficos.chartTallerSem = new Chart(document.getElementById("chartTallerSem"), {
+      type: "bar",
+      data: { labels: semLabels, datasets: [
+        { label: "Garantía", data: garPorSem, backgroundColor: "#00d97e", borderRadius: 4 },
+        { label: "Cliente",  data: cliPorSem, backgroundColor: "#4d9fff", borderRadius: 4 },
+        { label: "Interna",  data: intPorSem, backgroundColor: "#a87eff", borderRadius: 4 },
+      ]},
+      options: chartOptsBase,
+    });
+
     // Tabla por asesor
     const byAsesor = {};
     filas.forEach(r => {
@@ -1765,6 +1859,23 @@ const D = {
       htmlAsesor += `<tr><td>${nombre}</td><td class="r">${v.tot}</td><td class="r">${v.gar}</td><td class="r">${v.cli}</td><td class="r">${v.inn}</td></tr>`;
     });
     document.getElementById("tallerTablaAsesor").innerHTML = htmlAsesor || "<tr><td colspan='5'>Sin datos</td></tr>";
+
+    // ── Gráfico: distribución por asesor (donut) ──
+    if (this.graficos.chartTallerAsesor) { try { this.graficos.chartTallerAsesor.destroy(); } catch(e){} }
+    const asesorLabels = Object.keys(byAsesor);
+    const asesorVals   = asesorLabels.map(k => byAsesor[k].tot);
+    this.graficos.chartTallerAsesor = new Chart(document.getElementById("chartTallerAsesor"), {
+      type: "doughnut",
+      data: { labels: asesorLabels, datasets: [{ data: asesorVals, backgroundColor: this.PALETA, borderColor: "#0b1525", borderWidth: 3, hoverOffset: 5 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false, cutout:"65%",
+        plugins:{
+          legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
+            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(ctx.parsed/tot*100)})`;}}},
+        },
+      },
+    });
   },
 
   // ── RENDER ÓRDENES ABIERTAS ────────────────────────────────────
@@ -1774,33 +1885,104 @@ const D = {
 
     if (datos.length === 0) {
       document.getElementById("orSubtitulo").textContent = "Sin datos cargados";
-      ["orTotalCant","orTotalImp","orPctGar","orMas30","orAnt0","orAnt30","orAnt60","orAnt90"].forEach(id => {
+      ["orTotalCant","orTotalImp","orPctGar","orImpRiesgo","orAnt0","orAnt30","orAnt60","orAnt90"].forEach(id => {
         document.getElementById(id).textContent = "—";
       });
-      ["orTablaPendiente","orTablaGarantia","orTablaMeses"].forEach(id => {
-        document.getElementById(id).innerHTML = "<tr><td colspan='3' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+      ["orTablaPendiente","orTablaGarantia","orTablaMeses","orTablaPromedio","orTablaSinOrigen"].forEach(id => {
+        document.getElementById(id).innerHTML = "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+      });
+      ["chartOrAntiguedad","chartOrRecepcionista"].forEach(id => {
+        if (this.graficos[id]) { try { this.graficos[id].destroy(); } catch(e){} delete this.graficos[id]; }
       });
       return;
     }
+
+    // ── Antigüedad en días hábiles (mismo criterio que usaba Belén) ──
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    const parseLocal = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+    datos.forEach(r => { r.diasHab = this.diasHab(parseLocal(r.fecha), hoy); });
 
     // ── KPIs generales ──
     const total    = datos.length;
     const impTotal = this.sum(datos);
     const garN     = datos.filter(r => r.cargo === "Garantía").length;
     const pctGar   = total > 0 ? (garN / total * 100).toFixed(0) : 0;
-    const mas30    = datos.filter(r => r.dias > 30).length;
+    const impRiesgo = this.sum(datos.filter(r => r.diasHab > 60));
 
     document.getElementById("orSubtitulo").textContent = `${total} OR abiertas — actualizado al cargar`;
     document.getElementById("orTotalCant").textContent = total;
     document.getElementById("orTotalImp").textContent  = this.compacto(impTotal);
     document.getElementById("orPctGar").textContent    = pctGar + "%";
-    document.getElementById("orMas30").textContent     = mas30;
+    document.getElementById("orImpRiesgo").textContent = this.compacto(impRiesgo);
 
-    // ── Antigüedad ──
-    document.getElementById("orAnt0").textContent  = datos.filter(r => r.dias <= 30).length;
-    document.getElementById("orAnt30").textContent = datos.filter(r => r.dias > 30 && r.dias <= 60).length;
-    document.getElementById("orAnt60").textContent = datos.filter(r => r.dias > 60 && r.dias <= 90).length;
-    document.getElementById("orAnt90").textContent = datos.filter(r => r.dias > 90).length;
+    // ── Antigüedad (chips) ──
+    document.getElementById("orAnt0").textContent  = datos.filter(r => r.diasHab <= 30).length;
+    document.getElementById("orAnt30").textContent = datos.filter(r => r.diasHab > 30 && r.diasHab <= 60).length;
+    document.getElementById("orAnt60").textContent = datos.filter(r => r.diasHab > 60 && r.diasHab <= 90).length;
+    document.getElementById("orAnt90").textContent = datos.filter(r => r.diasHab > 90).length;
+
+    // ── Gráfico: concentración por antigüedad (donut) ──
+    if (this.graficos.chartOrAntiguedad) { try { this.graficos.chartOrAntiguedad.destroy(); } catch(e){} }
+    const antLabels = ["0-30 días", "31-60 días", "61-90 días", "+90 días"];
+    const antVals = [
+      datos.filter(r => r.diasHab <= 30).length,
+      datos.filter(r => r.diasHab > 30 && r.diasHab <= 60).length,
+      datos.filter(r => r.diasHab > 60 && r.diasHab <= 90).length,
+      datos.filter(r => r.diasHab > 90).length,
+    ];
+    this.graficos.chartOrAntiguedad = new Chart(document.getElementById("chartOrAntiguedad"), {
+      type: "doughnut",
+      data: { labels: antLabels, datasets: [{ data: antVals, backgroundColor: ["#00d97e","#ffb020","#ff8c42","#ff3b52"], borderColor: "#0b1525", borderWidth: 3, hoverOffset: 5 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false, cutout:"65%",
+        plugins:{
+          legend:{display:true,position:"bottom",labels:{color:"#6b92b8",font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
+            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+        },
+      },
+    });
+
+    // ── Gráfico: importe pendiente por Recepcionista (bar horizontal, top 8) ──
+    if (this.graficos.chartOrRecepcionista) { try { this.graficos.chartOrRecepcionista.destroy(); } catch(e){} }
+    const impPorRecep = {};
+    datos.forEach(r => {
+      const k = r.recepcionista || "Sin asignar";
+      impPorRecep[k] = (impPorRecep[k] || 0) + (r.importe || 0);
+    });
+    const recepOrd = Object.entries(impPorRecep).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    this.graficos.chartOrRecepcionista = new Chart(document.getElementById("chartOrRecepcionista"), {
+      type: "bar",
+      data: { labels: recepOrd.map(x => x[0]), datasets: [{ data: recepOrd.map(x => x[1]), backgroundColor: this.PALETA.map(c => c + "28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 6, maxBarThickness: 26 }]},
+      options: {
+        indexAxis: "y",
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{backgroundColor:"#0b1525",borderColor:"#1e3350",borderWidth:1,titleColor:"#ddeeff",bodyColor:"#6b92b8",padding:9,cornerRadius:8,
+          callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+        scales:{
+          x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:"#6b92b8",font:{size:10},callback:v=>"$"+this.compacto(v)}},
+          y:{grid:{display:false},ticks:{color:"#6b92b8",font:{size:10,weight:"700"}}},
+        },
+      },
+    });
+
+    // ── Tabla: tiempo promedio de resolución por Responsable ──
+    const byResp = {};
+    datos.forEach(r => {
+      const k = (r.recepcionista || "Sin asignar") + "||" + r.estado;
+      if (!byResp[k]) byResp[k] = { nombre: r.recepcionista || "Sin asignar", estado: r.estado, cant: 0, sumaDias: 0 };
+      byResp[k].cant++;
+      byResp[k].sumaDias += r.diasHab;
+    });
+    const respOrd = Object.values(byResp).sort((a, b) => (b.sumaDias / b.cant) - (a.sumaDias / a.cant));
+    let htmlProm = "";
+    respOrd.forEach(v => {
+      const prom = v.cant > 0 ? (v.sumaDias / v.cant) : 0;
+      const color = prom > 60 ? "var(--red)" : prom > 30 ? "var(--orange)" : "var(--green)";
+      htmlProm += `<tr><td>${v.nombre}</td><td>${v.estado}</td><td class="r">${v.cant}</td><td class="r" style="color:${color};font-weight:800">${prom.toFixed(1)}</td></tr>`;
+    });
+    document.getElementById("orBadgeProm").textContent = respOrd.length + " responsables";
+    document.getElementById("orTablaPromedio").innerHTML = htmlProm || "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos</td></tr>";
 
     // ── Tabla: Pendiente de Facturación (Cargo != Garantía, Estado = Pendiente Factura) ──
     const pend = datos.filter(r => r.cargo !== "Garantía" && r.estado === "Pendiente Factura");
@@ -1828,6 +2010,29 @@ const D = {
     const tCant = datos.length, tImp = impTotal;
     htmlMeses += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tCant}</td><td class="r">${this.moneda(tImp)}</td></tr>`;
     document.getElementById("orTablaMeses").innerHTML = htmlMeses;
+
+    // ── Tabla: Garantías sin Origen (hoja "Garantia", SAGA = "No encontrada") ──
+    const garDatos   = this.garDetalle || [];
+    const sinOrigen  = garDatos.filter(r => r.sinOrigen && r.estado === "Abierta");
+    document.getElementById("orBadgeSinOrigen").textContent = sinOrigen.length + " OR";
+
+    const byMesSO = {};
+    sinOrigen.forEach(r => {
+      const clave = r.ano + "-" + String(r.mes).padStart(2, "0");
+      if (!byMesSO[clave]) byMesSO[clave] = { cant: 0, imp: 0, ano: r.ano, mes: r.mes };
+      byMesSO[clave].cant++;
+      byMesSO[clave].imp += r.importe || 0;
+    });
+    const mesesSOOrd = Object.entries(byMesSO).sort((a, b) => a[0].localeCompare(b[0]));
+    let htmlSO = "";
+    mesesSOOrd.forEach(([clave, v]) => {
+      htmlSO += `<tr><td>${MESES[v.mes]} ${v.ano}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
+    });
+    const tCantSO = sinOrigen.length, tImpSO = this.sum(sinOrigen);
+    htmlSO += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tCantSO}</td><td class="r">${this.moneda(tImpSO)}</td></tr>`;
+    document.getElementById("orTablaSinOrigen").innerHTML = sinOrigen.length > 0
+      ? htmlSO
+      : "<tr><td colspan='3' style='text-align:center;color:var(--muted)'>Sin OR sin origen</td></tr>";
   },
 
   tablaPorRecepcionista(lista) {
@@ -1835,16 +2040,20 @@ const D = {
     const byRecep = {};
     lista.forEach(r => {
       const k = r.recepcionista || "Sin asignar";
-      if (!byRecep[k]) byRecep[k] = { cant: 0, imp: 0 };
+      if (!byRecep[k]) byRecep[k] = { cant: 0, imp: 0, sumaDias: 0 };
       byRecep[k].cant++;
       byRecep[k].imp += r.importe || 0;
+      byRecep[k].sumaDias += (r.diasHab || 0);
     });
     const ord = Object.entries(byRecep).sort((a, b) => b[1].cant - a[1].cant);
     let html = "";
     let tCant = 0, tImp = 0;
     ord.forEach(([nombre, v]) => {
       tCant += v.cant; tImp += v.imp;
-      html += `<tr><td>${nombre}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
+      const prom  = v.cant > 0 ? v.sumaDias / v.cant : 0;
+      const color = prom > 60 ? "var(--red)" : prom > 30 ? "var(--orange)" : "var(--green)";
+      const dot   = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${color};margin-right:6px"></span>`;
+      html += `<tr><td>${dot}${nombre}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td></tr>`;
     });
     html += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${tCant}</td><td class="r">${this.moneda(tImp)}</td></tr>`;
     return html;
