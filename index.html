@@ -749,7 +749,7 @@ tr:last-child td{border-bottom:0}
     <!-- Pendiente de Facturar a VW (Reclamos - hoja de Benicio) -->
     <div class="card" style="margin-top:18px">
       <div class="card-head">
-        <div class="card-title">💰 Pendiente de Facturar a VW — por Lote</div>
+        <div class="card-title">💰 Pendiente de Facturar a VW — por Lote (solo fecha de corte futura)</div>
         <div class="card-badge" id="garBadgeReclamos">—</div>
       </div>
       <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
@@ -1980,29 +1980,28 @@ const D = {
     document.getElementById("garResDebito").textContent = totalDebito > 0 ? "−" + this.moneda(totalDebito) : "$0";
     document.getElementById("garResNeto").textContent = this.moneda(neto);
 
-    this.renderGarReclamos(mes, ano);
+    this.renderGarReclamos();
   },
 
   // ── RENDER PENDIENTE DE FACTURAR A VW (Reclamos - hoja de Benicio) ──
-  renderGarReclamos(mes, ano) {
-    const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const todos = this.reclamosData || [];
-    const datos = todos.filter(r => {
-      if (!r.fecha) return false;
-      const [y, m] = r.fecha.split("-").map(Number);
-      return y === ano && m === mes;
-    });
+  renderGarReclamos() {
+    const hoyISO = (() => { const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); })();
+    const todosRaw  = this.reclamosData || [];
+    const sinFecha  = todosRaw.filter(r => !r.fecha).length;
+    // Solo lotes cuya fecha de corte todavía no llegó — lo demás ya se facturó y no es "pendiente"
+    const datos = todosRaw.filter(r => r.fecha && r.fecha >= hoyISO);
     this.reclamosDataMesActual = datos; // usado por mostrarDetalleLote()
 
+    document.getElementById("garBadgeReclamos").textContent = sinFecha > 0 ? `${sinFecha} sin fecha cargada` : "";
+
     if (datos.length === 0) {
-      document.getElementById("garBadgeReclamos").textContent = "0 en " + MESES[mes];
       ["garReclamosCant","garReclamosImporte","garReclamosMO","garProxLoteBadge","garProxLoteFecha","garProxLoteCant","garProxLoteImp","garProxLoteMO"].forEach(id => {
         document.getElementById(id).textContent = "—";
       });
       document.getElementById("garTablaReclamos").innerHTML =
-        `<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin reclamos cargados en ${MESES[mes]} ${ano}</td></tr>`;
+        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>No hay lotes pendientes con fecha futura</td></tr>";
       document.getElementById("garProxLoteContrato").innerHTML =
-        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
+        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos</td></tr>";
       document.getElementById("garLoteDetalle").style.display = "none";
       return;
     }
@@ -2010,7 +2009,6 @@ const D = {
     const totalImp = this.sum(datos);
     const totalMO  = datos.reduce((a, r) => a + (r.manoObra || 0), 0);
 
-    document.getElementById("garBadgeReclamos").textContent  = `${datos.length} en ${MESES[mes]}`;
     document.getElementById("garReclamosCant").textContent   = datos.length;
     document.getElementById("garReclamosImporte").textContent= this.compacto(totalImp);
     document.getElementById("garReclamosMO").textContent     = this.compacto(totalMO);
