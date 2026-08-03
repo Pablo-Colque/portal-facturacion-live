@@ -1151,6 +1151,7 @@ const D = {
   garDetalle: [], // [{ ano, mes, orNum, importe, cargo, estado, saga, sinOrigen, lote, cmNp, estadoGestion, seguimiento }]
   ampData: [], // [{ ano, mes, orNum, prioridad, categoria, asesor, tecnico, estado, hsTaller, importe, motivoRechazo, ... }]
   reclamosData: [], // [{ orNum, fecha, tipo, campana, importe, manoObra, contrato, lote }]
+  reclamosDataMesActual: [], // subset filtrado por mes/año, usado por mostrarDetalleLote()
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -1979,22 +1980,29 @@ const D = {
     document.getElementById("garResDebito").textContent = totalDebito > 0 ? "−" + this.moneda(totalDebito) : "$0";
     document.getElementById("garResNeto").textContent = this.moneda(neto);
 
-    this.renderGarReclamos();
+    this.renderGarReclamos(mes, ano);
   },
 
   // ── RENDER PENDIENTE DE FACTURAR A VW (Reclamos - hoja de Benicio) ──
-  renderGarReclamos() {
-    const datos = this.reclamosData || [];
+  renderGarReclamos(mes, ano) {
+    const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const todos = this.reclamosData || [];
+    const datos = todos.filter(r => {
+      if (!r.fecha) return false;
+      const [y, m] = r.fecha.split("-").map(Number);
+      return y === ano && m === mes;
+    });
+    this.reclamosDataMesActual = datos; // usado por mostrarDetalleLote()
 
     if (datos.length === 0) {
-      document.getElementById("garBadgeReclamos").textContent = "—";
+      document.getElementById("garBadgeReclamos").textContent = "0 en " + MESES[mes];
       ["garReclamosCant","garReclamosImporte","garReclamosMO","garProxLoteBadge","garProxLoteFecha","garProxLoteCant","garProxLoteImp","garProxLoteMO"].forEach(id => {
         document.getElementById(id).textContent = "—";
       });
       document.getElementById("garTablaReclamos").innerHTML =
-        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos cargados</td></tr>";
+        `<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin reclamos cargados en ${MESES[mes]} ${ano}</td></tr>`;
       document.getElementById("garProxLoteContrato").innerHTML =
-        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos cargados</td></tr>";
+        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos para este período</td></tr>";
       document.getElementById("garLoteDetalle").style.display = "none";
       return;
     }
@@ -2002,7 +2010,7 @@ const D = {
     const totalImp = this.sum(datos);
     const totalMO  = datos.reduce((a, r) => a + (r.manoObra || 0), 0);
 
-    document.getElementById("garBadgeReclamos").textContent  = datos.length + " reclamos";
+    document.getElementById("garBadgeReclamos").textContent  = `${datos.length} en ${MESES[mes]}`;
     document.getElementById("garReclamosCant").textContent   = datos.length;
     document.getElementById("garReclamosImporte").textContent= this.compacto(totalImp);
     document.getElementById("garReclamosMO").textContent     = this.compacto(totalMO);
@@ -2092,7 +2100,7 @@ const D = {
   },
 
   mostrarDetalleLote(lote) {
-    const datos = (this.reclamosData || []).filter(r => (r.lote || "Sin lote asignado") === lote);
+    const datos = (this.reclamosDataMesActual || []).filter(r => (r.lote || "Sin lote asignado") === lote);
     const cont  = document.getElementById("garLoteDetalle");
     if (datos.length === 0) { cont.style.display = "none"; return; }
 
