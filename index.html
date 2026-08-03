@@ -705,6 +705,42 @@ tr:last-child td{border-bottom:0}
       <div class="gar-formula">Bruto − Débitos = Neto</div>
     </div>
 
+    <!-- Pendiente de Facturar a VW (Reclamos - hoja de Benicio) -->
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div class="card-title">💰 Pendiente de Facturar a VW — por Lote</div>
+        <div class="card-badge" id="garBadgeReclamos">—</div>
+      </div>
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="kpi-card c-main">
+          <div class="kpi-ico">📄</div>
+          <div class="kpi-val" id="garReclamosCant">—</div>
+          <div class="kpi-lbl">Reclamos pendientes</div>
+        </div>
+        <div class="kpi-card c-cli">
+          <div class="kpi-ico">💵</div>
+          <div class="kpi-val" id="garReclamosImporte">—</div>
+          <div class="kpi-lbl">$ Total (fábrica)</div>
+        </div>
+        <div class="kpi-card c-gar">
+          <div class="kpi-ico">🔧</div>
+          <div class="kpi-val" id="garReclamosMO">—</div>
+          <div class="kpi-lbl">$ Mano de obra taller (40%)</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Lote</th>
+            <th class="r">Cantidad</th>
+            <th class="r">$ Fábrica</th>
+            <th class="r">$ M.O. Taller</th>
+          </tr></thead>
+          <tbody id="garTablaReclamos"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- /panelGarantias -->
 
   <!-- ═══ PANEL PASO POR TALLER ═══ -->
@@ -1072,6 +1108,7 @@ const D = {
   orData:  [],  // [{ ano, mes, dias, orNum, cliente, servicio, importe, cargo, estado, chasis, recepcionista, suc }]
   garDetalle: [], // [{ ano, mes, orNum, importe, cargo, estado, saga, sinOrigen, lote, cmNp, estadoGestion, seguimiento }]
   ampData: [], // [{ ano, mes, orNum, prioridad, categoria, asesor, tecnico, estado, hsTaller, importe, motivoRechazo, ... }]
+  reclamosData: [], // [{ orNum, fecha, tipo, campana, importe, manoObra, contrato, lote }]
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -1176,7 +1213,8 @@ const D = {
       this.pptData    = json.ppt          || [];
       this.orData     = json.or           || [];
       this.garDetalle = json.garDetalle   || [];
-      this.ampData    = json.ampliaciones || [];
+      this.ampData    = json.ampliaciones     || [];
+      this.reclamosData = json.reclamosBenicio || [];
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -1898,6 +1936,79 @@ const D = {
     document.getElementById("garResBruto").textContent = this.moneda(bruto);
     document.getElementById("garResDebito").textContent = totalDebito > 0 ? "−" + this.moneda(totalDebito) : "$0";
     document.getElementById("garResNeto").textContent = this.moneda(neto);
+
+    this.renderGarReclamos();
+  },
+
+  // ── RENDER PENDIENTE DE FACTURAR A VW (Reclamos - hoja de Benicio) ──
+  renderGarReclamos() {
+    const datos = this.reclamosData || [];
+
+    if (datos.length === 0) {
+      document.getElementById("garBadgeReclamos").textContent = "—";
+      ["garReclamosCant","garReclamosImporte","garReclamosMO"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      document.getElementById("garTablaReclamos").innerHTML =
+        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos cargados</td></tr>";
+      return;
+    }
+
+    const totalImp = this.sum(datos);
+    const totalMO  = datos.reduce((a, r) => a + (r.manoObra || 0), 0);
+
+    document.getElementById("garBadgeReclamos").textContent  = datos.length + " reclamos";
+    document.getElementById("garReclamosCant").textContent   = datos.length;
+    document.getElementById("garReclamosImporte").textContent= this.compacto(totalImp);
+    document.getElementById("garReclamosMO").textContent     = this.compacto(totalMO);
+
+    // ── Agrupar por Lote ──
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    const parseLocalDMY = (s) => {
+      // acepta "dd/mm/yyyy" o "yyyy-mm-dd"
+      if (!s) return null;
+      let p = s.includes("/") ? s.split("/") : s.split("-");
+      if (s.includes("/")) { const [d,m,y] = p.map(Number); return new Date(y, m-1, d); }
+      const [y,m,d] = p.map(Number); return new Date(y, m-1, d);
+    };
+
+    const byLote = {};
+    datos.forEach(r => {
+      const k = r.lote || "Sin lote asignado";
+      if (!byLote[k]) byLote[k] = { cant: 0, imp: 0, mo: 0 };
+      byLote[k].cant++;
+      byLote[k].imp += r.importe  || 0;
+      byLote[k].mo  += r.manoObra || 0;
+    });
+
+    // Ordenar: fechas válidas primero (más próximas arriba), luego "CM"/"NO"/"Sin lote asignado"
+    const entradas = Object.entries(byLote);
+    entradas.sort((a, b) => {
+      const fa = parseLocalDMY(a[0]), fb = parseLocalDMY(b[0]);
+      if (fa && fb) return fa - fb;
+      if (fa && !fb) return -1;
+      if (!fa && fb) return 1;
+      return a[0].localeCompare(b[0]);
+    });
+
+    let html = "";
+    entradas.forEach(([lote, v]) => {
+      const fechaLote = parseLocalDMY(lote);
+      let colorDot = "var(--muted)";
+      let etiqueta = lote;
+      if (fechaLote) {
+        const diasRest = Math.ceil((fechaLote - hoy) / 86400000);
+        if (diasRest < 0)      colorDot = "var(--red)";
+        else if (diasRest <= 3) colorDot = "var(--red)";
+        else if (diasRest <= 7) colorDot = "var(--orange)";
+        else                    colorDot = "var(--green)";
+        etiqueta = lote + (diasRest >= 0 ? ` (${diasRest} d.)` : ` (venció hace ${-diasRest} d.)`);
+      }
+      const dot = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${colorDot};margin-right:6px"></span>`;
+      html += `<tr><td>${dot}${etiqueta}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td><td class="r">${this.moneda(v.mo)}</td></tr>`;
+    });
+    html += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${datos.length}</td><td class="r">${this.moneda(totalImp)}</td><td class="r">${this.moneda(totalMO)}</td></tr>`;
+    document.getElementById("garTablaReclamos").innerHTML = html;
   },
 
   // ── RENDER PASO POR TALLER ────────────────────────────────────
