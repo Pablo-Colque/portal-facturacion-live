@@ -705,6 +705,47 @@ tr:last-child td{border-bottom:0}
       <div class="gar-formula">Bruto − Débitos = Neto</div>
     </div>
 
+    <!-- Próximo Lote a Facturar — Proyección -->
+    <div class="card" style="margin-top:18px;border-color:var(--vw-light)">
+      <div class="card-head">
+        <div class="card-title">🎯 Próximo Lote a Facturar — Proyección</div>
+        <div class="card-badge" id="garProxLoteBadge">—</div>
+      </div>
+      <div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+        <div class="kpi-card c-main">
+          <div class="kpi-ico">📅</div>
+          <div class="kpi-val" id="garProxLoteFecha">—</div>
+          <div class="kpi-lbl">Fecha de corte</div>
+        </div>
+        <div class="kpi-card c-cli">
+          <div class="kpi-ico">📄</div>
+          <div class="kpi-val" id="garProxLoteCant">—</div>
+          <div class="kpi-lbl">OR en el lote</div>
+        </div>
+        <div class="kpi-card c-gar">
+          <div class="kpi-ico">💵</div>
+          <div class="kpi-val" id="garProxLoteImp">—</div>
+          <div class="kpi-lbl">$ Total (fábrica)</div>
+        </div>
+        <div class="kpi-card c-int">
+          <div class="kpi-ico">🔧</div>
+          <div class="kpi-val" id="garProxLoteMO">—</div>
+          <div class="kpi-lbl">$ M.O. Taller</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Tipo de Contrato</th>
+            <th class="r">Cantidad</th>
+            <th class="r">$ Fábrica</th>
+            <th class="r">$ M.O. Taller</th>
+          </tr></thead>
+          <tbody id="garProxLoteContrato"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Pendiente de Facturar a VW (Reclamos - hoja de Benicio) -->
     <div class="card" style="margin-top:18px">
       <div class="card-head">
@@ -739,6 +780,7 @@ tr:last-child td{border-bottom:0}
           <tbody id="garTablaReclamos"></tbody>
         </table>
       </div>
+      <div id="garLoteDetalle" style="display:none;margin-top:14px;border-top:1px solid var(--border);padding-top:14px"></div>
     </div>
 
   </div><!-- /panelGarantias -->
@@ -1946,11 +1988,14 @@ const D = {
 
     if (datos.length === 0) {
       document.getElementById("garBadgeReclamos").textContent = "—";
-      ["garReclamosCant","garReclamosImporte","garReclamosMO"].forEach(id => {
+      ["garReclamosCant","garReclamosImporte","garReclamosMO","garProxLoteBadge","garProxLoteFecha","garProxLoteCant","garProxLoteImp","garProxLoteMO"].forEach(id => {
         document.getElementById(id).textContent = "—";
       });
       document.getElementById("garTablaReclamos").innerHTML =
         "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos cargados</td></tr>";
+      document.getElementById("garProxLoteContrato").innerHTML =
+        "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos cargados</td></tr>";
+      document.getElementById("garLoteDetalle").style.display = "none";
       return;
     }
 
@@ -1962,12 +2007,11 @@ const D = {
     document.getElementById("garReclamosImporte").textContent= this.compacto(totalImp);
     document.getElementById("garReclamosMO").textContent     = this.compacto(totalMO);
 
-    // ── Agrupar por Lote ──
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
     const parseLocalDMY = (s) => {
-      // acepta "dd/mm/yyyy" o "yyyy-mm-dd"
       if (!s) return null;
-      let p = s.includes("/") ? s.split("/") : s.split("-");
+      const p = s.includes("/") ? s.split("/") : s.split("-");
+      if (p.length !== 3) return null;
       if (s.includes("/")) { const [d,m,y] = p.map(Number); return new Date(y, m-1, d); }
       const [y,m,d] = p.map(Number); return new Date(y, m-1, d);
     };
@@ -1981,7 +2025,6 @@ const D = {
       byLote[k].mo  += r.manoObra || 0;
     });
 
-    // Ordenar: fechas válidas primero (más próximas arriba), luego "CM"/"NO"/"Sin lote asignado"
     const entradas = Object.entries(byLote);
     entradas.sort((a, b) => {
       const fa = parseLocalDMY(a[0]), fb = parseLocalDMY(b[0]);
@@ -1991,6 +2034,41 @@ const D = {
       return a[0].localeCompare(b[0]);
     });
 
+    // ── Próximo Lote (proyección) ──
+    const conFecha = entradas.filter(([k]) => parseLocalDMY(k));
+    const futuros  = conFecha.filter(([k]) => parseLocalDMY(k) >= hoy);
+    const proxLote = futuros.length > 0 ? futuros[0] : (conFecha.length > 0 ? conFecha[conFecha.length - 1] : null);
+
+    if (proxLote) {
+      const [loteKey, loteVal] = proxLote;
+      const fechaLote = parseLocalDMY(loteKey);
+      const diasRest  = Math.ceil((fechaLote - hoy) / 86400000);
+      document.getElementById("garProxLoteBadge").textContent = diasRest >= 0 ? `en ${diasRest} días` : `venció hace ${-diasRest} días`;
+      document.getElementById("garProxLoteFecha").textContent = loteKey;
+      document.getElementById("garProxLoteCant").textContent  = loteVal.cant;
+      document.getElementById("garProxLoteImp").textContent   = this.compacto(loteVal.imp);
+      document.getElementById("garProxLoteMO").textContent    = this.compacto(loteVal.mo);
+
+      const filasProxLote = datos.filter(r => (r.lote || "Sin lote asignado") === loteKey);
+      const byContrato = {};
+      filasProxLote.forEach(r => {
+        const c = r.contrato === "C" ? "Con contrato" : r.contrato === "N" ? "Sin contrato" : "Sin dato";
+        if (!byContrato[c]) byContrato[c] = { cant: 0, imp: 0, mo: 0 };
+        byContrato[c].cant++;
+        byContrato[c].imp += r.importe  || 0;
+        byContrato[c].mo  += r.manoObra || 0;
+      });
+      let htmlContrato = "";
+      Object.entries(byContrato).sort((a,b) => b[1].cant - a[1].cant).forEach(([c, v]) => {
+        htmlContrato += `<tr><td>${c}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td><td class="r">${this.moneda(v.mo)}</td></tr>`;
+      });
+      document.getElementById("garProxLoteContrato").innerHTML = htmlContrato;
+    } else {
+      document.getElementById("garProxLoteBadge").textContent = "—";
+      document.getElementById("garProxLoteContrato").innerHTML = "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin lotes con fecha</td></tr>";
+    }
+
+    // ── Tabla general por Lote (clickeable) ──
     let html = "";
     entradas.forEach(([lote, v]) => {
       const fechaLote = parseLocalDMY(lote);
@@ -1998,17 +2076,41 @@ const D = {
       let etiqueta = lote;
       if (fechaLote) {
         const diasRest = Math.ceil((fechaLote - hoy) / 86400000);
-        if (diasRest < 0)      colorDot = "var(--red)";
-        else if (diasRest <= 3) colorDot = "var(--red)";
+        if (diasRest <= 3)      colorDot = "var(--red)";
         else if (diasRest <= 7) colorDot = "var(--orange)";
         else                    colorDot = "var(--green)";
         etiqueta = lote + (diasRest >= 0 ? ` (${diasRest} d.)` : ` (venció hace ${-diasRest} d.)`);
       }
       const dot = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${colorDot};margin-right:6px"></span>`;
-      html += `<tr><td>${dot}${etiqueta}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td><td class="r">${this.moneda(v.mo)}</td></tr>`;
+      const loteEsc = lote.replace(/'/g, "\\'");
+      html += `<tr style="cursor:pointer" onclick="D.mostrarDetalleLote('${loteEsc}')" title="Click para ver el detalle de OR de este lote"><td>${dot}${etiqueta}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.imp)}</td><td class="r">${this.moneda(v.mo)}</td></tr>`;
     });
     html += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${datos.length}</td><td class="r">${this.moneda(totalImp)}</td><td class="r">${this.moneda(totalMO)}</td></tr>`;
     document.getElementById("garTablaReclamos").innerHTML = html;
+
+    document.getElementById("garLoteDetalle").style.display = "none";
+  },
+
+  mostrarDetalleLote(lote) {
+    const datos = (this.reclamosData || []).filter(r => (r.lote || "Sin lote asignado") === lote);
+    const cont  = document.getElementById("garLoteDetalle");
+    if (datos.length === 0) { cont.style.display = "none"; return; }
+
+    let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="card-title">📋 Detalle del Lote: ${lote}</div>
+      <button class="btn-clr" onclick="document.getElementById('garLoteDetalle').style.display='none'">✕ Cerrar</button>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>OR</th><th>Tipo</th><th>Contrato</th><th class="r">$ Fábrica</th><th class="r">$ M.O. Taller</th></tr></thead>
+      <tbody>`;
+    datos.forEach(r => {
+      const c = r.contrato === "C" ? "Con contrato" : r.contrato === "N" ? "Sin contrato" : "Sin dato";
+      html += `<tr><td>${r.orNum}</td><td>${r.tipo || "—"}</td><td>${c}</td><td class="r">${this.moneda(r.importe)}</td><td class="r">${this.moneda(r.manoObra)}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    cont.innerHTML = html;
+    cont.style.display = "block";
+    cont.scrollIntoView({ behavior: "smooth", block: "nearest" });
   },
 
   // ── RENDER PASO POR TALLER ────────────────────────────────────
