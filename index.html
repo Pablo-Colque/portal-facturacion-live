@@ -2555,8 +2555,9 @@ const D = {
     const datosAll = this.ampData || [];
     const datos    = datosAll.filter(r => r.ano === ano && r.mes === mes);
 
+    const sinOR = datos.filter(r => r.sinOR).length;
     document.getElementById("ampSubtitulo").textContent = datos.length > 0
-      ? `${datos.length} ampliaciones detectadas en ${MESES[mes]} ${ano}`
+      ? `${datos.length} ampliaciones detectadas en ${MESES[mes]} ${ano}` + (sinOR > 0 ? ` — ⚠️ ${sinOR} sin N° de OR (identificadas por presupuesto)` : "")
       : `Sin ampliaciones registradas en ${MESES[mes]} ${ano}`;
 
     if (datos.length === 0) {
