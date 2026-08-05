@@ -967,6 +967,29 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Alerta: OR de alto valor pendientes -->
+    <div class="alert-dias" id="alertaOrAltoValor" style="margin-bottom:18px;display:none;border-color:rgba(227,69,87,.3);background:linear-gradient(90deg,rgba(227,69,87,.08),rgba(227,69,87,.03))">
+      <div class="icon">🔴</div>
+      <div class="txt">
+        <b style="color:var(--red)">OR de alto valor pendientes</b>
+        <p id="orAltoValorSub">Órdenes individuales que concentran un importe alto — no se pierden dentro de un promedio o total</p>
+      </div>
+    </div>
+    <div class="card" id="cardOrAltoValor" style="margin-bottom:18px;display:none">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>OR</th>
+            <th>Cliente / Servicio</th>
+            <th>Recepcionista</th>
+            <th class="r">Días hábiles</th>
+            <th class="r">Importe</th>
+          </tr></thead>
+          <tbody id="orTablaAltoValor"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Gráficos -->
     <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
       <div class="card">
@@ -2384,6 +2407,8 @@ const D = {
       ["chartOrAntiguedad","chartOrRecepcionista"].forEach(id => {
         if (this.graficos[id]) { try { this.graficos[id].destroy(); } catch(e){} delete this.graficos[id]; }
       });
+      document.getElementById("alertaOrAltoValor").style.display = "none";
+      document.getElementById("cardOrAltoValor").style.display = "none";
       return;
     }
 
@@ -2410,6 +2435,27 @@ const D = {
     document.getElementById("orAnt30").textContent = datos.filter(r => r.diasHab > 30 && r.diasHab <= 60).length;
     document.getElementById("orAnt60").textContent = datos.filter(r => r.diasHab > 60 && r.diasHab <= 90).length;
     document.getElementById("orAnt90").textContent = datos.filter(r => r.diasHab > 90).length;
+
+    // ── Alerta: OR de alto valor pendientes (para que no se pierdan dentro de un total/promedio) ──
+    const UMBRAL_ALTO_VALOR = 3000000; // $3M — ajustable según lo que Jorge considere "alto valor"
+    const altoValor = datos.filter(r => (r.importe || 0) >= UMBRAL_ALTO_VALOR).sort((a, b) => b.importe - a.importe);
+    if (altoValor.length > 0) {
+      document.getElementById("alertaOrAltoValor").style.display = "flex";
+      document.getElementById("cardOrAltoValor").style.display = "block";
+      document.getElementById("orAltoValorSub").textContent =
+        `${altoValor.length} OR con importe individual ≥ ${this.compacto(UMBRAL_ALTO_VALOR)} — total: ${this.compacto(this.sum(altoValor))}`;
+      document.getElementById("orTablaAltoValor").innerHTML = altoValor.map(r => `
+        <tr>
+          <td>${r.orNum}</td>
+          <td>${r.cliente || r.servicio || "—"}</td>
+          <td>${r.recepcionista || "Sin asignar"}</td>
+          <td class="r" style="color:${r.diasHab > 60 ? "var(--red)" : r.diasHab > 30 ? "var(--orange)" : "var(--green)"}">${r.diasHab}</td>
+          <td class="r" style="font-weight:800">${this.moneda(r.importe)}</td>
+        </tr>`).join("");
+    } else {
+      document.getElementById("alertaOrAltoValor").style.display = "none";
+      document.getElementById("cardOrAltoValor").style.display = "none";
+    }
 
     // ── Gráfico: concentración por antigüedad (donut) ──
     if (this.graficos.chartOrAntiguedad) { try { this.graficos.chartOrAntiguedad.destroy(); } catch(e){} }
@@ -2472,6 +2518,22 @@ const D = {
       htmlProm += `<tr><td>${v.nombre}</td><td>${v.estado}</td><td class="r">${v.cant}</td><td class="r" style="color:${color};font-weight:800">${prom.toFixed(1)}</td></tr>`;
     });
     document.getElementById("orBadgeProm").textContent = respOrd.length + " responsables";
+
+    // ── Semáforo en el badge de tiempo promedio: alerta visual si el promedio general es alto ──
+    const promGeneral = datos.length > 0 ? datos.reduce((a, r) => a + r.diasHab, 0) / datos.length : 0;
+    const badgeProm = document.getElementById("orBadgeProm");
+    if (promGeneral > 30) {
+      const color = promGeneral > 45 ? "var(--red)" : "var(--orange)";
+      badgeProm.innerHTML = `⚠️ Promedio ${promGeneral.toFixed(0)} días hábiles`;
+      badgeProm.style.color = color;
+      badgeProm.style.borderColor = color;
+      badgeProm.style.background = "transparent";
+    } else {
+      badgeProm.textContent = respOrd.length + " responsables";
+      badgeProm.style.color = "";
+      badgeProm.style.borderColor = "";
+      badgeProm.style.background = "";
+    }
     document.getElementById("orTablaPromedio").innerHTML = htmlProm || "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin datos</td></tr>";
 
     // ── Tabla: Pendiente de Facturación (Cargo != Garantía, Estado = Pendiente Factura) ──
