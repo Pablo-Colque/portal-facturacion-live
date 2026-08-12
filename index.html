@@ -532,7 +532,7 @@ tr:last-child td{border-bottom:0}
     </select>
     <div class="fsep"></div>
     <label>SUCURSAL</label>
-    <select id="fSuc" onchange="D.aplicar()">
+    <select id="fSuc" onchange="D.actualizarAsesoresPorSuc();D.aplicar()">
       <option value="todas">Todas</option>
     </select>
     <label>ASESOR</label>
@@ -1437,6 +1437,7 @@ const D = {
       this.ampData    = json.ampliaciones     || [];
       this.reclamosData = json.reclamosBenicio || [];
       this.cmData = json.contratosMantenimiento || { porVendedorMes: [], meses: [], totalGeneral: 0 };
+      this.objetivosPorSuc = json.objetivosPorSuc || {};
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -1530,19 +1531,32 @@ const D = {
 
   // ── DROPDOWNS DINÁMICOS ───────────────────────────────────────
   poblarDropdowns(asesores, sucursales) {
+    this.asesoresAll = asesores || [];
     // Sucursales
     const selSuc = document.getElementById("fSuc");
     selSuc.innerHTML = '<option value="todas">Todas</option>';
     sucursales.sort().forEach(s => {
       selSuc.innerHTML += `<option value="${s}">${s}</option>`;
     });
+    this.actualizarAsesoresPorSuc();
+  },
 
-    // Asesores
+  // Repuebla el select de Asesor según la sucursal elegida (solo los asesores de esa sucursal)
+  actualizarAsesoresPorSuc() {
+    const suc = document.getElementById("fSuc").value;
+    const asesorActual = document.getElementById("fAsesor").value;
+    const lista = (this.asesoresAll || []).filter(a => suc === "todas" || a.suc === suc);
     const selAs = document.getElementById("fAsesor");
     selAs.innerHTML = '<option value="todos">Todos</option>';
-    asesores.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(a => {
+    lista.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(a => {
       selAs.innerHTML += `<option value="${a.nombre}">${a.nombre}</option>`;
     });
+    // Si el asesor que estaba elegido ya no pertenece a esta sucursal, resetear a "todos"
+    if (asesorActual !== "todos" && !lista.some(a => a.nombre === asesorActual)) {
+      selAs.value = "todos";
+    } else {
+      selAs.value = asesorActual;
+    }
   },
 
   // ── FILTROS LOCALES ───────────────────────────────────────────
@@ -1605,7 +1619,8 @@ const D = {
   totales(arr, mes, ano) {
     const total     = arr.reduce((s,r) => s + r.importe, 0);
     const cd        = this.calcDias(mes, ano);
-    const objetivo  = (this.OBJETIVOS[ano] || this.OBJETIVOS[2026])[mes] || 92700000;
+    const sucSel    = document.getElementById("fSuc").value;
+    const objetivo  = this.objetivoDe(sucSel, mes, ano) || 92700000;
     const diasHabT  = cd.diasHabTrans || 1;
     const ritmo     = total / diasHabT;
     const proyeccion= ritmo * cd.diasHabMes;
@@ -1802,18 +1817,20 @@ const D = {
 
   // ── SUCURSAL JUJUY ───────────────────────────────────────────
   renderSucursal(mes, ano) {
-    const arr     = this.raw.filter(r => r.mes===mes && r.ano===ano && r.suc==="Jujuy");
-    const obj     = (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[mes] || 0;
+    const sucSel  = document.getElementById("fSuc").value;
+    const suc     = (sucSel && sucSel !== "todas") ? sucSel : "Jujuy";
+    const arr     = this.raw.filter(r => r.mes===mes && r.ano===ano && r.suc===suc);
+    const obj     = this.objetivoDe(suc, mes, ano);
     const total   = arr.reduce((s,r) => s+r.importe, 0);
     const ors     = arr.length;
     const ticket  = ors ? Math.round(total/ors) : 0;
     const cumpl   = obj ? total/obj*100 : 0;
-    const arrAnt  = this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1) && r.suc==="Jujuy");
+    const arrAnt  = this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1) && r.suc===suc);
     const tickAnt = arrAnt.length ? Math.round(arrAnt.reduce((s,r)=>s+r.importe,0)/arrAnt.length) : 0;
     const dif = ticket - tickAnt;
     document.getElementById("sucJujuy").innerHTML = `
       <div class="suc-header">
-        <div class="suc-name">🏢 Jujuy</div>
+        <div class="suc-name">🏢 ${suc}</div>
         <div class="suc-badge">${cumpl.toFixed(1)}% del objetivo</div>
       </div>
       <div class="suc-kpis" style="grid-template-columns:repeat(3,1fr)">
@@ -1829,10 +1846,12 @@ const D = {
 
   // ── INTERANUAL ───────────────────────────────────────────────
   renderInteranual(mes, ano) {
+    const sucSel = document.getElementById("fSuc").value;
+    const suc    = (sucSel && sucSel !== "todas") ? sucSel : "Jujuy";
     const totalesPorMes = (anoConsulta) => {
       const arr = new Array(13).fill(0); // índice 1-12
       for (let m = 1; m <= 12; m++) {
-        arr[m] = this.raw.filter(r => r.mes === m && r.ano === anoConsulta && r.suc === "Jujuy").reduce((s, r) => s + r.importe, 0);
+        arr[m] = this.raw.filter(r => r.mes === m && r.ano === anoConsulta && r.suc === suc).reduce((s, r) => s + r.importe, 0);
       }
       return arr;
     };
@@ -2000,10 +2019,12 @@ const D = {
       options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
 
     // Objetivo vs Facturado año completo — con datos reales de TODOS los meses
+    const sucSelObj = document.getElementById("fSuc").value;
+    const sucObj    = (sucSelObj && sucSelObj !== "todas") ? sucSelObj : "Jujuy";
     const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
     const mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]);
-    const realesAno = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0));
-    const objsAno   = mesesAno.map(m => (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m] || 0);
+    const realesAno = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc===sucObj).reduce((s,r)=>s+r.importe,0));
+    const objsAno   = mesesAno.map(m => this.objetivoDe(sucObj, m, ano));
     this.graficos.o = new Chart(document.getElementById("chartObj"),{type:"bar",
       data:{labels:mesesLabels,datasets:[
         {label:"Objetivo",data:objsAno,backgroundColor:"rgba(77,159,255,.12)",borderColor:"rgba(77,159,255,.5)",borderWidth:1.5,borderRadius:4,borderSkipped:false},
@@ -2054,12 +2075,14 @@ const D = {
 
   // ── HISTÓRICO ─────────────────────────────────────────────────
   renderHistorico(ano) {
+    const sucSel = document.getElementById("fSuc").value;
+    const suc    = (sucSel && sucSel !== "todas") ? sucSel : "Jujuy";
     const hoy = new Date();
     const mesCierre = ano < hoy.getFullYear() ? 12 : hoy.getMonth()+1;
     let cumplidos = 0;
     document.getElementById("histGrid").innerHTML = [1,2,3,4,5,6,7,8,9,10,11,12].map(m => {
-      const real = this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0);
-      const obj  = (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m] || 0;
+      const real = this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc===suc).reduce((s,r)=>s+r.importe,0);
+      const obj  = this.objetivoDe(suc, m, ano);
       const pct  = obj ? real/obj*100 : 0;
       if (m > mesCierre) {
         return `<div class="hist-mes fut"><div class="hm">${this.MESES_CORTO[m]}</div><div class="hv">—</div><div class="hp">pendiente</div></div>`;
@@ -2840,6 +2863,31 @@ const D = {
   moneda(v){ return(+v||0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); },
   compacto(v){ v=+v||0; if(v>=1000000)return"$"+(v/1000000).toFixed(1)+"M"; if(v>=1000)return"$"+(v/1000).toFixed(0)+"K"; return"$"+Math.round(v).toLocaleString("es-AR"); },
   pct(v){ return(+v||0).toFixed(1)+"%"; },
+
+  // Objetivo mensual para una sucursal puntual. Si la tabla tiene categorías
+  // (Repuestos/Servicios/Accesorios) las suma para dar el objetivo total —
+  // así el resumen general sigue funcionando igual mientras el detalle por
+  // categoría queda disponible para cuando se arme el módulo de Repuestos.
+  objetivoDe(suc, mes, ano, categoria) {
+    const s = (suc && suc !== "todas") ? suc : "Jujuy";
+    const tabla = this.objetivosPorSuc && this.objetivosPorSuc[s];
+    if (tabla) {
+      const esPorCategoria = tabla.Repuestos || tabla.Servicios || tabla.Accesorios;
+      if (esPorCategoria) {
+        if (categoria) return (tabla[categoria] && tabla[categoria][mes]) || 0;
+        // Sin categoría puntual: sumar las 3 para el objetivo total
+        let suma = 0;
+        ["Repuestos", "Servicios", "Accesorios"].forEach(c => {
+          if (tabla[c] && tabla[c][mes]) suma += tabla[c][mes];
+        });
+        if (suma > 0) return suma;
+      } else if (tabla[mes]) {
+        return tabla[mes]; // formato viejo: un solo objetivo por mes
+      }
+    }
+    if (s === "Jujuy") return (this.OBJETIVOS[ano] || this.OBJETIVOS[2026])[mes] || 0;
+    return 0; // sin objetivo cargado para esa sucursal/mes todavía
+  },
 
   // ── CONTRATOS DE MANTENIMIENTO ──────────────────────────────────
   renderCM() {
