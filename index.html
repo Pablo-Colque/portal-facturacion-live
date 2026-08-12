@@ -2172,7 +2172,7 @@ const D = {
       const diaAnterior = idx === 0 ? 0 : MESES_CORTE[idx - 1];
       const arrLote = arrGar.filter(r => r.dia > diaAnterior && r.dia <= dia);
       const montoLote = arrLote.reduce((s,r) => s + r.importe, 0);
-      const moLote    = arrLote.reduce((s,r) => s + (mapaMOporOR[r.or] !== undefined ? mapaMOporOR[r.or] : r.importe * 0.4), 0);
+      const moLote    = arrLote.reduce((s,r) => s + (r.mo > 0 ? r.mo : (mapaMOporOR[r.or] !== undefined ? mapaMOporOR[r.or] : r.importe * 0.4)), 0);
 
       // Débito de este lote
       const debLote = debs.find(d => d.lote === loteNum);
