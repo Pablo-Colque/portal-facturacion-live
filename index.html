@@ -51,6 +51,7 @@
 [data-modulo="taller"]{--accent:var(--orange)}
 [data-modulo="or"]{--accent:var(--green)}
 [data-modulo="amp"]{--accent:var(--teal)}
+[data-modulo="cm"]{--accent:var(--cyan)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"tnum" 1,"cv11" 1}
@@ -483,11 +484,13 @@ tr:last-child td{border-bottom:0}
     <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
     <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span></button>
     <button onclick="D.navTo('amp',this)"><span class="ico">🔧</span><span class="lbl">Ampliaciones</span></button>
+    <button onclick="D.navTo('cm',this)"><span class="ico">📝</span><span class="lbl">Contratos de Mant.</span></button>
     <div class="nav-sec">Próximamente</div>
-    <button class="locked" disabled><span class="ico">🛡️</span><span class="lbl">Garantías · RMST</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">📈</span><span class="lbl">Productividad</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🎯</span><span class="lbl">KPI Gerenciales</span><span class="cnt">pronto</span></button>
     <button class="locked" disabled><span class="ico">🔩</span><span class="lbl">Repuestos</span><span class="cnt">pronto</span></button>
+    <button class="locked" disabled><span class="ico">🅿️</span><span class="lbl">Unidades Paradas</span><span class="cnt">pronto</span></button>
+    <button class="locked" disabled><span class="ico">📑</span><span class="lbl">Cuenta Resultado</span><span class="cnt">pronto</span></button>
   </nav>
   <div class="sidefoot">
     <span class="live-dot"></span><b>En vivo</b> · Google Sheets<br>
@@ -592,8 +595,11 @@ tr:last-child td{border-bottom:0}
 
     <!-- INTELIGENCIA GERENCIAL -->
     <div class="intel" id="intelPanel">
-      <div class="intel-head">🧠 Acciones Prioritarias — Inteligencia Gerencial</div>
-      <div class="intel-items" id="intelItems"></div>
+      <div class="intel-head" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="D.toggleIntel()">
+        <span>🧠 Acciones Prioritarias — Inteligencia Gerencial</span>
+        <button class="btn-clr" id="btnToggleIntel" style="margin-left:0" onclick="event.stopPropagation();D.toggleIntel()">Ver detalle ▾</button>
+      </div>
+      <div class="intel-items" id="intelItems" style="display:none"></div>
     </div>
 
     <!-- ALERTA DÍAS -->
@@ -607,10 +613,10 @@ tr:last-child td{border-bottom:0}
     <!-- COMPARATIVA INTERANUAL -->
     <div class="card">
       <div class="card-head">
-        <div class="card-title">📅 Comparativa Interanual — Mismo Mes</div>
+        <div class="card-title">📅 Comparativa Interanual — Todos los meses</div>
         <div class="card-badge" id="badgeInteranual">—</div>
       </div>
-      <div id="interanualRow"></div>
+      <div class="chart-wrap" style="height:260px"><canvas id="chartInteranual"></canvas></div>
     </div>
 
     <!-- KPIs CONSOLIDADOS -->
@@ -654,18 +660,10 @@ tr:last-child td{border-bottom:0}
     </div>
 
     <!-- CHARTS ROW 3 -->
-    <div class="charts-row3">
+    <div class="charts-row3" style="grid-template-columns:1fr">
       <div class="card">
         <div class="card-head"><div class="card-title">Tendencia Semanal</div></div>
         <div class="chart-wrap" style="height:140px"><canvas id="chartSemanal"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">Concentración · Riesgo Operativo</div>
-          <div id="riesgoBadge"></div>
-        </div>
-        <div id="concBarWrap"></div>
-        <div id="concLegend" class="conc-legend"></div>
       </div>
     </div>
 
@@ -928,6 +926,24 @@ tr:last-child td{border-bottom:0}
       <div class="h-sub" id="orSubtitulo">Cargando datos…</div>
     </div>
 
+    <!-- Tabla: OR Pendiente de Facturación (arriba de todo — lo primero que necesita ver un gerente) -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">💰 OR Pendiente de Facturación (por Recepcionista)</div>
+        <div class="card-badge" id="orBadgePend">—</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Recepcionista</th>
+            <th class="r">Cantidad OR</th>
+            <th class="r">Importe</th>
+          </tr></thead>
+          <tbody id="orTablaPendiente"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- KPIs principales -->
     <div class="kpis" id="orKpis" style="margin-bottom:20px">
       <div class="kpi-card c-main">
@@ -980,7 +996,7 @@ tr:last-child td{border-bottom:0}
         <table>
           <thead><tr>
             <th>OR</th>
-            <th>Cliente / Servicio</th>
+            <th>Servicio</th>
             <th>Recepcionista</th>
             <th class="r">Días hábiles</th>
             <th class="r">Importe</th>
@@ -1017,24 +1033,6 @@ tr:last-child td{border-bottom:0}
             <th class="r">Promedio días hábiles</th>
           </tr></thead>
           <tbody id="orTablaPromedio"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Tabla: OR Pendiente de Facturación -->
-    <div class="card" style="margin-bottom:18px">
-      <div class="card-head">
-        <div class="card-title">OR Pendiente de Facturación (por Recepcionista)</div>
-        <div class="card-badge" id="orBadgePend">—</div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Recepcionista</th>
-            <th class="r">Cantidad OR</th>
-            <th class="r">Importe</th>
-          </tr></thead>
-          <tbody id="orTablaPendiente"></tbody>
         </table>
       </div>
     </div>
@@ -1195,6 +1193,65 @@ tr:last-child td{border-bottom:0}
 
   </div><!-- /panelAmp -->
 
+  <!-- ═══════════ CONTRATOS DE MANTENIMIENTO ═══════════ -->
+  <div class="content" id="panelCM" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">📝 Contratos de Mantenimiento</div>
+      <div class="h-sub" id="cmSubtitulo">Cargando datos…</div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpis" id="cmKpis" style="margin-bottom:20px">
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">📝</div>
+        <div class="kpi-val" id="cmTotal">—</div>
+        <div class="kpi-lbl">Contratos vendidos (total)</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">🏆</div>
+        <div class="kpi-val" id="cmTopVendedor">—</div>
+        <div class="kpi-lbl">Vendedor líder</div>
+      </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">📊</div>
+        <div class="kpi-val" id="cmPromedioMes">—</div>
+        <div class="kpi-lbl">Promedio mensual</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">📅</div>
+        <div class="kpi-val" id="cmMesActual">—</div>
+        <div class="kpi-lbl" id="cmMesActualLbl">Este mes</div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Evolución mensual</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartCMMes"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Participación por vendedor</div></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chartCMVendedor"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tabla: por vendedor y mes -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Detalle por Vendedor</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr id="cmTablaHead"></tr></thead>
+          <tbody id="cmTablaVendedor"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /panelCM -->
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -1267,6 +1324,7 @@ const D = {
   ampData: [], // [{ ano, mes, orNum, prioridad, categoria, asesor, tecnico, estado, hsTaller, importe, motivoRechazo, ... }]
   reclamosData: [], // [{ orNum, fecha, tipo, campana, importe, manoObra, contrato, lote }]
   reclamosDataMesActual: [], // subset filtrado por mes/año, usado por mostrarDetalleLote()
+  cmData: { porVendedorMes: [], meses: [], totalGeneral: 0 }, // Contratos de Mantenimiento — libro CM Autosol
 
   FERIADOS: [
     "2024-01-01","2024-02-12","2024-02-13","2024-03-24","2024-04-01","2024-04-02",
@@ -1296,21 +1354,22 @@ const D = {
   // ── NAVEGACIÓN ────────────────────────────────────────────────
   navTo(vista, btn) {
     this.vistaActual = vista;
-    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : "facturacion");
+    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : "facturacion");
     document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR)");
+    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM)");
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
     const panelOR     = document.getElementById("panelOR");
     const panelAmp    = document.getElementById("panelAmp");
+    const panelCM     = document.getElementById("panelCM");
     const filtersBar  = document.getElementById("filtersBar");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
-    [panelFac, panelGar, panelTaller, panelOR, panelAmp].forEach(p => { if (p) p.style.display = "none"; });
-    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Ampliaciones — son foto/serie histórica propia
-    if (filtersBar) filtersBar.style.display = (vista === "or") ? "none" : "flex";
+    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM].forEach(p => { if (p) p.style.display = "none"; });
+    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas, Ampliaciones ni Contratos de Mant. — son foto/serie histórica propia
+    if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "cm") ? "none" : "flex";
     if (vista === "garantias") {
       panelGar.style.display = "flex";
       this.renderGarantias(mes, ano);
@@ -1323,6 +1382,9 @@ const D = {
     } else if (vista === "amp") {
       panelAmp.style.display = "flex";
       this.renderAmp(mes, ano);
+    } else if (vista === "cm") {
+      panelCM.style.display = "flex";
+      this.renderCM();
     } else {
       panelFac.style.display = "flex";
     }
@@ -1374,6 +1436,7 @@ const D = {
       this.garDetalle = json.garDetalle   || [];
       this.ampData    = json.ampliaciones     || [];
       this.reclamosData = json.reclamosBenicio || [];
+      this.cmData = json.contratosMantenimiento || { porVendedorMes: [], meses: [], totalGeneral: 0 };
 
       // Sobreescribir objetivos 2026 con los de Portal_Config
       if (json.objetivos && Object.keys(json.objetivos).length > 0) {
@@ -1442,6 +1505,14 @@ const D = {
     this.aplicarTema(nuevo, true);
   },
 
+  toggleIntel() {
+    const items = document.getElementById("intelItems");
+    const btn   = document.getElementById("btnToggleIntel");
+    const abierto = items.style.display !== "none";
+    items.style.display = abierto ? "none" : "flex";
+    btn.textContent = abierto ? "Ver detalle ▾" : "Ocultar ▴";
+  },
+
   // ── LOGIN ──────────────────────────────────────────────────────
   login() {
     const CLAVE = "1122334455";
@@ -1501,6 +1572,7 @@ const D = {
     if (this.vistaActual === "taller")    this.renderTaller(mes, ano);
     if (this.vistaActual === "or")        this.renderOR();
     if (this.vistaActual === "amp")       this.renderAmp(mes, ano);
+    if (this.vistaActual === "cm")        this.renderCM();
   },
 
   limpiar() {
@@ -1524,7 +1596,6 @@ const D = {
     this.renderKPIs(t, mes, ano);
     this.renderSemaforo(mes, ano, t);
     this.renderGraficos(mes, ano, t);
-    this.renderConcentracion();
     this.renderHistorico(ano);
     this.renderRanking(t, mes, ano);
     document.getElementById("badgeTotal").textContent = "Total: " + this.moneda(t.total);
@@ -1745,8 +1816,7 @@ const D = {
         <div class="suc-name">🏢 Jujuy</div>
         <div class="suc-badge">${cumpl.toFixed(1)}% del objetivo</div>
       </div>
-      <div class="suc-kpis">
-        <div class="suc-kpi"><div class="l">Facturación</div><div class="v">${this.compacto(total)}</div><div class="s">${this.moneda(total)}</div></div>
+      <div class="suc-kpis" style="grid-template-columns:repeat(3,1fr)">
         <div class="suc-kpi"><div class="l">OR</div><div class="v">${ors}</div><div class="s">órdenes facturadas</div></div>
         <div class="suc-kpi"><div class="l">Ticket Promedio</div><div class="v">${this.compacto(ticket)}</div><div class="s" style="color:${dif>=0?"var(--green)":"var(--red)"}">${dif>=0?"↑":"↓"} vs mes ant.</div></div>
         <div class="suc-kpi"><div class="l">Objetivo</div><div class="v">${this.compacto(obj)}</div><div class="s">meta mensual</div></div>
@@ -1759,30 +1829,45 @@ const D = {
 
   // ── INTERANUAL ───────────────────────────────────────────────
   renderInteranual(mes, ano) {
-    document.getElementById("badgeInteranual").textContent = `${this.MESES[mes]} ${ano-1} vs ${ano}`;
-    const prev = this.raw.filter(r=>r.mes===mes&&r.ano===ano-1&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0);
-    const curr = this.raw.filter(r=>r.mes===mes&&r.ano===ano  &&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0);
-    const maxV = Math.max(prev, curr, 1);
-    const vari = prev > 0 ? (curr-prev)/prev*100 : 0;
-    document.getElementById("interanualRow").innerHTML = `
-      <div class="interanual-card">
-        <div class="interanual-head">
-          <div class="interanual-title">Jujuy · ${this.MESES[mes]}</div>
-          <span class="var-badge ${vari>=0?"var-up":"var-down"}">${vari>=0?"+":""}${vari.toFixed(1)}% vs año ant.</span>
-        </div>
-        <div class="interanual-years">
-          <div class="year-row">
-            <div class="year-lbl">${ano-1}</div>
-            <div class="year-bar-wrap"><div class="year-bar" style="width:${(prev/maxV*100).toFixed(1)}%;background:linear-gradient(90deg,#0040c8,#4d9fff)">${this.compacto(prev)}</div></div>
-            <div class="year-val">${this.moneda(prev)}</div>
-          </div>
-          <div class="year-row">
-            <div class="year-lbl">${ano}</div>
-            <div class="year-bar-wrap"><div class="year-bar" style="width:${(curr/maxV*100).toFixed(1)}%;background:linear-gradient(90deg,#0040c8aa,#4d9fff)">${this.compacto(curr)}</div></div>
-            <div class="year-val">${this.moneda(curr)}</div>
-          </div>
-        </div>
-      </div>`;
+    const totalesPorMes = (anoConsulta) => {
+      const arr = new Array(13).fill(0); // índice 1-12
+      for (let m = 1; m <= 12; m++) {
+        arr[m] = this.raw.filter(r => r.mes === m && r.ano === anoConsulta && r.suc === "Jujuy").reduce((s, r) => s + r.importe, 0);
+      }
+      return arr;
+    };
+    const prevTotales = totalesPorMes(ano - 1);
+    const currTotales = totalesPorMes(ano);
+
+    const totalPrev = prevTotales.reduce((a, b) => a + b, 0);
+    const totalCurr = currTotales.reduce((a, b) => a + b, 0);
+    const variTotal = totalPrev > 0 ? (totalCurr - totalPrev) / totalPrev * 100 : 0;
+
+    document.getElementById("badgeInteranual").textContent = `${ano - 1} vs ${ano} · ${variTotal>=0?"+":""}${variTotal.toFixed(1)}% total`;
+
+    if (this.graficos.chartInteranual) { try { this.graficos.chartInteranual.destroy(); } catch(e){} }
+    this.graficos.chartInteranual = new Chart(document.getElementById("chartInteranual"), {
+      type: "bar",
+      data: {
+        labels: this.MESES.slice(1).map(m => m.slice(0, 3)),
+        datasets: [
+          { label: String(ano - 1), data: prevTotales.slice(1), backgroundColor: "#4d9fff55", borderColor: "#4d9fff", borderWidth: 1.5, borderRadius: 4 },
+          { label: String(ano),     data: currTotales.slice(1), backgroundColor: "#0040c8", borderColor: "#0040c8", borderWidth: 1.5, borderRadius: 4 },
+        ],
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+            callbacks:{label:ctx=>` ${ctx.dataset.label}: ${this.moneda(ctx.raw)}`}},
+        },
+        scales:{
+          x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+          y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+        },
+      },
+    });
   },
 
   // ── KPIs ─────────────────────────────────────────────────────
@@ -2038,6 +2123,10 @@ const D = {
 
     // Facturación bruta del mes (tipo Garantía)
     const arrGar = this.raw.filter(r => r.mes === mes && r.ano === ano && r.tipo === "Garantía");
+
+    // Mapa OR -> Mano de Obra real, tomado de "RECLAMOS" (lo carga Benicio, columna I = 40% del importe)
+    const mapaMOporOR = {};
+    (this.reclamosData || []).forEach(r => { if (r.orNum) mapaMOporOR[r.orNum] = r.manoObra; });
     const bruto  = arrGar.reduce((s,r) => s + r.importe, 0);
 
     // Débitos del mes
@@ -2083,6 +2172,7 @@ const D = {
       const diaAnterior = idx === 0 ? 0 : MESES_CORTE[idx - 1];
       const arrLote = arrGar.filter(r => r.dia > diaAnterior && r.dia <= dia);
       const montoLote = arrLote.reduce((s,r) => s + r.importe, 0);
+      const moLote    = arrLote.reduce((s,r) => s + (mapaMOporOR[r.or] !== undefined ? mapaMOporOR[r.or] : r.importe * 0.4), 0);
 
       // Débito de este lote
       const debLote = debs.find(d => d.lote === loteNum);
@@ -2113,6 +2203,7 @@ const D = {
         <div class="gar-lote-estado ${estadoCls}">${estadoLabel}</div>
         <div class="gar-lote-monto">${montoLote > 0 ? this.compacto(montoLote) : "—"}</div>
         <div style="font-size:9px;color:var(--muted)">${montoLote > 0 ? this.moneda(montoLote) : (pasado ? "Sin OR en período" : "")}</div>
+        ${moLote > 0 ? `<div style="font-size:9px;color:var(--muted);margin-top:2px">🔧 M.O.: <b style="color:var(--txt)">${this.compacto(moLote)}</b></div>` : ""}
         ${debMonto > 0 ? `<div class="gar-lote-debito">🔻 Débito: ${this.compacto(debMonto)}</div>` : ""}
         ${diasInfo}
       </div>`;
@@ -2447,7 +2538,7 @@ const D = {
       document.getElementById("orTablaAltoValor").innerHTML = altoValor.map(r => `
         <tr>
           <td>${r.orNum}</td>
-          <td>${r.cliente || r.servicio || "—"}</td>
+          <td>${r.servicio || "—"}</td>
           <td>${r.recepcionista || "Sin asignar"}</td>
           <td class="r" style="color:${r.diasHab > 60 ? "var(--red)" : r.diasHab > 30 ? "var(--orange)" : "var(--green)"}">${r.diasHab}</td>
           <td class="r" style="font-weight:800">${this.moneda(r.importe)}</td>
@@ -2749,6 +2840,82 @@ const D = {
   moneda(v){ return(+v||0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}); },
   compacto(v){ v=+v||0; if(v>=1000000)return"$"+(v/1000000).toFixed(1)+"M"; if(v>=1000)return"$"+(v/1000).toFixed(0)+"K"; return"$"+Math.round(v).toLocaleString("es-AR"); },
   pct(v){ return(+v||0).toFixed(1)+"%"; },
+
+  // ── CONTRATOS DE MANTENIMIENTO ──────────────────────────────────
+  renderCM() {
+    const data = this.cmData || { porVendedorMes: [], meses: [], totalGeneral: 0 };
+    const { porVendedorMes, meses, totalGeneral } = data;
+
+    if (!porVendedorMes || porVendedorMes.length === 0) {
+      document.getElementById("cmSubtitulo").textContent = "Sin datos disponibles todavía";
+      ["cmTotal","cmTopVendedor","cmPromedioMes","cmMesActual"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      document.getElementById("cmTablaVendedor").innerHTML = "<tr><td style='text-align:center;color:var(--muted)'>Sin datos para mostrar</td></tr>";
+      return;
+    }
+
+    document.getElementById("cmSubtitulo").textContent = `${totalGeneral} contratos vendidos desde ${meses[0] || "—"}`;
+
+    // ── KPIs ──
+    document.getElementById("cmTotal").textContent = totalGeneral;
+    const topVendedor = [...porVendedorMes].sort((a,b) => b.total - a.total)[0];
+    document.getElementById("cmTopVendedor").textContent = topVendedor ? topVendedor.vendedor : "—";
+    const mesesConDato = meses.filter(m => porVendedorMes.some(v => v.porMes[m] > 0));
+    const promedioMes = mesesConDato.length > 0 ? totalGeneral / mesesConDato.length : 0;
+    document.getElementById("cmPromedioMes").textContent = promedioMes.toFixed(1);
+    const ultimoMes = meses[meses.length - 1] || "—";
+    const totalUltimoMes = porVendedorMes.reduce((s, v) => s + (v.porMes[ultimoMes] || 0), 0);
+    document.getElementById("cmMesActual").textContent = totalUltimoMes;
+    document.getElementById("cmMesActualLbl").textContent = ultimoMes;
+
+    // ── Gráfico: evolución mensual (barras, total de todos los vendedores por mes) ──
+    if (this.graficos.chartCMMes) { try { this.graficos.chartCMMes.destroy(); } catch(e){} }
+    const totalesPorMes = meses.map(m => porVendedorMes.reduce((s, v) => s + (v.porMes[m] || 0), 0));
+    this.graficos.chartCMMes = new Chart(document.getElementById("chartCMMes"), {
+      type: "bar",
+      data: { labels: meses, datasets: [{ label: "Contratos", data: totalesPorMes, backgroundColor: "#1fb8d4", borderRadius: 4 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
+        scales:{
+          x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+          y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},precision:0}},
+        },
+      },
+    });
+
+    // ── Gráfico: participación por vendedor (donut) ──
+    if (this.graficos.chartCMVendedor) { try { this.graficos.chartCMVendedor.destroy(); } catch(e){} }
+    const vendOrd = [...porVendedorMes].sort((a,b) => b.total - a.total);
+    this.graficos.chartCMVendedor = new Chart(document.getElementById("chartCMVendedor"), {
+      type: "doughnut",
+      data: { labels: vendOrd.map(v=>v.vendedor), datasets: [{ data: vendOrd.map(v=>v.total), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false, cutout:"60%",
+        plugins:{
+          legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+        },
+      },
+    });
+
+    // ── Tabla: por vendedor y mes ──
+    let theadHtml = "<th>Vendedor</th>";
+    meses.forEach(m => { theadHtml += `<th class="r">${m}</th>`; });
+    theadHtml += `<th class="r">Total</th>`;
+    document.getElementById("cmTablaHead").innerHTML = theadHtml;
+
+    let tbodyHtml = "";
+    vendOrd.forEach(v => {
+      tbodyHtml += `<tr><td>${v.vendedor}</td>`;
+      meses.forEach(m => { tbodyHtml += `<td class="r">${v.porMes[m] || 0}</td>`; });
+      tbodyHtml += `<td class="r" style="font-weight:700">${v.total}</td></tr>`;
+    });
+    document.getElementById("cmTablaVendedor").innerHTML = tbodyHtml || "<tr><td style='text-align:center;color:var(--muted)'>Sin datos</td></tr>";
+  },
 };
 
 window.addEventListener("DOMContentLoaded", () => {
