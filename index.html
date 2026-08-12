@@ -2044,8 +2044,8 @@ const D = {
       options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
 
     // Histórico
-    const histR = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc==="Jujuy").reduce((s,r)=>s+r.importe,0));
-    const histO = mesesAno.map(m => (this.OBJETIVOS[ano]||this.OBJETIVOS[2026])[m] || 0);
+    const histR = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc===sucObj).reduce((s,r)=>s+r.importe,0));
+    const histO = mesesAno.map(m => this.objetivoDe(sucObj, m, ano));
     this.graficos.h = new Chart(document.getElementById("chartHist"),{type:"bar",
       data:{labels:mesesLabels,datasets:[{label:"Cumplimiento %",
         data:histR.map((v,i)=>histO[i]?+(v/histO[i]*100).toFixed(1):0),
@@ -2864,29 +2864,36 @@ const D = {
   compacto(v){ v=+v||0; if(v>=1000000)return"$"+(v/1000000).toFixed(1)+"M"; if(v>=1000)return"$"+(v/1000).toFixed(0)+"K"; return"$"+Math.round(v).toLocaleString("es-AR"); },
   pct(v){ return(+v||0).toFixed(1)+"%"; },
 
-  // Objetivo mensual para una sucursal puntual. Si la tabla tiene categorías
-  // (Repuestos/Servicios/Accesorios) las suma para dar el objetivo total —
-  // así el resumen general sigue funcionando igual mientras el detalle por
-  // categoría queda disponible para cuando se arme el módulo de Repuestos.
-  objetivoDe(suc, mes, ano, categoria) {
-    const s = (suc && suc !== "todas") ? suc : "Jujuy";
+  // Objetivo de UNA sucursal puntual (sin manejar "todas")
+  objetivoDeUnaSuc(s, mes, ano, categoria) {
     const tabla = this.objetivosPorSuc && this.objetivosPorSuc[s];
     if (tabla) {
       const esPorCategoria = tabla.Repuestos || tabla.Servicios || tabla.Accesorios;
       if (esPorCategoria) {
         if (categoria) return (tabla[categoria] && tabla[categoria][mes]) || 0;
-        // Sin categoría puntual: sumar las 3 para el objetivo total
         let suma = 0;
         ["Repuestos", "Servicios", "Accesorios"].forEach(c => {
           if (tabla[c] && tabla[c][mes]) suma += tabla[c][mes];
         });
-        if (suma > 0) return suma;
+        return suma;
       } else if (tabla[mes]) {
         return tabla[mes]; // formato viejo: un solo objetivo por mes
       }
     }
     if (s === "Jujuy") return (this.OBJETIVOS[ano] || this.OBJETIVOS[2026])[mes] || 0;
-    return 0; // sin objetivo cargado para esa sucursal/mes todavía
+    return 0;
+  },
+
+  // Objetivo mensual para una sucursal puntual, o la SUMA de las 5 si se eligió "todas".
+  objetivoDe(suc, mes, ano, categoria) {
+    if (!suc || suc === "todas") {
+      const sucs = new Set(["Jujuy"]);
+      Object.keys(this.objetivosPorSuc || {}).forEach(s => sucs.add(s));
+      let total = 0;
+      sucs.forEach(s => { total += this.objetivoDeUnaSuc(s, mes, ano, categoria); });
+      return total;
+    }
+    return this.objetivoDeUnaSuc(suc, mes, ano, categoria);
   },
 
   // ── CONTRATOS DE MANTENIMIENTO ──────────────────────────────────
