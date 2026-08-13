@@ -1759,7 +1759,7 @@ const D = {
       alertas.push({cls:"warn", ico:"🎯", txt:`Proyección <b>${this.compacto(t.proyeccion)}</b> — necesitás mejorar el ritmo para llegar`});
 
     // Asesores — alertas individuales
-    const byAsesor = this.grupo(this.raw.filter(r=>r.mes===mes&&r.ano===ano&&!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
     const nAs = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = t.objetivo / nAs;
     Object.entries(byAsesor).forEach(([a, arr]) => {
