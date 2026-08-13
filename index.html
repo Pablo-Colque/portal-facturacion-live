@@ -1865,30 +1865,37 @@ const D = {
     document.getElementById("badgeInteranual").textContent = `${ano - 1} vs ${ano} · ${variTotal>=0?"+":""}${variTotal.toFixed(1)}% total`;
 
     try {
-      if (this.graficos.chartInteranual) { try { this.graficos.chartInteranual.destroy(); } catch(e){} }
-      const canvasInt = document.getElementById("chartInteranual");
-      if (!canvasInt) { console.error("chartInteranual: no se encontró el canvas en el DOM"); return; }
-      this.graficos.chartInteranual = new Chart(canvasInt, {
-        type: "bar",
-        data: {
-          labels: this.MESES.slice(1).map(m => m.slice(0, 3)),
-          datasets: [
-            { label: String(ano - 1), data: prevTotales.slice(1), backgroundColor: "#4d9fff55", borderColor: "#4d9fff", borderWidth: 1.5, borderRadius: 4 },
-            { label: String(ano),     data: currTotales.slice(1), backgroundColor: "#0040c8", borderColor: "#0040c8", borderWidth: 1.5, borderRadius: 4 },
-          ],
-        },
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          plugins:{
-            legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-            tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
-              callbacks:{label:ctx=>` ${ctx.dataset.label}: ${this.moneda(ctx.raw)}`}},
-          },
-          scales:{
-            x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
-            y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
-          },
-        },
+      if (this.graficos.chartInteranual) { try { this.graficos.chartInteranual.destroy(); } catch(e){} this.graficos.chartInteranual = null; }
+      requestAnimationFrame(() => {
+        try {
+          const canvasInt = document.getElementById("chartInteranual");
+          if (!canvasInt) { console.error("chartInteranual: no se encontró el canvas en el DOM"); return; }
+          this.graficos.chartInteranual = new Chart(canvasInt, {
+            type: "bar",
+            data: {
+              labels: this.MESES.slice(1).map(m => m.slice(0, 3)),
+              datasets: [
+                { label: String(ano - 1), data: prevTotales.slice(1), backgroundColor: "#4d9fff55", borderColor: "#4d9fff", borderWidth: 1.5, borderRadius: 4 },
+                { label: String(ano),     data: currTotales.slice(1), backgroundColor: "#0040c8", borderColor: "#0040c8", borderWidth: 1.5, borderRadius: 4 },
+              ],
+            },
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{
+                legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                  callbacks:{label:ctx=>` ${ctx.dataset.label}: ${this.moneda(ctx.raw)}`}},
+              },
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        } catch (errInner) {
+          console.error("Error en gráfico Comparativa Interanual (diferido):", errInner);
+          document.getElementById("badgeInteranual").textContent = "⚠️ Error: " + errInner.message;
+        }
       });
     } catch (errChart) {
       console.error("Error en gráfico Comparativa Interanual:", errChart);
