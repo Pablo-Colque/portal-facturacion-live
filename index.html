@@ -1818,21 +1818,34 @@ const D = {
   // ── SUCURSAL JUJUY ───────────────────────────────────────────
   renderSucursal(mes, ano) {
     const sucSel  = document.getElementById("fSuc").value;
-    const suc     = (sucSel && sucSel !== "todas") ? sucSel : "Jujuy";
-    const arr     = this.raw.filter(r => r.mes===mes && r.ano===ano && r.suc===suc);
-    const obj     = this.objetivoDe(suc, mes, ano);
+    const esTodas = !sucSel || sucSel === "todas";
+    const suc     = esTodas ? "Jujuy" : sucSel;
+
+    const arr     = esTodas
+      ? this.raw.filter(r => r.mes===mes && r.ano===ano)
+      : this.raw.filter(r => r.mes===mes && r.ano===ano && r.suc===suc);
+    const obj     = this.objetivoDe(sucSel, mes, ano);
     const total   = arr.reduce((s,r) => s+r.importe, 0);
     const ors     = arr.length;
-    const ticket  = ors ? Math.round(total/ors) : 0;
+    const ticket  = ors ? Math.round(total/ors) : 0; // promedio ponderado real (total/OR), no promedio de promedios
     const cumpl   = obj ? total/obj*100 : 0;
-    const arrAnt  = this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1) && r.suc===suc);
+
+    const arrAnt  = esTodas
+      ? this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1))
+      : this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1) && r.suc===suc);
     const tickAnt = arrAnt.length ? Math.round(arrAnt.reduce((s,r)=>s+r.importe,0)/arrAnt.length) : 0;
     const dif = ticket - tickAnt;
+
+    const nSuc = new Set(["Jujuy", ...Object.keys(this.objetivosPorSuc || {})]).size;
+    const titulo   = esTodas ? "🏢 Consolidado — Todas las sucursales" : `🏢 ${suc}`;
+    const subtitulo= esTodas ? `<div class="suc-badge" style="opacity:.7">${nSuc} sucursales</div>` : "";
+
     document.getElementById("sucJujuy").innerHTML = `
       <div class="suc-header">
-        <div class="suc-name">🏢 ${suc}</div>
+        <div class="suc-name">${titulo}</div>
         <div class="suc-badge">${cumpl.toFixed(1)}% del objetivo</div>
       </div>
+      ${subtitulo}
       <div class="suc-kpis" style="grid-template-columns:repeat(3,1fr)">
         <div class="suc-kpi"><div class="l">OR</div><div class="v">${ors}</div><div class="s">órdenes facturadas</div></div>
         <div class="suc-kpi"><div class="l">Ticket Promedio</div><div class="v">${this.compacto(ticket)}</div><div class="s" style="color:${dif>=0?"var(--green)":"var(--red)"}">${dif>=0?"↑":"↓"} vs mes ant.</div></div>
@@ -1847,11 +1860,12 @@ const D = {
   // ── INTERANUAL ───────────────────────────────────────────────
   renderInteranual(mes, ano) {
     const sucSel = document.getElementById("fSuc").value;
-    const suc    = (sucSel && sucSel !== "todas") ? sucSel : "Jujuy";
     const totalesPorMes = (anoConsulta) => {
       const arr = new Array(13).fill(0); // índice 1-12
       for (let m = 1; m <= 12; m++) {
-        arr[m] = this.raw.filter(r => r.mes === m && r.ano === anoConsulta && r.suc === suc).reduce((s, r) => s + r.importe, 0);
+        arr[m] = this.raw.filter(r => r.mes === m && r.ano === anoConsulta &&
+          (sucSel === "todas" ? true : r.suc === sucSel)
+        ).reduce((s, r) => s + r.importe, 0);
       }
       return arr;
     };
@@ -1944,6 +1958,7 @@ const D = {
     let verde=0, amarillo=0, rojo=0;
     const cards = Object.entries(byAsesor).map(([a, arr]) => {
       const total = arr.reduce((s,r)=>s+r.importe,0);
+      const mo    = arr.reduce((s,r)=>s+(r.mo||0),0);
       const cumpl = objInd ? total/objInd*100 : 0;
       const suc   = arr[0]?.suc || "";
       const ritmoAct = t.diasHabTrans > 0 ? total/t.diasHabTrans : 0;
@@ -1958,7 +1973,8 @@ const D = {
       return `<div class="sem-card ${color}">
         <div class="sem-top"><span class="sem-name">${a}</span><span class="sem-indicator ${color}"></span></div>
         <div class="sem-suc"><span class="badge b-blue">${suc}</span></div>
-        <div class="sem-val">${this.compacto(total)}</div>
+        <div class="sem-val">${this.compacto(mo)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:-6px;margin-bottom:6px">💰 Facturación: <b style="color:var(--txt)">${this.compacto(total)}</b></div>
         <div class="sem-pct">${cumpl.toFixed(1)}% del obj. individual</div>
         <div class="sem-prog"><div class="sem-prog-track"><div class="sem-prog-fill" style="width:${Math.min(cumpl,100)}%"></div></div></div>
         <div class="sem-alerta">${alerta}</div>
@@ -2034,11 +2050,14 @@ const D = {
 
     // Objetivo vs Facturado año completo — con datos reales de TODOS los meses
     const sucSelObj = document.getElementById("fSuc").value;
-    const sucObj    = (sucSelObj && sucSelObj !== "todas") ? sucSelObj : "Jujuy";
     const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
     const mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]);
-    const realesAno = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc===sucObj).reduce((s,r)=>s+r.importe,0));
-    const objsAno   = mesesAno.map(m => this.objetivoDe(sucObj, m, ano));
+    // "todas": sumar TODAS las sucursales; una puntual: solo esa
+    const facturadoDeMes = m => this.raw.filter(r => r.mes===m && r.ano===ano &&
+      (sucSelObj === "todas" ? true : r.suc === sucSelObj)
+    ).reduce((s,r)=>s+r.importe,0);
+    const realesAno = mesesAno.map(facturadoDeMes);
+    const objsAno   = mesesAno.map(m => this.objetivoDe(sucSelObj, m, ano));
     this.graficos.o = new Chart(document.getElementById("chartObj"),{type:"bar",
       data:{labels:mesesLabels,datasets:[
         {label:"Objetivo",data:objsAno,backgroundColor:"rgba(77,159,255,.12)",borderColor:"rgba(77,159,255,.5)",borderWidth:1.5,borderRadius:4,borderSkipped:false},
@@ -2058,8 +2077,8 @@ const D = {
       options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
 
     // Histórico
-    const histR = mesesAno.map(m => this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc===sucObj).reduce((s,r)=>s+r.importe,0));
-    const histO = mesesAno.map(m => this.objetivoDe(sucObj, m, ano));
+    const histR = mesesAno.map(facturadoDeMes);
+    const histO = mesesAno.map(m => this.objetivoDe(sucSelObj, m, ano));
     this.graficos.h = new Chart(document.getElementById("chartHist"),{type:"bar",
       data:{labels:mesesLabels,datasets:[{label:"Cumplimiento %",
         data:histR.map((v,i)=>histO[i]?+(v/histO[i]*100).toFixed(1):0),
