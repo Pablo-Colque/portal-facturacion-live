@@ -52,6 +52,7 @@
 [data-modulo="or"]{--accent:var(--green)}
 [data-modulo="amp"]{--accent:var(--teal)}
 [data-modulo="cm"]{--accent:var(--cyan)}
+[data-modulo="servicios"]{--accent:var(--yellow)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"tnum" 1,"cv11" 1}
@@ -479,7 +480,8 @@ tr:last-child td{border-bottom:0}
   </div>
   <nav class="nav">
     <div class="nav-sec">Módulos</div>
-    <button class="active" onclick="D.navTo('facturacion',this)"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
+    <button onclick="D.navTo('facturacion',this)" class="active"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
+    <button onclick="D.navTo('servicios',this)"><span class="ico">🔩</span><span class="lbl">Servicios</span></button>
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
     <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
     <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">Órdenes Abiertas</span></button>
@@ -1194,6 +1196,69 @@ tr:last-child td{border-bottom:0}
   </div><!-- /panelAmp -->
 
   <!-- ═══════════ CONTRATOS DE MANTENIMIENTO ═══════════ -->
+  <!-- ═══════════ SERVICIOS (Mano de Obra + Terceros) ═══════════ -->
+  <div class="content" id="panelServicios" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">🔩 Servicios — Mano de Obra + Terceros</div>
+      <div class="h-sub" id="servSubtitulo">Trabajo propio + trabajo tercerizado (chapa/pintura), sin repuestos ni accesorios</div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpis" id="servKpis" style="margin-bottom:20px">
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">🔩</div>
+        <div class="kpi-val" id="servTotal">—</div>
+        <div class="kpi-lbl" id="servTotalLbl">Servicios (M.O. + Terceros)</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">🎯</div>
+        <div class="kpi-val" id="servObjetivo">—</div>
+        <div class="kpi-lbl">Objetivo Servicios</div>
+      </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">📊</div>
+        <div class="kpi-val" id="servCumpl">—</div>
+        <div class="kpi-lbl">Cumplimiento</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">📐</div>
+        <div class="kpi-val" id="servProyeccion">—</div>
+        <div class="kpi-lbl" id="servProyeccionLbl">Proyección fin de mes</div>
+      </div>
+    </div>
+
+    <!-- Barra de avance -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="suc-prog">
+        <div class="suc-prog-meta"><span>Avance hacia el objetivo de Servicios</span><span id="servPct">0%</span></div>
+        <div class="suc-prog-track"><div class="suc-prog-fill" id="servProgFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Servicios por Asesor</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartServAsesor"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Servicios vs Objetivo — Todos los meses</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartServMes"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tarjetas por asesor (semáforo) -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Servicios por Asesor — Detalle</div>
+        <div class="card-badge" id="servResumen"></div>
+      </div>
+      <div class="sem-grid" id="servGrid"></div>
+    </div>
+
+  </div><!-- /panelServicios -->
+
   <div class="content" id="panelCM" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
@@ -1354,21 +1419,22 @@ const D = {
   // ── NAVEGACIÓN ────────────────────────────────────────────────
   navTo(vista, btn) {
     this.vistaActual = vista;
-    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : "facturacion");
+    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : vista === "servicios" ? "servicios" : "facturacion");
     document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM)");
+    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM):not(#panelServicios)");
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
     const panelOR     = document.getElementById("panelOR");
     const panelAmp    = document.getElementById("panelAmp");
     const panelCM     = document.getElementById("panelCM");
+    const panelServ   = document.getElementById("panelServicios");
     const filtersBar  = document.getElementById("filtersBar");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
-    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM].forEach(p => { if (p) p.style.display = "none"; });
-    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas, Ampliaciones ni Contratos de Mant. — son foto/serie histórica propia
+    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM, panelServ].forEach(p => { if (p) p.style.display = "none"; });
+    // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Contratos de Mant. — son foto/serie histórica propia
     if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "cm") ? "none" : "flex";
     if (vista === "garantias") {
       panelGar.style.display = "flex";
@@ -1382,6 +1448,9 @@ const D = {
     } else if (vista === "amp") {
       panelAmp.style.display = "flex";
       this.renderAmp(mes, ano);
+    } else if (vista === "servicios") {
+      panelServ.style.display = "flex";
+      this.renderServicios(mes, ano);
     } else if (vista === "cm") {
       panelCM.style.display = "flex";
       this.renderCM();
@@ -1587,6 +1656,7 @@ const D = {
     if (this.vistaActual === "or")        this.renderOR();
     if (this.vistaActual === "amp")       this.renderAmp(mes, ano);
     if (this.vistaActual === "cm")        this.renderCM();
+    if (this.vistaActual === "servicios") this.renderServicios(mes, ano);
   },
 
   limpiar() {
@@ -2930,6 +3000,101 @@ const D = {
   },
 
   // ── CONTRATOS DE MANTENIMIENTO ──────────────────────────────────
+  // ── SERVICIOS (Mano de Obra + Terceros) ─────────────────────────
+  renderServicios(mes, ano) {
+    const sucSel  = document.getElementById("fSuc").value;
+    const val = r => (r.mo || 0) + (r.terceros || 0);
+
+    const total = this.fil.reduce((s,r) => s + val(r), 0);
+    const obj   = this.objetivoDe(sucSel, mes, ano, "Servicios");
+    const cumpl = obj ? total/obj*100 : 0;
+    const cd    = this.calcDias(mes, ano);
+    const ritmo = cd.diasHabTrans > 0 ? total/cd.diasHabTrans : 0;
+    const proyeccion = ritmo * cd.diasHabMes;
+
+    document.getElementById("servTotal").textContent = this.compacto(total);
+    document.getElementById("servTotalLbl").textContent = `${this.moneda(total)}`;
+    document.getElementById("servObjetivo").textContent = obj ? this.compacto(obj) : "Sin cargar";
+    document.getElementById("servCumpl").textContent = obj ? this.pct(cumpl) : "—";
+    document.getElementById("servProyeccion").textContent = this.compacto(proyeccion);
+    document.getElementById("servProyeccionLbl").textContent = obj
+      ? (proyeccion >= obj ? "✅ Alcanzable" : "⚠️ En riesgo")
+      : "Proyección fin de mes";
+    document.getElementById("servPct").textContent = obj ? this.pct(cumpl) : "sin objetivo";
+    document.getElementById("servProgFill").style.width = Math.min(cumpl,100) + "%";
+
+    // Por asesor
+    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
+    const objInd = obj / nAsesores;
+    let verde=0, amarillo=0, rojo=0;
+    const filas = Object.entries(byAsesor).map(([a, arr]) => {
+      const totAs = arr.reduce((s,r)=>s+val(r),0);
+      const suc = arr[0]?.suc || "";
+      const cumplAs = objInd ? totAs/objInd*100 : 0;
+      let color = !obj ? "amarillo" : cumplAs>=90?"verde":cumplAs>=55?"amarillo":"rojo";
+      if (color==="verde") verde++; else if (color==="amarillo") amarillo++; else rojo++;
+      return { a, suc, totAs, cumplAs, color };
+    }).sort((x,y)=>y.totAs-x.totAs);
+
+    document.getElementById("servResumen").innerHTML = obj ? `🟢 ${verde} &nbsp;🟡 ${amarillo} &nbsp;🔴 ${rojo}` : "Sin objetivo de Servicios cargado para esta sucursal/mes";
+    document.getElementById("servGrid").innerHTML = filas.map(f => `
+      <div class="sem-card ${f.color}">
+        <div class="sem-top"><span class="sem-name">${f.a}</span><span class="sem-indicator ${f.color}"></span></div>
+        <div class="sem-suc"><span class="badge b-blue">${f.suc}</span></div>
+        <div class="sem-val">${this.compacto(f.totAs)}</div>
+        <div class="sem-pct">${obj ? f.cumplAs.toFixed(1)+"% del obj. individual" : "sin objetivo"}</div>
+        <div class="sem-prog"><div class="sem-prog-track"><div class="sem-prog-fill" style="width:${Math.min(f.cumplAs,100)}%"></div></div></div>
+      </div>`).join("");
+
+    // Gráfico por asesor
+    if (this.graficos.chartServAsesor) { try { this.graficos.chartServAsesor.destroy(); } catch(e){} }
+    this.graficos.chartServAsesor = new Chart(document.getElementById("chartServAsesor"), {
+      type: "bar",
+      data: { labels: filas.map(f=>f.a), datasets: [{ data: filas.map(f=>f.totAs), backgroundColor: this.PALETA.map(c=>c+"28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 7, maxBarThickness: 50 }]},
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+        scales:{
+          x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+          y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+        },
+      },
+    });
+
+    // Gráfico mensual: Servicios vs Objetivo, todos los meses
+    if (this.graficos.chartServMes) { try { this.graficos.chartServMes.destroy(); } catch(e){} }
+    requestAnimationFrame(() => {
+      try {
+        const canvasServMes = document.getElementById("chartServMes");
+        if (!canvasServMes) return;
+        const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
+        const realesMes = mesesAno.map(m => this.raw.filter(r => r.mes===m && r.ano===ano && (sucSel==="todas" ? true : r.suc===sucSel)).reduce((s,r)=>s+val(r),0));
+        const objsMes   = mesesAno.map(m => this.objetivoDe(sucSel, m, ano, "Servicios"));
+        this.graficos.chartServMes = new Chart(canvasServMes, {
+          type: "bar",
+          data: { labels: mesesAno.map(m=>this.MESES_CORTO[m]), datasets: [
+            { label: "Objetivo", data: objsMes, backgroundColor: "rgba(224,194,87,.15)", borderColor: "rgba(224,194,87,.5)", borderWidth: 1.5, borderRadius: 4 },
+            { label: "Servicios", data: realesMes,
+              backgroundColor: realesMes.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=objsMes[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
+              borderColor: realesMes.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=objsMes[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
+              borderWidth: 1.5, borderRadius: 4 },
+          ]},
+          options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
+            scales:{
+              x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+              y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartServMes:", err); }
+    });
+  },
+
   renderCM() {
     const data = this.cmData || { porVendedorMes: [], meses: [], totalGeneral: 0 };
     const { porVendedorMes, meses, totalGeneral } = data;
