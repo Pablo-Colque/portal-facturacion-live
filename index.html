@@ -1243,6 +1243,13 @@ tr:last-child td{border-bottom:0}
         <div class="chart-wrap" style="height:220px"><canvas id="chartServAsesor"></canvas></div>
       </div>
       <div class="card">
+        <div class="card-head"><div class="card-title">Participación por Asesor</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartServPart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-row" style="grid-template-columns:1fr;margin-bottom:18px">
+      <div class="card">
         <div class="card-head"><div class="card-title">Servicios vs Objetivo — Todos los meses</div></div>
         <div class="chart-wrap" style="height:220px"><canvas id="chartServMes"></canvas></div>
       </div>
@@ -1688,14 +1695,20 @@ const D = {
   // ── TOTALES ───────────────────────────────────────────────────
   totales(arr, mes, ano) {
     const total     = arr.reduce((s,r) => s + r.importe, 0);
+    // "Comercial" = todo menos Garantía. El objetivo (Repuestos+Servicios+Accesorios)
+    // NO incluye Garantía, así que la comparación contra objetivo tiene que hacerse
+    // con este total, no con el total general — si no, un lote grande de Garantía
+    // infla el % de cumplimiento sin que tenga nada que ver con lo comercial.
+    const totalComercial = arr.reduce((s,r) => s + (r.tipo === "Garantía" ? 0 : r.importe), 0);
     const cd        = this.calcDias(mes, ano);
     const sucSel    = document.getElementById("fSuc").value;
     const objetivo  = this.objetivoDe(sucSel, mes, ano) || 92700000;
     const diasHabT  = cd.diasHabTrans || 1;
-    const ritmo     = total / diasHabT;
+    const ritmo     = totalComercial / diasHabT;
     const proyeccion= ritmo * cd.diasHabMes;
     return {
       total,
+      totalComercial,
       mo:        arr.reduce((s,r) => s + (r.tipo === "Cliente" || r.tipo === "Mixto" ? (r.mo || 0) : 0), 0),
       cliente:   arr.reduce((s,r) => s + (r.cliente  || 0), 0),
       garantia:  arr.reduce((s,r) => s + (r.garantia || 0), 0),
@@ -1705,7 +1718,7 @@ const D = {
       ors:       arr.length,
       ticket:    arr.length ? Math.round(total / arr.length) : 0,
       objetivo,
-      cumpl:     objetivo ? total / objetivo * 100 : 0,
+      cumpl:     objetivo ? totalComercial / objetivo * 100 : 0,
       ritmo,
       ritmoIdeal:objetivo / cd.diasHabMes,
       proyeccion,
@@ -1716,10 +1729,10 @@ const D = {
   // ── CENTRO DE DECISIONES ─────────────────────────────────────
   renderCentroDecisiones(mes, ano, t) {
     const panel = document.getElementById("cdecPanel");
-    const falta = Math.max(t.objetivo - t.total, 0);
+    const falta = Math.max(t.objetivo - t.totalComercial, 0);
     const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
     const prob = this.calcProbabilidad(t);
-    const desvio = t.total - t.objetivo;
+    const desvio = t.totalComercial - t.objetivo;
 
     // Estado
     let estado = "estado-ok", label = "✅ EN OBJETIVO";
@@ -1752,7 +1765,7 @@ const D = {
       </div>
       <div class="cdec-met ${t.cumpl>=90?"positivo":t.cumpl>=60?"warn":"negativo"}">
         <div class="lbl">Facturado</div>
-        <div class="val">${this.compacto(t.total)}</div>
+        <div class="val">${this.compacto(t.totalComercial)}</div>
         <div class="sub">${t.cumpl.toFixed(1)}% del objetivo</div>
       </div>
       <div class="cdec-met ${t.proyeccion>=t.objetivo?"positivo":"negativo"}">
@@ -1775,7 +1788,7 @@ const D = {
     const pct = Math.min(t.cumpl, 100);
     document.getElementById("cdecBarraFill").style.width   = pct + "%";
     document.getElementById("cdecBarraMarker").style.left  = pct + "%";
-    document.getElementById("cdecBarraIzq").textContent    = "Facturado: " + this.moneda(t.total);
+    document.getElementById("cdecBarraIzq").textContent    = "Facturado: " + this.moneda(t.totalComercial);
     document.getElementById("cdecBarraDer").textContent    = "Objetivo: " + this.moneda(t.objetivo);
   },
 
@@ -1788,7 +1801,7 @@ const D = {
     const diasRestPct = t.diasHabRest / t.diasHabMes;
     let prob = Math.min(ratio * 100 * (1 - diasRestPct) + t.cumpl * diasRestPct, 100);
     // Penalizar si ritmo actual < ritmo necesario
-    if (t.ritmo < (t.objetivo - t.total) / Math.max(t.diasHabRest, 1)) {
+    if (t.ritmo < (t.objetivo - t.totalComercial) / Math.max(t.diasHabRest, 1)) {
       prob = prob * 0.6;
     }
     return Math.max(Math.round(prob), 0);
@@ -1797,10 +1810,8 @@ const D = {
   // ── INTELIGENCIA GERENCIAL ────────────────────────────────────
   renderInteligencia(mes, ano, t) {
     const alertas = [];
-    const falta   = Math.max(t.objetivo - t.total, 0);
+    const falta   = Math.max(t.objetivo - t.totalComercial, 0);
     const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
-
-    // Alerta de días
     if (t.esMesActual) {
       if (t.diasHabRest <= 3)
         alertas.push({cls:"alerta", ico:"🚨", txt:`Quedan solo <b>${t.diasHabRest} días hábiles</b> — necesitás <b>${this.compacto(ritmoNec)}/día</b>`});
@@ -1833,7 +1844,7 @@ const D = {
     const nAs = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = t.objetivo / nAs;
     Object.entries(byAsesor).forEach(([a, arr]) => {
-      const tot = arr.reduce((s,r)=>s+r.importe,0);
+      const tot = arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:r.importe),0);
       const cumpl = objInd ? tot/objInd*100 : 0;
       const faltaAs = Math.max(objInd - tot, 0);
       if (cumpl >= 100)
@@ -1864,7 +1875,7 @@ const D = {
     const el = document.getElementById("alertaDias");
     if (!t.esMesActual) { el.style.display = "none"; return; }
     el.style.display = "flex";
-    const falta    = Math.max(t.objetivo - t.total, 0);
+    const falta    = Math.max(t.objetivo - t.totalComercial, 0);
     const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
     const clsRest  = t.diasHabRest <= 3 ? "urgente" : t.diasHabRest <= 8 ? "warn" : "ok";
     const ritmoOk  = t.ritmo >= ritmoNec;
@@ -1896,9 +1907,10 @@ const D = {
       : this.raw.filter(r => r.mes===mes && r.ano===ano && r.suc===suc);
     const obj     = this.objetivoDe(sucSel, mes, ano);
     const total   = arr.reduce((s,r) => s+r.importe, 0);
+    const totalCom= arr.reduce((s,r) => s+(r.tipo==="Garantía"?0:r.importe), 0);
     const ors     = arr.length;
     const ticket  = ors ? Math.round(total/ors) : 0; // promedio ponderado real (total/OR), no promedio de promedios
-    const cumpl   = obj ? total/obj*100 : 0;
+    const cumpl   = obj ? totalCom/obj*100 : 0;
 
     const arrAnt  = esTodas
       ? this.raw.filter(r => r.mes===(mes>1?mes-1:12) && r.ano===(mes>1?ano:ano-1))
@@ -1993,8 +2005,9 @@ const D = {
     const cls = pc>=90?"on-track":pc>=60?"at-risk":"behind";
     const bdg = pc>=90?"b-green":pc>=60?"b-orange":"b-red";
     const cards = [
-      {label:"Facturación total",val:this.moneda(t.total),sub:this.pct(t.cumpl)+" del objetivo",ico:"💰",cls:"c-main",
+      {label:"Facturación Comercial",val:this.moneda(t.totalComercial),sub:this.pct(t.cumpl)+" del objetivo",ico:"💰",cls:"c-main",
        extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. ${this.compacto(t.objetivo)}</span><span class="badge ${bdg}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div></div>`},
+      {label:"Facturación Total",val:this.moneda(t.total),sub:"incluye Garantía · sin objetivo propio",ico:"📊",cls:"c-blue"},
       {label:"Mano de Obra",val:this.moneda(t.mo),sub:this.pct(t.total?t.mo/t.total*100:0)+" del total",ico:"🔧",cls:"c-blue"},
       {label:"Terceros",val:this.moneda(t.terceros),sub:this.pct(t.total?t.terceros/t.total*100:0)+" del total",ico:"🤝",cls:"c-cyan"},
       {label:"Garantía",val:this.moneda(t.garantia),sub:this.pct(t.total?t.garantia/t.total*100:0)+" del total",ico:"🛡️",cls:"c-purple",
@@ -2028,11 +2041,12 @@ const D = {
     let verde=0, amarillo=0, rojo=0;
     const cards = Object.entries(byAsesor).map(([a, arr]) => {
       const total = arr.reduce((s,r)=>s+r.importe,0);
+      const totalCom = arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:r.importe),0);
       const mo    = arr.reduce((s,r)=>s+(r.mo||0),0);
-      const cumpl = objInd ? total/objInd*100 : 0;
+      const cumpl = objInd ? totalCom/objInd*100 : 0;
       const suc   = arr[0]?.suc || "";
-      const ritmoAct = t.diasHabTrans > 0 ? total/t.diasHabTrans : 0;
-      const falta    = Math.max(objInd - total, 0);
+      const ritmoAct = t.diasHabTrans > 0 ? totalCom/t.diasHabTrans : 0;
+      const falta    = Math.max(objInd - totalCom, 0);
       const ritmoNec = t.diasHabRest > 0 ? falta/t.diasHabRest : 0;
       let color = cumpl>=90?"verde":cumpl>=55?"amarillo":"rojo";
       if (color==="amarillo" && ritmoAct>=ritmoNec && t.diasHabRest>3) color="verde";
@@ -2122,8 +2136,10 @@ const D = {
     const sucSelObj = document.getElementById("fSuc").value;
     const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
     const mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]);
-    // "todas": sumar TODAS las sucursales; una puntual: solo esa
+    // "todas": sumar TODAS las sucursales; una puntual: solo esa. Excluye Garantía
+    // porque se compara contra el objetivo comercial (Repuestos+Servicios+Accesorios).
     const facturadoDeMes = m => this.raw.filter(r => r.mes===m && r.ano===ano &&
+      r.tipo !== "Garantía" &&
       (sucSelObj === "todas" ? true : r.suc === sucSelObj)
     ).reduce((s,r)=>s+r.importe,0);
     const realesAno = mesesAno.map(facturadoDeMes);
@@ -2179,13 +2195,14 @@ const D = {
   // ── HISTÓRICO ─────────────────────────────────────────────────
   renderHistorico(ano) {
     const sucSel = document.getElementById("fSuc").value;
-    const suc    = (sucSel && sucSel !== "todas") ? sucSel : "Jujuy";
     const hoy = new Date();
     const mesCierre = ano < hoy.getFullYear() ? 12 : hoy.getMonth()+1;
     let cumplidos = 0;
     document.getElementById("histGrid").innerHTML = [1,2,3,4,5,6,7,8,9,10,11,12].map(m => {
-      const real = this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.suc===suc).reduce((s,r)=>s+r.importe,0);
-      const obj  = this.objetivoDe(suc, m, ano);
+      const real = this.raw.filter(r=>r.mes===m&&r.ano===ano&&r.tipo!=="Garantía"&&
+        (sucSel==="todas" ? true : r.suc===sucSel)
+      ).reduce((s,r)=>s+r.importe,0);
+      const obj  = this.objetivoDe(sucSel, m, ano);
       const pct  = obj ? real/obj*100 : 0;
       if (m > mesCierre) {
         return `<div class="hist-mes fut"><div class="hm">${this.MESES_CORTO[m]}</div><div class="hv">—</div><div class="hp">pendiente</div></div>`;
@@ -2208,6 +2225,7 @@ const D = {
     const rows = Object.entries(byAsesor).map(([a,arr]) => ({
       a, suc:arr[0]?.suc||"",
       total: arr.reduce((s,r)=>s+r.importe,0),
+      totalCom: arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:r.importe),0),
       ors:   arr.length,
       ticket:arr.length?Math.round(arr.reduce((s,r)=>s+r.importe,0)/arr.length):0,
       repuestos:arr.reduce((s,r)=>s+(r.repuestos||0),0),
@@ -2216,7 +2234,7 @@ const D = {
     const rankCls = i => i===0?"gold":i===1?"silver":i===2?"bronze":"";
     document.getElementById("rankingBody").innerHTML = rows.map((r,i) => {
       const part  = r.total/total*100;
-      const cumpl = objInd ? r.total/objInd*100 : 0;
+      const cumpl = objInd ? r.totalCom/objInd*100 : 0;
       const cls   = cumpl>=90?"on-track":cumpl>=55?"at-risk":"behind";
       const bdg   = cumpl>=90?"b-green":cumpl>=55?"b-orange":"b-red";
       return `<tr>
@@ -3047,20 +3065,43 @@ const D = {
         <div class="sem-prog"><div class="sem-prog-track"><div class="sem-prog-fill" style="width:${Math.min(f.cumplAs,100)}%"></div></div></div>
       </div>`).join("");
 
-    // Gráfico por asesor
-    if (this.graficos.chartServAsesor) { try { this.graficos.chartServAsesor.destroy(); } catch(e){} }
-    this.graficos.chartServAsesor = new Chart(document.getElementById("chartServAsesor"), {
-      type: "bar",
-      data: { labels: filas.map(f=>f.a), datasets: [{ data: filas.map(f=>f.totAs), backgroundColor: this.PALETA.map(c=>c+"28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 7, maxBarThickness: 50 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
-        scales:{
-          x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
-          y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
-        },
-      },
+    // Gráfico por asesor + torta de participación
+    if (this.graficos.chartServAsesor) { try { this.graficos.chartServAsesor.destroy(); } catch(e){} this.graficos.chartServAsesor = null; }
+    if (this.graficos.chartServPart)   { try { this.graficos.chartServPart.destroy(); } catch(e){} this.graficos.chartServPart = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvasServAs = document.getElementById("chartServAsesor");
+        if (canvasServAs) {
+          this.graficos.chartServAsesor = new Chart(canvasServAs, {
+            type: "bar",
+            data: { labels: filas.map(f=>f.a), datasets: [{ data: filas.map(f=>f.totAs), backgroundColor: this.PALETA.map(c=>c+"28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 7, maxBarThickness: 50 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:false},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        }
+        const canvasServPart = document.getElementById("chartServPart");
+        if (canvasServPart) {
+          this.graficos.chartServPart = new Chart(canvasServPart, {
+            type: "doughnut",
+            data: { labels: filas.map(f=>f.a), datasets: [{ data: filas.map(f=>f.totAs), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false, cutout:"60%",
+              plugins:{
+                legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                  callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${this.moneda(ctx.parsed)} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error gráficos Servicios (asesor/participación):", err); }
     });
 
     // Gráfico mensual: Servicios vs Objetivo, todos los meses
