@@ -1256,6 +1256,17 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Evolución Diaria Acumulada</div></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartServDiario"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Tendencia Semanal</div></div>
+        <div class="chart-wrap" style="height:140px"><canvas id="chartServSemanal"></canvas></div>
+      </div>
+    </div>
+
     <!-- Tarjetas por asesor (semáforo) -->
     <div class="card">
       <div class="card-head">
@@ -3022,7 +3033,9 @@ const D = {
   // ── SERVICIOS (Mano de Obra + Terceros) ─────────────────────────
   renderServicios(mes, ano) {
     const sucSel  = document.getElementById("fSuc").value;
-    const val = r => (r.mo || 0) + (r.terceros || 0);
+    // Excluye Garantía — igual que en Facturación, el objetivo de Servicios (Repuestos+Servicios+
+    // Accesorios de Jorge) no incluye Garantía, así que no debe contar acá tampoco.
+    const val = r => r.tipo === "Garantía" ? 0 : (r.mo || 0) + (r.terceros || 0);
 
     const total = this.fil.reduce((s,r) => s + val(r), 0);
     const obj   = this.objetivoDe(sucSel, mes, ano, "Servicios");
@@ -3134,6 +3147,62 @@ const D = {
           },
         });
       } catch (err) { console.error("Error chartServMes:", err); }
+    });
+
+    // Evolución Diaria Acumulada + Tendencia Semanal
+    if (this.graficos.chartServDiario)  { try { this.graficos.chartServDiario.destroy(); } catch(e){} this.graficos.chartServDiario = null; }
+    if (this.graficos.chartServSemanal) { try { this.graficos.chartServSemanal.destroy(); } catch(e){} this.graficos.chartServSemanal = null; }
+    requestAnimationFrame(() => {
+      try {
+        // Diario acumulado — solo el mes/filtro actual
+        const canvasServDia = document.getElementById("chartServDiario");
+        if (canvasServDia) {
+          const byFecha = {};
+          this.fil.forEach(r => { byFecha[r.fecha] = (byFecha[r.fecha]||0) + val(r); });
+          const fechas = Object.keys(byFecha).sort();
+          let ac = 0;
+          const acV = fechas.map(f => { ac += byFecha[f]; return ac; });
+          const diasMes = new Date(ano, mes, 0).getDate();
+          const objLine = fechas.map((_,i) => Math.round((obj||0) / diasMes * (i+1)));
+          this.graficos.chartServDiario = new Chart(canvasServDia, {
+            type: "line",
+            data: { labels: fechas.map(f=>f.slice(8)), datasets: [
+              { label: "Servicios", data: acV, borderColor: "#e0c257", backgroundColor: "rgba(224,194,87,.08)", borderWidth: 2, pointRadius: 1, tension: .4, fill: true },
+              { label: "Ritmo ideal", data: objLine, borderColor: "#00d97e", backgroundColor: "transparent", borderWidth: 1.5, pointRadius: 0, tension: .4, borderDash: [5,4] },
+            ]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:9}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        }
+
+        // Semanal
+        const canvasServSem = document.getElementById("chartServSemanal");
+        if (canvasServSem) {
+          const bySem = {};
+          this.fil.forEach(r => { const k="Sem "+r.sem; bySem[k]=(bySem[k]||0)+val(r); });
+          const semKeys = Object.keys(bySem).sort();
+          this.graficos.chartServSemanal = new Chart(canvasServSem, {
+            type: "line",
+            data: { labels: semKeys, datasets: [{ label:"Servicios semanal", data: semKeys.map(k=>bySem[k]), borderColor:"#a87eff", backgroundColor:"rgba(168,126,255,.08)", borderWidth:2.5, pointRadius:4, pointBackgroundColor:"#a87eff", tension:.4, fill:true }]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:false},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error gráficos Servicios (diario/semanal):", err); }
     });
   },
 
