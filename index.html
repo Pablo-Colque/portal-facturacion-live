@@ -803,6 +803,9 @@ tr:last-child td{border-bottom:0}
         <div class="card-title">💰 Pendiente de Facturar a VW — por Lote (solo fecha de corte futura)</div>
         <div class="card-badge" id="garBadgeReclamos">—</div>
       </div>
+      <div id="garAvisoSucReclamos" style="display:none;background:var(--well);border:1px solid var(--orange);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--muted)">
+        ⚠️ Esta sección (RECLAMOS de Benicio) solo tiene datos de <b style="color:var(--txt)">Jujuy</b> — la fuente no distingue por sucursal. Lo que ves abajo es siempre Jujuy, sin importar el filtro elegido arriba.
+      </div>
       <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
         <div class="kpi-card c-main">
           <div class="kpi-ico">📄</div>
@@ -2277,8 +2280,11 @@ const D = {
     const hoy = new Date(); hoy.setHours(0,0,0,0);
     const esMesActual = mes === hoy.getMonth()+1 && ano === hoy.getFullYear();
 
-    // Facturación bruta del mes (tipo Garantía)
-    const arrGar = this.raw.filter(r => r.mes === mes && r.ano === ano && r.tipo === "Garantía");
+    const sucSel = document.getElementById("fSuc").value;
+    // Facturación bruta del mes (tipo Garantía) — respeta el filtro de Sucursal
+    const arrGar = this.raw.filter(r => r.mes === mes && r.ano === ano && r.tipo === "Garantía" &&
+      (sucSel === "todas" ? true : r.suc === sucSel)
+    );
 
     // Mapa OR -> Mano de Obra real, tomado de "RECLAMOS" (lo carga Benicio, columna I = 40% del importe)
     const mapaMOporOR = {};
@@ -2303,10 +2309,10 @@ const D = {
     // Barra de avance: bruto vs promedio histórico o último mes con datos
     const mesesAnt = [1,2,3,4,5,6,7,8,9,10,11,12].filter(m2 => {
       if (m2 === mes && ano === new Date().getFullYear()) return false; // no incluir mes actual
-      return this.raw.some(r => r.mes === m2 && r.ano === ano && r.tipo === "Garantía");
+      return this.raw.some(r => r.mes === m2 && r.ano === ano && r.tipo === "Garantía" && (sucSel === "todas" ? true : r.suc === sucSel));
     });
     const promedioRef = mesesAnt.length
-      ? mesesAnt.reduce((s,m2) => s + this.raw.filter(r=>r.mes===m2&&r.ano===ano&&r.tipo==="Garantía").reduce((ss,r)=>ss+r.importe,0), 0) / mesesAnt.length
+      ? mesesAnt.reduce((s,m2) => s + this.raw.filter(r=>r.mes===m2&&r.ano===ano&&r.tipo==="Garantía"&&(sucSel==="todas"?true:r.suc===sucSel)).reduce((ss,r)=>ss+r.importe,0), 0) / mesesAnt.length
       : bruto || 1;
 
     const pctAvance = promedioRef > 0 ? Math.min(bruto / promedioRef * 100, 150) : 0;
@@ -2377,6 +2383,11 @@ const D = {
 
   // ── RENDER PENDIENTE DE FACTURAR A VW (Reclamos - hoja de Benicio) ──
   renderGarReclamos() {
+    const sucSel = document.getElementById("fSuc").value;
+    const esOtraSuc = sucSel !== "todas" && sucSel !== "Jujuy";
+    const avisoSuc = document.getElementById("garAvisoSucReclamos");
+    if (avisoSuc) avisoSuc.style.display = esOtraSuc ? "block" : "none";
+
     const hoyISO = (() => { const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); })();
     const todosRaw  = this.reclamosData || [];
     const sinFecha  = todosRaw.filter(r => !r.fecha).length;
