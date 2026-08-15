@@ -1724,12 +1724,14 @@ const D = {
     return {
       total,
       totalComercial,
-      mo:        arr.reduce((s,r) => s + (r.tipo === "Cliente" || r.tipo === "Mixto" ? (r.mo || 0) : 0), 0),
+      // Mano de Obra y Terceros: Cliente+Interna+Mixto, SIN Garantía — misma regla
+      // que usa el módulo Servicios, para que los dos números siempre cierren igual.
+      mo:        arr.reduce((s,r) => s + (r.tipo === "Garantía" ? 0 : (r.mo || 0)), 0),
       cliente:   arr.reduce((s,r) => s + (r.cliente  || 0), 0),
       garantia:  arr.reduce((s,r) => s + (r.garantia || 0), 0),
       interna:   arr.reduce((s,r) => s + (r.interna  || 0), 0),
       repuestos: arr.reduce((s,r) => s + (r.repuestos|| 0), 0),
-      terceros:  arr.reduce((s,r) => s + (r.terceros || 0), 0),
+      terceros:  arr.reduce((s,r) => s + (r.tipo === "Garantía" ? 0 : (r.terceros || 0)), 0),
       ors:       arr.length,
       ticket:    arr.length ? Math.round(total / arr.length) : 0,
       objetivo,
@@ -2057,7 +2059,7 @@ const D = {
     const cards = Object.entries(byAsesor).map(([a, arr]) => {
       const total = arr.reduce((s,r)=>s+r.importe,0);
       const totalCom = arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:r.importe),0);
-      const mo    = arr.reduce((s,r)=>s+(r.mo||0),0);
+      const mo    = arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:(r.mo||0)),0);
       const cumpl = objInd ? totalCom/objInd*100 : 0;
       const suc   = arr[0]?.suc || "";
       const ritmoAct = t.diasHabTrans > 0 ? totalCom/t.diasHabTrans : 0;
@@ -2243,8 +2245,8 @@ const D = {
       totalCom: arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:r.importe),0),
       ors:   arr.length,
       ticket:arr.length?Math.round(arr.reduce((s,r)=>s+r.importe,0)/arr.length):0,
-      mo: arr.reduce((s,r)=>s+(r.mo||0),0),
-      terceros: arr.reduce((s,r)=>s+(r.terceros||0),0),
+      mo: arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:(r.mo||0)),0),
+      terceros: arr.reduce((s,r)=>s+(r.tipo==="Garantía"?0:(r.terceros||0)),0),
     })).sort((a,b)=>b.total-a.total);
     const rankCls = i => i===0?"gold":i===1?"silver":i===2?"bronze":"";
     document.getElementById("rankingBody").innerHTML = rows.map((r,i) => {
