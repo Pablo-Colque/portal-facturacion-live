@@ -16,7 +16,7 @@
   --vw-blue:#001e50;--vw-blue2:#0040c8;--vw-light:#4d9fff;
   --green:#1fb473;--green2:#0f8f58;--red:#e34557;--red2:#b52d3d;
   --orange:#e5a020;--cyan:#1fb8d4;--purple:#9b7aeb;--yellow:#e0c257;
-  --teal:#1fc9ae;
+  --teal:#1fc9ae;--pink:#e56b9f;
   --radius:12px;--radius-sm:8px;--sidebar-w:230px;
   --sidebar-grad1:#0a0f16;--sidebar-grad2:#0d141c;
   --sidebar-txt:#e7ecf2;--sidebar-muted:#8394a8;--sidebar-dim:#465162;--sidebar-border:#1b232d;--sidebar-hover:rgba(255,255,255,.05);
@@ -36,7 +36,7 @@
   --vw-blue:#001e50;--vw-blue2:#0040c8;--vw-light:#0058d6;
   --green:#0c8a55;--green2:#076e43;--red:#c8283b;--red2:#9c1c2b;
   --orange:#b3760f;--cyan:#0790a3;--purple:#6c46d1;--yellow:#a3821b;
-  --teal:#0a9483;
+  --teal:#0a9483;--pink:#c23a72;
   --sidebar-grad1:#ffffff;--sidebar-grad2:#f7f9fb;
   --sidebar-txt:#1a2433;--sidebar-muted:#5c6b7d;--sidebar-dim:#a4aebb;--sidebar-border:#e1e5eb;--sidebar-hover:rgba(20,30,45,.045);
   --shadow-sm:0 1px 2px rgba(20,30,45,.06);
@@ -54,6 +54,7 @@
 [data-modulo="cm"]{--accent:var(--cyan)}
 [data-modulo="servicios"]{--accent:var(--yellow)}
 [data-modulo="repuestos"]{--accent:var(--red)}
+[data-modulo="accesorios"]{--accent:var(--pink)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"tnum" 1,"cv11" 1}
@@ -485,6 +486,7 @@ tr:last-child td{border-bottom:0}
     <button onclick="D.navTo('facturacion',this)" class="active"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
     <button onclick="D.navTo('servicios',this)"><span class="ico">🔩</span><span class="lbl">Servicios</span></button>
     <button onclick="D.navTo('repuestos',this)"><span class="ico">⚙️</span><span class="lbl">Repuestos</span></button>
+    <button onclick="D.navTo('accesorios',this)"><span class="ico">🎒</span><span class="lbl">Accesorios</span></button>
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
     <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
     <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">OR sin Facturar</span></button>
@@ -712,7 +714,7 @@ tr:last-child td{border-bottom:0}
     <div class="gar-header">
       <div class="gar-header-ico">🛡️</div>
       <div class="gar-header-info">
-        <div class="gar-header-title">Garantías — Facturación Benicio</div>
+        <div class="gar-header-title">Garantías</div>
         <div class="gar-header-sub" id="garHeaderSub">Seleccioná un período para ver el detalle de lotes</div>
       </div>
       <div class="gar-header-chips" id="garChips"></div>
@@ -1400,6 +1402,100 @@ tr:last-child td{border-bottom:0}
 
   </div><!-- /panelRepuestos -->
 
+  <!-- ═══════════ ACCESORIOS ═══════════ -->
+  <div class="content" id="panelAccesorios" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">🎒 Accesorios</div>
+      <div class="h-sub" id="accSubtitulo">Aproximación por palabra clave ("ACC"/"ACCESORIOS") en el texto del Servicio — no es una columna propia de SIAC</div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpis" id="accKpis" style="margin-bottom:20px">
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">🎒</div>
+        <div class="kpi-val" id="accTotal">—</div>
+        <div class="kpi-lbl" id="accTotalLbl">Accesorios</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">🎯</div>
+        <div class="kpi-val" id="accObjetivo">—</div>
+        <div class="kpi-lbl">Objetivo Accesorios</div>
+      </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">📊</div>
+        <div class="kpi-val" id="accCumpl">—</div>
+        <div class="kpi-lbl">Cumplimiento</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">📐</div>
+        <div class="kpi-val" id="accProyeccion">—</div>
+        <div class="kpi-lbl" id="accProyeccionLbl">Proyección fin de mes</div>
+      </div>
+    </div>
+
+    <!-- Barra de avance -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="suc-prog">
+        <div class="suc-prog-meta"><span>Avance hacia el objetivo de Accesorios</span><span id="accPct">0%</span></div>
+        <div class="suc-prog-track"><div class="suc-prog-fill" id="accProgFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Accesorios por Asesor</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartAccAsesor"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Participación por Asesor</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartAccPart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-row" style="grid-template-columns:1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Accesorios vs Objetivo — Todos los meses</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartAccMes"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Evolución Diaria Acumulada</div></div>
+        <div class="chart-wrap" style="height:150px"><canvas id="chartAccDiario"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Tendencia Semanal</div></div>
+        <div class="chart-wrap" style="height:140px"><canvas id="chartAccSemanal"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tarjetas por asesor (semáforo) -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Accesorios por Asesor — Detalle</div>
+        <div class="card-badge" id="accResumen"></div>
+      </div>
+      <div class="sem-grid" id="accGrid"></div>
+    </div>
+
+    <!-- Muestra de OR detectadas, para que Pablo/Jorge validen si la palabra clave está funcionando bien -->
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div class="card-title">OR detectadas como Accesorios — muestra para validar</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>OR</th><th>Servicio</th><th>Asesor</th><th class="r">Importe</th></tr></thead>
+          <tbody id="accTablaMuestra"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /panelAccesorios -->
+
   <div class="content" id="panelCM" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
@@ -1560,10 +1656,10 @@ const D = {
   // ── NAVEGACIÓN ────────────────────────────────────────────────
   navTo(vista, btn) {
     this.vistaActual = vista;
-    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : vista === "servicios" ? "servicios" : vista === "repuestos" ? "repuestos" : "facturacion");
+    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : vista === "servicios" ? "servicios" : vista === "repuestos" ? "repuestos" : vista === "accesorios" ? "accesorios" : "facturacion");
     document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM):not(#panelServicios):not(#panelRepuestos)");
+    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM):not(#panelServicios):not(#panelRepuestos):not(#panelAccesorios)");
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
     const panelOR     = document.getElementById("panelOR");
@@ -1571,11 +1667,12 @@ const D = {
     const panelCM     = document.getElementById("panelCM");
     const panelServ   = document.getElementById("panelServicios");
     const panelRep    = document.getElementById("panelRepuestos");
+    const panelAcc    = document.getElementById("panelAccesorios");
     const filtersBar  = document.getElementById("filtersBar");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
-    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM, panelServ, panelRep].forEach(p => { if (p) p.style.display = "none"; });
+    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM, panelServ, panelRep, panelAcc].forEach(p => { if (p) p.style.display = "none"; });
     // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Contratos de Mant. — son foto/serie histórica propia
     if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "cm") ? "none" : "flex";
     if (vista === "garantias") {
@@ -1596,6 +1693,9 @@ const D = {
     } else if (vista === "repuestos") {
       panelRep.style.display = "flex";
       this.renderRepuestos(mes, ano);
+    } else if (vista === "accesorios") {
+      panelAcc.style.display = "flex";
+      this.renderAccesorios(mes, ano);
     } else if (vista === "cm") {
       panelCM.style.display = "flex";
       this.renderCM();
@@ -1803,6 +1903,7 @@ const D = {
     if (this.vistaActual === "cm")        this.renderCM();
     if (this.vistaActual === "servicios") this.renderServicios(mes, ano);
     if (this.vistaActual === "repuestos") this.renderRepuestos(mes, ano);
+    if (this.vistaActual === "accesorios") this.renderAccesorios(mes, ano);
   },
 
   limpiar() {
@@ -2424,7 +2525,7 @@ const D = {
 
     // Actualizar encabezado
     document.getElementById("garHeaderSub").textContent =
-      `${this.MESES[mes]} ${ano} — Facturación de garantías por lotes de Benicio`;
+      `${this.MESES[mes]} ${ano} — Facturación de garantías por lotes`;
 
     // Chips de resumen en header
     document.getElementById("garChips").innerHTML = `
@@ -3237,13 +3338,23 @@ const D = {
     return this.objetivoDeUnaSuc(suc, mes, ano, categoria);
   },
 
+  // Identifica una OR como "Accesorios" buscando la palabra en el texto del Servicio
+  // (SIAC no tiene una columna propia para esto — es una aproximación por palabra clave,
+  // confirmada por Pablo: usa OR con "ACC"/"ACCESORIOS" en el servicio, ej. "COLOCACION DE ACCESORIOS").
+  // Nunca aplica a Garantía (VW no clasifica así sus reclamos).
+  esAccesorio(r) {
+    if (r.tipo === "Garantía") return false;
+    return !!(r.servicio && /acc/i.test(r.servicio));
+  },
+
   // ── CONTRATOS DE MANTENIMIENTO ──────────────────────────────────
   // ── SERVICIOS (Mano de Obra + Terceros) ─────────────────────────
   renderServicios(mes, ano) {
     const sucSel  = document.getElementById("fSuc").value;
-    // Excluye Garantía — igual que en Facturación, el objetivo de Servicios (Repuestos+Servicios+
-    // Accesorios de Jorge) no incluye Garantía, así que no debe contar acá tampoco.
-    const val = r => r.tipo === "Garantía" ? 0 : (r.mo || 0) + (r.terceros || 0);
+    // Excluye Garantía (no compite contra el objetivo comercial) y también las OR de
+    // Accesorios (se cuentan aparte, en su propio módulo — si no, quedarían contadas
+    // dos veces: acá y en Accesorios).
+    const val = r => (r.tipo === "Garantía" || this.esAccesorio(r)) ? 0 : (r.mo || 0) + (r.terceros || 0);
 
     const total = this.fil.reduce((s,r) => s + val(r), 0);
     const obj   = this.objetivoDe(sucSel, mes, ano, "Servicios");
@@ -3417,10 +3528,11 @@ const D = {
   // ── REPUESTOS (Facturación Comercial menos Servicios) ───────────
   renderRepuestos(mes, ano) {
     const sucSel  = document.getElementById("fSuc").value;
-    // Repuestos = lo comercial (Cliente+Interna+Mixto, sin Garantía) MENOS Servicios (M.O.+Terceros).
-    // Sale por resta, sin depender de ningún filtro de SIAC.
+    // Repuestos = lo comercial (Cliente+Interna+Mixto, sin Garantía, sin Accesorios) MENOS
+    // Servicios (M.O.+Terceros). Accesorios se cuenta aparte en su propio módulo — si no,
+    // esas OR quedarían contadas acá también, duplicando plata entre los dos módulos.
     const val = r => {
-      if (r.tipo === "Garantía") return 0;
+      if (r.tipo === "Garantía" || this.esAccesorio(r)) return 0;
       return r.importe - (r.mo || 0) - (r.terceros || 0);
     };
 
@@ -3590,6 +3702,188 @@ const D = {
           });
         }
       } catch (err) { console.error("Error gráficos Repuestos (diario/semanal):", err); }
+    });
+  },
+
+  // ── ACCESORIOS ────────────────────────────────────────────────
+  renderAccesorios(mes, ano) {
+    const sucSel  = document.getElementById("fSuc").value;
+    // Accesorios: se identifica la OR completa por palabra clave en el Servicio ("ACC"/"ACCESORIOS").
+    // A diferencia de Servicios/Repuestos (que dividen cada OR en M.O. vs materiales), acá se cuenta
+    // el importe comercial COMPLETO de la OR — es una categorización de la orden entera, no un
+    // desglose interno. Por eso Servicios y Repuestos excluyen estas OR (ver esAccesorio arriba).
+    const val = r => this.esAccesorio(r) ? r.importe : 0;
+
+    const total = this.fil.reduce((s,r) => s + val(r), 0);
+    const obj   = this.objetivoDe(sucSel, mes, ano, "Accesorios");
+    const cumpl = obj ? total/obj*100 : 0;
+    const cd    = this.calcDias(mes, ano);
+    const ritmo = cd.diasHabTrans > 0 ? total/cd.diasHabTrans : 0;
+    const proyeccion = ritmo * cd.diasHabMes;
+
+    document.getElementById("accTotal").textContent = this.compacto(total);
+    document.getElementById("accTotalLbl").textContent = `${this.moneda(total)}`;
+    document.getElementById("accObjetivo").textContent = obj ? this.compacto(obj) : "Sin cargar";
+    document.getElementById("accCumpl").textContent = obj ? this.pct(cumpl) : "—";
+    document.getElementById("accProyeccion").textContent = this.compacto(proyeccion);
+    document.getElementById("accProyeccionLbl").textContent = obj
+      ? (proyeccion >= obj ? "✅ Alcanzable" : "⚠️ En riesgo")
+      : "Proyección fin de mes";
+    document.getElementById("accPct").textContent = obj ? this.pct(cumpl) : "sin objetivo";
+    document.getElementById("accProgFill").style.width = Math.min(cumpl,100) + "%";
+
+    // Por asesor
+    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
+    const objInd = obj / nAsesores;
+    let verde=0, amarillo=0, rojo=0;
+    const filas = Object.entries(byAsesor).map(([a, arr]) => {
+      const totAs = arr.reduce((s,r)=>s+val(r),0);
+      const suc = arr[0]?.suc || "";
+      const cumplAs = objInd ? totAs/objInd*100 : 0;
+      let color = !obj ? "amarillo" : cumplAs>=90?"verde":cumplAs>=55?"amarillo":"rojo";
+      if (color==="verde") verde++; else if (color==="amarillo") amarillo++; else rojo++;
+      return { a, suc, totAs, cumplAs, color };
+    }).sort((x,y)=>y.totAs-x.totAs);
+
+    document.getElementById("accResumen").innerHTML = obj ? `🟢 ${verde} &nbsp;🟡 ${amarillo} &nbsp;🔴 ${rojo}` : "Sin objetivo de Accesorios cargado para esta sucursal/mes";
+    document.getElementById("accGrid").innerHTML = filas.map(f => `
+      <div class="sem-card ${f.color}">
+        <div class="sem-top"><span class="sem-name">${f.a}</span><span class="sem-indicator ${f.color}"></span></div>
+        <div class="sem-suc"><span class="badge b-blue">${f.suc}</span></div>
+        <div class="sem-val">${this.compacto(f.totAs)}</div>
+        <div class="sem-pct">${obj ? f.cumplAs.toFixed(1)+"% del obj. individual" : "sin objetivo"}</div>
+        <div class="sem-prog"><div class="sem-prog-track"><div class="sem-prog-fill" style="width:${Math.min(f.cumplAs,100)}%"></div></div></div>
+      </div>`).join("");
+
+    // Tabla de muestra: OR detectadas como Accesorios, para validar que la palabra clave funciona bien
+    const detectadas = this.fil.filter(r => this.esAccesorio(r)).sort((a,b) => b.importe - a.importe).slice(0, 30);
+    document.getElementById("accTablaMuestra").innerHTML = detectadas.length
+      ? detectadas.map(r => `<tr><td>${r.or || "—"}</td><td>${r.servicio || "—"}</td><td>${r.asesor}</td><td class="r">${this.moneda(r.importe)}</td></tr>`).join("")
+      : "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Ninguna OR con \"ACC\"/\"ACCESORIOS\" en el Servicio, para este filtro</td></tr>";
+
+    // Gráfico por asesor + torta de participación
+    if (this.graficos.chartAccAsesor) { try { this.graficos.chartAccAsesor.destroy(); } catch(e){} this.graficos.chartAccAsesor = null; }
+    if (this.graficos.chartAccPart)   { try { this.graficos.chartAccPart.destroy(); } catch(e){} this.graficos.chartAccPart = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvasAccAs = document.getElementById("chartAccAsesor");
+        if (canvasAccAs) {
+          this.graficos.chartAccAsesor = new Chart(canvasAccAs, {
+            type: "bar",
+            data: { labels: filas.map(f=>f.a), datasets: [{ data: filas.map(f=>f.totAs), backgroundColor: this.PALETA.map(c=>c+"28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 7, maxBarThickness: 50 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:false},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        }
+        const canvasAccPart = document.getElementById("chartAccPart");
+        if (canvasAccPart) {
+          this.graficos.chartAccPart = new Chart(canvasAccPart, {
+            type: "doughnut",
+            data: { labels: filas.map(f=>f.a), datasets: [{ data: filas.map(f=>f.totAs), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false, cutout:"60%",
+              plugins:{
+                legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                  callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${this.moneda(ctx.parsed)} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error gráficos Accesorios (asesor/participación):", err); }
+    });
+
+    // Gráfico mensual: Accesorios vs Objetivo, todos los meses
+    if (this.graficos.chartAccMes) { try { this.graficos.chartAccMes.destroy(); } catch(e){} }
+    requestAnimationFrame(() => {
+      try {
+        const canvasAccMes = document.getElementById("chartAccMes");
+        if (!canvasAccMes) return;
+        const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
+        const realesMes = mesesAno.map(m => this.raw.filter(r => r.mes===m && r.ano===ano && (sucSel==="todas" ? true : r.suc===sucSel)).reduce((s,r)=>s+val(r),0));
+        const objsMes   = mesesAno.map(m => this.objetivoDe(sucSel, m, ano, "Accesorios"));
+        this.graficos.chartAccMes = new Chart(canvasAccMes, {
+          type: "bar",
+          data: { labels: mesesAno.map(m=>this.MESES_CORTO[m]), datasets: [
+            { label: "Objetivo", data: objsMes, backgroundColor: "rgba(229,107,159,.15)", borderColor: "rgba(229,107,159,.5)", borderWidth: 1.5, borderRadius: 4 },
+            { label: "Accesorios", data: realesMes,
+              backgroundColor: realesMes.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=objsMes[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
+              borderColor: realesMes.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=objsMes[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
+              borderWidth: 1.5, borderRadius: 4 },
+          ]},
+          options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
+            scales:{
+              x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+              y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartAccMes:", err); }
+    });
+
+    // Evolución Diaria Acumulada + Tendencia Semanal
+    if (this.graficos.chartAccDiario)  { try { this.graficos.chartAccDiario.destroy(); } catch(e){} this.graficos.chartAccDiario = null; }
+    if (this.graficos.chartAccSemanal) { try { this.graficos.chartAccSemanal.destroy(); } catch(e){} this.graficos.chartAccSemanal = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvasAccDia = document.getElementById("chartAccDiario");
+        if (canvasAccDia) {
+          const byFecha = {};
+          this.fil.forEach(r => { byFecha[r.fecha] = (byFecha[r.fecha]||0) + val(r); });
+          const fechas = Object.keys(byFecha).sort();
+          let ac = 0;
+          const acV = fechas.map(f => { ac += byFecha[f]; return ac; });
+          const diasMes = new Date(ano, mes, 0).getDate();
+          const objLine = fechas.map((_,i) => Math.round((obj||0) / diasMes * (i+1)));
+          this.graficos.chartAccDiario = new Chart(canvasAccDia, {
+            type: "line",
+            data: { labels: fechas.map(f=>f.slice(8)), datasets: [
+              { label: "Accesorios", data: acV, borderColor: "#e56b9f", backgroundColor: "rgba(229,107,159,.08)", borderWidth: 2, pointRadius: 1, tension: .4, fill: true },
+              { label: "Ritmo ideal", data: objLine, borderColor: "#00d97e", backgroundColor: "transparent", borderWidth: 1.5, pointRadius: 0, tension: .4, borderDash: [5,4] },
+            ]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:9}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        }
+
+        const canvasAccSem = document.getElementById("chartAccSemanal");
+        if (canvasAccSem) {
+          const bySem = {};
+          this.fil.forEach(r => { const k="Sem "+r.sem; bySem[k]=(bySem[k]||0)+val(r); });
+          const semKeys = Object.keys(bySem).sort();
+          this.graficos.chartAccSemanal = new Chart(canvasAccSem, {
+            type: "line",
+            data: { labels: semKeys, datasets: [{ label:"Accesorios semanal", data: semKeys.map(k=>bySem[k]), borderColor:"#a87eff", backgroundColor:"rgba(168,126,255,.08)", borderWidth:2.5, pointRadius:4, pointBackgroundColor:"#a87eff", tension:.4, fill:true }]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:false},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error gráficos Accesorios (diario/semanal):", err); }
     });
   },
 
