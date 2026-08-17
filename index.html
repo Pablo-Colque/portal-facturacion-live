@@ -459,7 +459,7 @@ tr:last-child td{border-bottom:0}
   <div class="login-box">
     <div class="vw-badge">VW</div>
     <h2>Portal de Gestión Postventa</h2>
-    <p>Volkswagen Autosol Jujuy · Acceso restringido</p>
+    <p>Volkswagen Autosol · Acceso restringido</p>
     <input type="password" id="loginPass" placeholder="Clave de acceso" maxlength="20" autocomplete="off">
     <button onclick="D.login()">Ingresar</button>
     <div class="login-err" id="loginErr"></div>
@@ -477,20 +477,20 @@ tr:last-child td{border-bottom:0}
 <aside class="sidebar">
   <div class="brand">
     <div class="vw-badge">VW</div>
-    <div class="brand-org">Volkswagen Argentina · Autosol Jujuy</div>
+    <div class="brand-org">Volkswagen Argentina · Autosol</div>
     <div class="brand-name">Portal de Gestión<br>Postventa</div>
     <div class="brand-mod">Gerencia de Postventa</div>
   </div>
   <nav class="nav">
     <div class="nav-sec">Módulos</div>
     <button onclick="D.navTo('facturacion',this)" class="active"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
-    <button onclick="D.navTo('servicios',this)"><span class="ico">🔩</span><span class="lbl">Servicios</span></button>
-    <button onclick="D.navTo('repuestos',this)"><span class="ico">⚙️</span><span class="lbl">Repuestos</span></button>
-    <button onclick="D.navTo('accesorios',this)"><span class="ico">🎒</span><span class="lbl">Accesorios</span></button>
+    <button onclick="D.navTo('servicios',this)"><span class="ico">🔧</span><span class="lbl">Servicios</span></button>
+    <button onclick="D.navTo('repuestos',this)"><span class="ico">🔩</span><span class="lbl">Repuestos</span></button>
+    <button onclick="D.navTo('accesorios',this)"><span class="ico">📦</span><span class="lbl">Accesorios</span></button>
     <button onclick="D.navTo('garantias',this)"><span class="ico">🛡️</span><span class="lbl">Garantías</span></button>
-    <button onclick="D.navTo('taller',this)"><span class="ico">🔧</span><span class="lbl">Paso por Taller</span></button>
+    <button onclick="D.navTo('taller',this)"><span class="ico">🚗</span><span class="lbl">Paso por Taller</span></button>
     <button onclick="D.navTo('or',this)"><span class="ico">📋</span><span class="lbl">OR sin Facturar</span></button>
-    <button onclick="D.navTo('amp',this)"><span class="ico">🔧</span><span class="lbl">Ampliaciones</span></button>
+    <button onclick="D.navTo('amp',this)"><span class="ico">📈</span><span class="lbl">Ampliaciones</span></button>
     <button onclick="D.navTo('cm',this)"><span class="ico">📝</span><span class="lbl">Contratos de Mant.</span></button>
     <div class="nav-sec">Próximamente</div>
     <button class="locked" disabled><span class="ico">📈</span><span class="lbl">Productividad</span><span class="cnt">pronto</span></button>
@@ -508,7 +508,7 @@ tr:last-child td{border-bottom:0}
 <div class="main">
   <div class="header">
     <div class="h-left">
-      <div class="h-eyebrow">Volkswagen Argentina · Autosol Jujuy</div>
+      <div class="h-eyebrow">Volkswagen Argentina · Autosol</div>
       <div class="h-title">Panel de Control — Facturación</div>
     </div>
     <div class="h-right">
@@ -846,7 +846,7 @@ tr:last-child td{border-bottom:0}
   <div class="content" id="panelTaller" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
-      <div class="h-title">🔧 Paso por Taller — Jujuy</div>
+      <div class="h-title">🚗 Paso por Taller — Jujuy</div>
       <div class="h-sub" id="tallerSubtitulo">Cargando datos…</div>
     </div>
 
@@ -1142,7 +1142,7 @@ tr:last-child td{border-bottom:0}
   <div class="content" id="panelAmp" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
-      <div class="h-title">🔧 Ampliaciones — Trabajos adicionales detectados en Taller</div>
+      <div class="h-title">📈 Ampliaciones — Trabajos adicionales detectados en Taller</div>
       <div class="h-sub" id="ampSubtitulo">Cargando datos…</div>
     </div>
 
@@ -1244,14 +1244,14 @@ tr:last-child td{border-bottom:0}
   <div class="content" id="panelServicios" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
-      <div class="h-title">🔩 Servicios — Mano de Obra + Terceros</div>
+      <div class="h-title">🔧 Servicios — Mano de Obra + Terceros</div>
       <div class="h-sub" id="servSubtitulo">Trabajo propio + trabajo tercerizado (chapa/pintura), sin repuestos ni accesorios</div>
     </div>
 
     <!-- KPIs principales -->
     <div class="kpis" id="servKpis" style="margin-bottom:20px">
       <div class="kpi-card c-main">
-        <div class="kpi-ico">🔩</div>
+        <div class="kpi-ico">🔧</div>
         <div class="kpi-val" id="servTotal">—</div>
         <div class="kpi-lbl" id="servTotalLbl">Servicios (M.O. + Terceros)</div>
       </div>
@@ -1270,6 +1270,11 @@ tr:last-child td{border-bottom:0}
         <div class="kpi-val" id="servProyeccion">—</div>
         <div class="kpi-lbl" id="servProyeccionLbl">Proyección fin de mes</div>
       </div>
+      <div class="kpi-card c-blue">
+        <div class="kpi-ico">🎟️</div>
+        <div class="kpi-val" id="servTicket">—</div>
+        <div class="kpi-lbl" id="servTicketLbl">Ticket promedio (por OR)</div>
+      </div>
     </div>
 
     <!-- Barra de avance -->
@@ -1278,6 +1283,15 @@ tr:last-child td{border-bottom:0}
         <div class="suc-prog-meta"><span>Avance hacia el objetivo de Servicios</span><span id="servPct">0%</span></div>
         <div class="suc-prog-track"><div class="suc-prog-fill" id="servProgFill" style="width:0%"></div></div>
       </div>
+    </div>
+
+    <!-- Comparativa Interanual -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">📅 Comparativa Interanual — Todos los meses</div>
+        <div class="card-badge" id="badgeServInteranual">—</div>
+      </div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartServInteranual"></canvas></div>
     </div>
 
     <!-- Gráficos -->
@@ -1325,14 +1339,14 @@ tr:last-child td{border-bottom:0}
   <div class="content" id="panelRepuestos" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
-      <div class="h-title">⚙️ Repuestos — Facturación Comercial menos Servicios</div>
+      <div class="h-title">🔩 Repuestos — Facturación Comercial menos Servicios</div>
       <div class="h-sub" id="repSubtitulo">Repuestos y materiales (Cliente+Interna+Mixto, sin Garantía) — sale por resta, sin depender de un filtro de SIAC</div>
     </div>
 
     <!-- KPIs principales -->
     <div class="kpis" id="repKpis" style="margin-bottom:20px">
       <div class="kpi-card c-main">
-        <div class="kpi-ico">⚙️</div>
+        <div class="kpi-ico">🔩</div>
         <div class="kpi-val" id="repTotal">—</div>
         <div class="kpi-lbl" id="repTotalLbl">Repuestos (Comercial − Servicios)</div>
       </div>
@@ -1351,6 +1365,20 @@ tr:last-child td{border-bottom:0}
         <div class="kpi-val" id="repProyeccion">—</div>
         <div class="kpi-lbl" id="repProyeccionLbl">Proyección fin de mes</div>
       </div>
+      <div class="kpi-card c-blue">
+        <div class="kpi-ico">🎟️</div>
+        <div class="kpi-val" id="repTicket">—</div>
+        <div class="kpi-lbl" id="repTicketLbl">Ticket promedio (por OR)</div>
+      </div>
+    </div>
+
+    <!-- Comparativa Interanual -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">📅 Comparativa Interanual — Todos los meses</div>
+        <div class="card-badge" id="badgeRepInteranual">—</div>
+      </div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chartRepInteranual"></canvas></div>
     </div>
 
     <!-- Barra de avance -->
@@ -1406,14 +1434,14 @@ tr:last-child td{border-bottom:0}
   <div class="content" id="panelAccesorios" style="display:none">
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
-      <div class="h-title">🎒 Accesorios</div>
+      <div class="h-title">📦 Accesorios</div>
       <div class="h-sub" id="accSubtitulo">Aproximación por palabra clave ("ACC"/"ACCESORIOS") en el texto del Servicio — no es una columna propia de SIAC</div>
     </div>
 
     <!-- KPIs principales -->
     <div class="kpis" id="accKpis" style="margin-bottom:20px">
       <div class="kpi-card c-main">
-        <div class="kpi-ico">🎒</div>
+        <div class="kpi-ico">📦</div>
         <div class="kpi-val" id="accTotal">—</div>
         <div class="kpi-lbl" id="accTotalLbl">Accesorios</div>
       </div>
@@ -1640,8 +1668,20 @@ const D = {
     "2026-08-17","2026-10-12","2026-11-23","2026-12-08","2026-12-25",
   ],
 
-  // Asesores que NO aparecen en semáforo/ranking (jefes, internos, etc.)
-  EXCLUIR_SEMAFORO: ["PABLO COLQUE","Pablo Colque"],
+  // Nombres de PDI/Pre-Entrega (Jujuy: Pablo Colque + Javier Reynoso — a veces Javier abre
+  // a nombre de Pablo, para que quede una sola persona en el registro; Santa Fe: Marcelo
+  // Tejerina + Ernesto Garamendi). No son asesores comerciales, así que en vez de compararlos
+  // 1 a 1 contra el resto (o hacerlos desaparecer del todo), se agrupan bajo "PDI" — sigue
+  // siendo visible y trackeable, pero separado de la comparación real entre asesores.
+  NOMBRES_PDI: ["PABLO COLQUE","Pablo Colque","JAVIER REYNOSO","Javier Reynoso",
+    "MARCELO TEJERINA","Marcelo Tejerina","ERNESTO GARAMENDI","Ernesto Garamendi"],
+  EXCLUIR_SEMAFORO: [], // ya no se excluye a nadie del todo — ver mapearPDI()
+
+  // Devuelve una copia del array con el asesor renombrado a "PDI" para las 4 personas de
+  // Pre-Entrega, dejando el resto de los campos (incluida la sucursal) intactos.
+  mapearPDI(arr) {
+    return arr.map(r => this.NOMBRES_PDI.includes(r.asesor) ? { ...r, asesor: "PDI" } : r);
+  },
 
   MESES: ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
   MESES_CORTO: ["","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
@@ -2082,7 +2122,7 @@ const D = {
       alertas.push({cls:"warn", ico:"🎯", txt:`Proyección <b>${this.compacto(t.proyeccion)}</b> — necesitás mejorar el ritmo para llegar`});
 
     // Asesores — alertas individuales
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAs = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = t.objetivo / nAs;
     Object.entries(byAsesor).forEach(([a, arr]) => {
@@ -2277,7 +2317,7 @@ const D = {
 
   // ── SEMÁFORO ─────────────────────────────────────────────────
   renderSemaforo(mes, ano, t) {
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = t.objetivo / nAsesores;
     let verde=0, amarillo=0, rojo=0;
@@ -2314,7 +2354,7 @@ const D = {
   renderGraficos(mes, ano, t) {
     this.killCharts();
     const d = this.fil;
-    const filSinJefe = d.filter(r => !this.EXCLUIR_SEMAFORO.includes(r.asesor));
+    const filSinJefe = this.mapearPDI(d);
     const byAsesor = this.grupo(filSinJefe, "asesor");
     const aKeys = Object.keys(byAsesor).sort((a,b) => this.sum(byAsesor[b]) - this.sum(byAsesor[a]));
     const aVals = aKeys.map(k => this.sum(byAsesor[k]));
@@ -2336,102 +2376,110 @@ const D = {
       },
     };
 
-    // Asesor
-    this.graficos.a = new Chart(document.getElementById("chartAsesor"),{type:"bar",
-      data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA.map(c=>c+"28"),borderColor:this.PALETA,borderWidth:2,borderRadius:7,borderSkipped:false,maxBarThickness:50}]},
-      options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
+    requestAnimationFrame(() => {
+      try {
+        // Asesor
+        this.graficos.a = new Chart(document.getElementById("chartAsesor"),{type:"bar",
+          data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA.map(c=>c+"28"),borderColor:this.PALETA,borderWidth:2,borderRadius:7,borderSkipped:false,maxBarThickness:50}]},
+          options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
+      } catch (err) { console.error("Error chartAsesor:", err); }
 
-    // Participación
-    this.graficos.p = new Chart(document.getElementById("chartPart"),{type:"doughnut",
-      data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA,borderColor:CHART_BG,borderWidth:3,hoverOffset:5}]},options:donutOpts});
+      try {
+        // Participación
+        this.graficos.p = new Chart(document.getElementById("chartPart"),{type:"doughnut",
+          data:{labels:aKeys,datasets:[{data:aVals,backgroundColor:this.PALETA,borderColor:CHART_BG,borderWidth:3,hoverOffset:5}]},options:donutOpts});
+      } catch (err) { console.error("Error chartPart:", err); }
 
-    // Tipo
-    const byTipo = this.grupo(d,"tipo");
-    const tKeys = Object.keys(byTipo);
-    const coloresTipo = {
-      "Cliente":  "#4d9fff",
-      "Garantía": "#00d97e",
-      "Mixto":    "#ffb020",
-      "Interna":  "#a87eff",
-    };
-    this.graficos.t = new Chart(document.getElementById("chartTipo"),{type:"doughnut",
-      data:{labels:tKeys,datasets:[{data:tKeys.map(k=>this.sum(byTipo[k])),
-        backgroundColor:tKeys.map(k=>coloresTipo[k]||"#00cce8"),
-        borderColor:CHART_BG,borderWidth:3,hoverOffset:5}]},options:donutOpts});
+      try {
+        // Tipo
+        const byTipo = this.grupo(d,"tipo");
+        const tKeys = Object.keys(byTipo);
+        const coloresTipo = {
+          "Cliente":  "#4d9fff",
+          "Garantía": "#00d97e",
+          "Mixto":    "#ffb020",
+          "Interna":  "#a87eff",
+        };
+        this.graficos.t = new Chart(document.getElementById("chartTipo"),{type:"doughnut",
+          data:{labels:tKeys,datasets:[{data:tKeys.map(k=>this.sum(byTipo[k])),
+            backgroundColor:tKeys.map(k=>coloresTipo[k]||"#00cce8"),
+            borderColor:CHART_BG,borderWidth:3,hoverOffset:5}]},options:donutOpts});
+      } catch (err) { console.error("Error chartTipo:", err); }
 
-    // Diario acumulado — solo el mes actual filtrado
-    const byFecha = {};
-    d.forEach(r => { byFecha[r.fecha] = (byFecha[r.fecha]||0) + r.importe; });
-    const fechas = Object.keys(byFecha).sort();
-    let ac = 0;
-    const acV = fechas.map(f => { ac += byFecha[f]; return ac; });
-    const diasMes = new Date(ano, mes, 0).getDate();
-    const objLine = fechas.map((_,i) => Math.round(t.objetivo / diasMes * (i+1)));
-    this.graficos.d = new Chart(document.getElementById("chartDiario"),{type:"line",
-      data:{labels:fechas.map(f=>f.slice(8)),datasets:[
-        {label:"Facturado",data:acV,borderColor:"#4d9fff",backgroundColor:"rgba(77,159,255,.07)",borderWidth:2,pointRadius:1,tension:.4,fill:true},
-        {label:"Ritmo ideal",data:objLine,borderColor:"#00d97e",backgroundColor:"transparent",borderWidth:1.5,pointRadius:0,tension:.4,borderDash:[5,4]},
-      ]},
-      options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
+      let t_objetivo = t.objetivo, mesesAno, mesesLabels, facturadoDeMes, sucSelObj;
+      try {
+        // Diario acumulado — solo el mes actual filtrado
+        const byFecha = {};
+        d.forEach(r => { byFecha[r.fecha] = (byFecha[r.fecha]||0) + r.importe; });
+        const fechas = Object.keys(byFecha).sort();
+        let ac = 0;
+        const acV = fechas.map(f => { ac += byFecha[f]; return ac; });
+        const diasMes = new Date(ano, mes, 0).getDate();
+        const objLine = fechas.map((_,i) => Math.round(t_objetivo / diasMes * (i+1)));
+        this.graficos.d = new Chart(document.getElementById("chartDiario"),{type:"line",
+          data:{labels:fechas.map(f=>f.slice(8)),datasets:[
+            {label:"Facturado",data:acV,borderColor:"#4d9fff",backgroundColor:"rgba(77,159,255,.07)",borderWidth:2,pointRadius:1,tension:.4,fill:true},
+            {label:"Ritmo ideal",data:objLine,borderColor:"#00d97e",backgroundColor:"transparent",borderWidth:1.5,pointRadius:0,tension:.4,borderDash:[5,4]},
+          ]},
+          options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
+      } catch (err) { console.error("Error chartDiario:", err); }
 
-    // Objetivo vs Facturado año completo — con datos reales de TODOS los meses
-    const sucSelObj = document.getElementById("fSuc").value;
-    const mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
-    const mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]);
-    // "todas": sumar TODAS las sucursales; una puntual: solo esa. Excluye Garantía
-    // porque se compara contra el objetivo comercial (Repuestos+Servicios+Accesorios).
-    const facturadoDeMes = m => this.raw.filter(r => r.mes===m && r.ano===ano &&
-      r.tipo !== "Garantía" &&
-      (sucSelObj === "todas" ? true : r.suc === sucSelObj)
-    ).reduce((s,r)=>s+r.importe,0);
-    const realesAno = mesesAno.map(facturadoDeMes);
-    const objsAno   = mesesAno.map(m => this.objetivoDe(sucSelObj, m, ano));
-    this.graficos.o = new Chart(document.getElementById("chartObj"),{type:"bar",
-      data:{labels:mesesLabels,datasets:[
-        {label:"Objetivo",data:objsAno,backgroundColor:"rgba(77,159,255,.12)",borderColor:"rgba(77,159,255,.5)",borderWidth:1.5,borderRadius:4,borderSkipped:false},
-        {label:"Facturado",data:realesAno,
-          backgroundColor:realesAno.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=objsAno[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
-          borderColor:realesAno.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=objsAno[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
-          borderWidth:1.5,borderRadius:4,borderSkipped:false},
-      ]},
-      options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
+      try {
+        // Objetivo vs Facturado año completo — con datos reales de TODOS los meses
+        sucSelObj = document.getElementById("fSuc").value;
+        mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12];
+        mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]);
+        // "todas": sumar TODAS las sucursales; una puntual: solo esa. Excluye Garantía
+        // porque se compara contra el objetivo comercial (Repuestos+Servicios+Accesorios).
+        facturadoDeMes = m => this.raw.filter(r => r.mes===m && r.ano===ano &&
+          r.tipo !== "Garantía" &&
+          (sucSelObj === "todas" ? true : r.suc === sucSelObj)
+        ).reduce((s,r)=>s+r.importe,0);
+        const realesAno = mesesAno.map(facturadoDeMes);
+        const objsAno   = mesesAno.map(m => this.objetivoDe(sucSelObj, m, ano));
+        this.graficos.o = new Chart(document.getElementById("chartObj"),{type:"bar",
+          data:{labels:mesesLabels,datasets:[
+            {label:"Objetivo",data:objsAno,backgroundColor:"rgba(77,159,255,.12)",borderColor:"rgba(77,159,255,.5)",borderWidth:1.5,borderRadius:4,borderSkipped:false},
+            {label:"Facturado",data:realesAno,
+              backgroundColor:realesAno.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=objsAno[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
+              borderColor:realesAno.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=objsAno[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
+              borderWidth:1.5,borderRadius:4,borderSkipped:false},
+          ]},
+          options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:10}}}}});
+      } catch (err) { console.error("Error chartObj:", err); }
 
-    // Semanal
-    const bySem = {};
-    d.forEach(r => { const k="Sem "+r.sem; bySem[k]=(bySem[k]||0)+r.importe; });
-    const semKeys = Object.keys(bySem).sort();
-    this.graficos.s = new Chart(document.getElementById("chartSemanal"),{type:"line",
-      data:{labels:semKeys,datasets:[{label:"Facturación semanal",data:semKeys.map(k=>bySem[k]),borderColor:"#a87eff",backgroundColor:"rgba(168,126,255,.08)",borderWidth:2.5,pointRadius:4,pointBackgroundColor:"#a87eff",tension:.4,fill:true}]},
-      options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
+      try {
+        // Semanal
+        const bySem = {};
+        d.forEach(r => { const k="Sem "+r.sem; bySem[k]=(bySem[k]||0)+r.importe; });
+        const semKeys = Object.keys(bySem).sort();
+        this.graficos.s = new Chart(document.getElementById("chartSemanal"),{type:"line",
+          data:{labels:semKeys,datasets:[{label:"Facturación semanal",data:semKeys.map(k=>bySem[k]),borderColor:"#a87eff",backgroundColor:"rgba(168,126,255,.08)",borderWidth:2.5,pointRadius:4,pointBackgroundColor:"#a87eff",tension:.4,fill:true}]},
+          options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}}}});
+      } catch (err) { console.error("Error chartSemanal:", err); }
 
-    // Histórico
-    const histR = mesesAno.map(facturadoDeMes);
-    const histO = mesesAno.map(m => this.objetivoDe(sucSelObj, m, ano));
-    this.graficos.h = new Chart(document.getElementById("chartHist"),{type:"bar",
-      data:{labels:mesesLabels,datasets:[{label:"Cumplimiento %",
-        data:histR.map((v,i)=>histO[i]?+(v/histO[i]*100).toFixed(1):0),
-        backgroundColor:histR.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=histO[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
-        borderColor:histR.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=histO[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
-        borderWidth:1.5,borderRadius:4,borderSkipped:false}]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>` Cumplimiento: ${ctx.raw}%`}}},
-        scales:{x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
-          y:{grid:{color:"rgba(30,51,80,.4)"},border:{display:false},ticks:{color:CHART_MUTED,font:{size:10},callback:v=>v+"%"},min:0,max:120}}}});
-  },
-
-  // ── CONCENTRACIÓN ─────────────────────────────────────────────
-  renderConcentracion() {
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
-    const total = this.sum(this.fil) || 1;
-    const rows = Object.entries(byAsesor).map(([a,arr])=>({a,v:this.sum(arr)})).sort((a,b)=>b.v-a.v);
-    const top1Pct = rows[0] ? rows[0].v/total*100 : 0;
-    const riesgo  = top1Pct>=60?"alto":top1Pct>=40?"medio":"bajo";
-    document.getElementById("riesgoBadge").innerHTML = `<span class="riesgo-badge riesgo-${riesgo}">Riesgo ${riesgo.toUpperCase()} — top asesor: ${top1Pct.toFixed(0)}%</span>`;
-    document.getElementById("concBarWrap").innerHTML = `<div class="concentracion-bar">
-      ${rows.map((r,i)=>`<div class="conc-seg" style="width:${(r.v/total*100).toFixed(1)}%;background:${this.PALETA[i]||"#444"}">${(r.v/total*100).toFixed(0)}%</div>`).join("")}
-    </div>`;
-    document.getElementById("concLegend").innerHTML = rows.map((r,i)=>`
-      <div class="conc-item"><div class="conc-dot" style="background:${this.PALETA[i]||"#444"}"></div>${r.a}: ${this.pct(r.v/total*100)}</div>`).join("");
+      try {
+        // Histórico
+        if (!mesesAno) { mesesAno = [1,2,3,4,5,6,7,8,9,10,11,12]; mesesLabels = mesesAno.map(m => this.MESES_CORTO[m]); sucSelObj = document.getElementById("fSuc").value; facturadoDeMes = m => this.raw.filter(r => r.mes===m && r.ano===ano && r.tipo !== "Garantía" && (sucSelObj === "todas" ? true : r.suc === sucSelObj)).reduce((s,r)=>s+r.importe,0); }
+        const histR = mesesAno.map(facturadoDeMes);
+        const histO = mesesAno.map(m => this.objetivoDe(sucSelObj, m, ano));
+        this.graficos.h = new Chart(document.getElementById("chartHist"),{type:"bar",
+          data:{labels:mesesLabels,datasets:[
+            {label:"Cumplimiento %",type:"bar",
+              data:histR.map((v,i)=>histO[i]?+(v/histO[i]*100).toFixed(1):0),
+              backgroundColor:histR.map((v,i)=>v===0?"rgba(107,146,184,.08)":v>=histO[i]?"rgba(0,217,126,.2)":"rgba(255,59,82,.15)"),
+              borderColor:histR.map((v,i)=>v===0?"rgba(107,146,184,.2)":v>=histO[i]?"rgba(0,217,126,.6)":"rgba(255,59,82,.6)"),
+              borderWidth:1.5,borderRadius:4,borderSkipped:false},
+            {label:"Meta (100%)",type:"line",
+              data:mesesLabels.map(()=>100),
+              borderColor:"rgba(224,194,87,.7)",borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false},
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{display:true,position:"top",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},usePointStyle:true,pointStyle:"circle",boxWidth:6,padding:8}},tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,callbacks:{label:ctx=>ctx.dataset.label==="Meta (100%)"?null:` Cumplimiento: ${ctx.raw}%`}}},
+            scales:{x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+              y:{grid:{color:"rgba(30,51,80,.4)"},border:{display:false},ticks:{color:CHART_MUTED,font:{size:10},callback:v=>v+"%"},min:0}}}});
+      } catch (err) { console.error("Error chartHist:", err); }
+    });
   },
 
   // ── HISTÓRICO ─────────────────────────────────────────────────
@@ -2461,7 +2509,7 @@ const D = {
 
   // ── RANKING ───────────────────────────────────────────────────
   renderRanking(t, mes, ano) {
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const total    = t.total || 1;
     const objInd   = t.objetivo / Math.max(Object.keys(byAsesor).length, 1);
     const rows = Object.entries(byAsesor).map(([a,arr]) => ({
@@ -2840,14 +2888,21 @@ const D = {
         y:{stacked:true,grid:{color:"rgba(30,51,80,.4)"},border:{display:false},ticks:{color:CHART_MUTED,font:{size:10}}},
       },
     };
-    this.graficos.chartTallerSem = new Chart(document.getElementById("chartTallerSem"), {
-      type: "bar",
-      data: { labels: semLabels, datasets: [
-        { label: "Garantía", data: garPorSem, backgroundColor: "#00d97e", borderRadius: 4 },
-        { label: "Cliente",  data: cliPorSem, backgroundColor: "#4d9fff", borderRadius: 4 },
-        { label: "Interna",  data: intPorSem, backgroundColor: "#a87eff", borderRadius: 4 },
-      ]},
-      options: chartOptsBase,
+    if (this.graficos.chartTallerSem) { try { this.graficos.chartTallerSem.destroy(); } catch(e){} this.graficos.chartTallerSem = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvasSem = document.getElementById("chartTallerSem");
+        if (!canvasSem) return;
+        this.graficos.chartTallerSem = new Chart(canvasSem, {
+          type: "bar",
+          data: { labels: semLabels, datasets: [
+            { label: "Garantía", data: garPorSem, backgroundColor: "#00d97e", borderRadius: 4 },
+            { label: "Cliente",  data: cliPorSem, backgroundColor: "#4d9fff", borderRadius: 4 },
+            { label: "Interna",  data: intPorSem, backgroundColor: "#a87eff", borderRadius: 4 },
+          ]},
+          options: chartOptsBase,
+        });
+      } catch (err) { console.error("Error chartTallerSem:", err); }
     });
 
     // ── Gráfico: Tendencia Semanal (línea, total sin desglose) — para ver de un vistazo si viene subiendo o bajando ──
@@ -2889,21 +2944,26 @@ const D = {
     });
     document.getElementById("tallerTablaAsesor").innerHTML = htmlAsesor || "<tr><td colspan='5'>Sin datos</td></tr>";
 
-    // ── Gráfico: distribución por asesor (donut) ──
-    if (this.graficos.chartTallerAsesor) { try { this.graficos.chartTallerAsesor.destroy(); } catch(e){} }
+    if (this.graficos.chartTallerAsesor) { try { this.graficos.chartTallerAsesor.destroy(); } catch(e){} this.graficos.chartTallerAsesor = null; }
     const asesorLabels = Object.keys(byAsesor);
     const asesorVals   = asesorLabels.map(k => byAsesor[k].tot);
-    this.graficos.chartTallerAsesor = new Chart(document.getElementById("chartTallerAsesor"), {
-      type: "doughnut",
-      data: { labels: asesorLabels, datasets: [{ data: asesorVals, backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false, cutout:"65%",
-        plugins:{
-          legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
-            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(ctx.parsed/tot*100)})`;}}},
-        },
-      },
+    requestAnimationFrame(() => {
+      try {
+        const canvasAs = document.getElementById("chartTallerAsesor");
+        if (!canvasAs) return;
+        this.graficos.chartTallerAsesor = new Chart(canvasAs, {
+          type: "doughnut",
+          data: { labels: asesorLabels, datasets: [{ data: asesorVals, backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+          options: {
+            responsive:true, maintainAspectRatio:false, cutout:"65%",
+            plugins:{
+              legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(ctx.parsed/tot*100)})`;}}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartTallerAsesor:", err); }
     });
   },
 
@@ -3014,7 +3074,8 @@ const D = {
     }
 
     // ── Gráfico: concentración por antigüedad (donut) ──
-    if (this.graficos.chartOrAntiguedad) { try { this.graficos.chartOrAntiguedad.destroy(); } catch(e){} }
+    if (this.graficos.chartOrAntiguedad)    { try { this.graficos.chartOrAntiguedad.destroy(); } catch(e){} this.graficos.chartOrAntiguedad = null; }
+    if (this.graficos.chartOrRecepcionista) { try { this.graficos.chartOrRecepcionista.destroy(); } catch(e){} this.graficos.chartOrRecepcionista = null; }
     const antLabels = ["0-30 días", "31-60 días", "61-90 días", "+90 días"];
     const antVals = [
       datos.filter(r => r.diasHab <= 30).length,
@@ -3022,40 +3083,50 @@ const D = {
       datos.filter(r => r.diasHab > 60 && r.diasHab <= 90).length,
       datos.filter(r => r.diasHab > 90).length,
     ];
-    this.graficos.chartOrAntiguedad = new Chart(document.getElementById("chartOrAntiguedad"), {
-      type: "doughnut",
-      data: { labels: antLabels, datasets: [{ data: antVals, backgroundColor: ["#00d97e","#ffb020","#ff8c42","#ff3b52"], borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false, cutout:"65%",
-        plugins:{
-          legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
-            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
-        },
-      },
-    });
-
-    // ── Gráfico: importe pendiente por Recepcionista (bar horizontal, top 8) ──
-    if (this.graficos.chartOrRecepcionista) { try { this.graficos.chartOrRecepcionista.destroy(); } catch(e){} }
     const impPorRecep = {};
     datos.forEach(r => {
       const k = r.recepcionista || "Sin asignar";
       impPorRecep[k] = (impPorRecep[k] || 0) + (r.importe || 0);
     });
     const recepOrd = Object.entries(impPorRecep).sort((a, b) => b[1] - a[1]).slice(0, 8);
-    this.graficos.chartOrRecepcionista = new Chart(document.getElementById("chartOrRecepcionista"), {
-      type: "bar",
-      data: { labels: recepOrd.map(x => x[0]), datasets: [{ data: recepOrd.map(x => x[1]), backgroundColor: this.PALETA.map(c => c + "28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 6, maxBarThickness: 26 }]},
-      options: {
-        indexAxis: "y",
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
-          callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
-        scales:{
-          x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:CHART_MUTED,font:{size:10},callback:v=>"$"+this.compacto(v)}},
-          y:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
-        },
-      },
+    requestAnimationFrame(() => {
+      try {
+        const canvasAnt = document.getElementById("chartOrAntiguedad");
+        if (canvasAnt) {
+          this.graficos.chartOrAntiguedad = new Chart(canvasAnt, {
+            type: "doughnut",
+            data: { labels: antLabels, datasets: [{ data: antVals, backgroundColor: ["#00d97e","#ffb020","#ff8c42","#ff3b52"], borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false, cutout:"65%",
+              plugins:{
+                legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                  callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error chartOrAntiguedad:", err); }
+
+      try {
+        const canvasRecep = document.getElementById("chartOrRecepcionista");
+        if (canvasRecep) {
+          this.graficos.chartOrRecepcionista = new Chart(canvasRecep, {
+            type: "bar",
+            data: { labels: recepOrd.map(x => x[0]), datasets: [{ data: recepOrd.map(x => x[1]), backgroundColor: this.PALETA.map(c => c + "28"), borderColor: this.PALETA, borderWidth: 2, borderRadius: 6, maxBarThickness: 26 }]},
+            options: {
+              indexAxis: "y",
+              responsive:true, maintainAspectRatio:false,
+              plugins:{legend:{display:false},tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                callbacks:{label:ctx=>` ${this.moneda(ctx.raw)}`}}},
+              scales:{
+                x:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:CHART_MUTED,font:{size:10},callback:v=>"$"+this.compacto(v)}},
+                y:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error chartOrRecepcionista:", err); }
     });
 
     // ── Tabla: tiempo promedio de resolución por Responsable ──
@@ -3207,21 +3278,27 @@ const D = {
     this.renderAmpTendencia(datosAll, MESES);
 
     // ── Gráfico: por categoría (donut, top 6, del mes filtrado) ──
-    if (this.graficos.chartAmpCategoria) { try { this.graficos.chartAmpCategoria.destroy(); } catch(e){} }
+    if (this.graficos.chartAmpCategoria) { try { this.graficos.chartAmpCategoria.destroy(); } catch(e){} this.graficos.chartAmpCategoria = null; }
     const byCat = {};
     datos.forEach(r => { const k = r.categoria || "Sin categorizar"; byCat[k] = (byCat[k]||0) + 1; });
     const catOrd = Object.entries(byCat).sort((a,b) => b[1]-a[1]).slice(0, 6);
-    this.graficos.chartAmpCategoria = new Chart(document.getElementById("chartAmpCategoria"), {
-      type: "doughnut",
-      data: { labels: catOrd.map(x=>x[0]), datasets: [{ data: catOrd.map(x=>x[1]), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false, cutout:"60%",
-        plugins:{
-          legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
-            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
-        },
-      },
+    requestAnimationFrame(() => {
+      try {
+        const canvasCat = document.getElementById("chartAmpCategoria");
+        if (!canvasCat) return;
+        this.graficos.chartAmpCategoria = new Chart(canvasCat, {
+          type: "doughnut",
+          data: { labels: catOrd.map(x=>x[0]), datasets: [{ data: catOrd.map(x=>x[1]), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+          options: {
+            responsive:true, maintainAspectRatio:false, cutout:"60%",
+            plugins:{
+              legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartAmpCategoria:", err); }
     });
 
     // ── Tabla: por Asesor (del mes filtrado) ──
@@ -3244,7 +3321,7 @@ const D = {
   },
 
   renderAmpTendencia(datosAll, MESES) {
-    if (this.graficos.chartAmpMes) { try { this.graficos.chartAmpMes.destroy(); } catch(e){} }
+    if (this.graficos.chartAmpMes) { try { this.graficos.chartAmpMes.destroy(); } catch(e){} this.graficos.chartAmpMes = null; }
     const byMes = {};
     datosAll.forEach(r => {
       if (!r.ano || !r.mes) return;
@@ -3254,24 +3331,30 @@ const D = {
       if (r.estado === "Aprobada") byMes[clave].apr++;
     });
     const mesesOrd = Object.entries(byMes).sort((a, b) => a[0].localeCompare(b[0]));
-    this.graficos.chartAmpMes = new Chart(document.getElementById("chartAmpMes"), {
-      type: "bar",
-      data: {
-        labels: mesesOrd.map(([,v]) => MESES[v.mes].slice(0,3)),
-        datasets: [
-          { type:"bar",  label:"Detectadas", data: mesesOrd.map(([,v]) => v.det), backgroundColor:CHART_BORDER, borderRadius:4 },
-          { type:"bar",  label:"Aprobadas",  data: mesesOrd.map(([,v]) => v.apr), backgroundColor:"#00d97e", borderRadius:4 },
-        ],
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
-        scales:{
-          x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
-          y:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:CHART_MUTED,font:{size:10}}},
-        },
-      },
+    requestAnimationFrame(() => {
+      try {
+        const canvasAmpMes = document.getElementById("chartAmpMes");
+        if (!canvasAmpMes) return;
+        this.graficos.chartAmpMes = new Chart(canvasAmpMes, {
+          type: "bar",
+          data: {
+            labels: mesesOrd.map(([,v]) => MESES[v.mes].slice(0,3)),
+            datasets: [
+              { type:"bar",  label:"Detectadas", data: mesesOrd.map(([,v]) => v.det), backgroundColor:CHART_BORDER, borderRadius:4 },
+              { type:"bar",  label:"Aprobadas",  data: mesesOrd.map(([,v]) => v.apr), backgroundColor:"#00d97e", borderRadius:4 },
+            ],
+          },
+          options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
+            scales:{
+              x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+              y:{grid:{color:"rgba(30,51,80,.4)"},ticks:{color:CHART_MUTED,font:{size:10}}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartAmpMes:", err); }
     });
   },
 
@@ -3347,6 +3430,61 @@ const D = {
     return !!(r.servicio && /acc/i.test(r.servicio));
   },
 
+  // Comparativa Interanual reutilizable: recibe una función val(r) que define qué se está
+  // comparando (Servicios, Repuestos, etc.), así no hay que repetir la lógica del gráfico.
+  renderInteranualGenerico(ano, sucSel, val, canvasId, badgeId, colorActual) {
+    const totalesPorMes = (anoConsulta) => {
+      const arr = new Array(13).fill(0);
+      for (let m = 1; m <= 12; m++) {
+        arr[m] = this.raw.filter(r => r.mes === m && r.ano === anoConsulta &&
+          (sucSel === "todas" ? true : r.suc === sucSel)
+        ).reduce((s, r) => s + val(r), 0);
+      }
+      return arr;
+    };
+    const prevTotales = totalesPorMes(ano - 1);
+    const currTotales = totalesPorMes(ano);
+    const totalPrev = prevTotales.reduce((a, b) => a + b, 0);
+    const totalCurr = currTotales.reduce((a, b) => a + b, 0);
+    const variTotal = totalPrev > 0 ? (totalCurr - totalPrev) / totalPrev * 100 : 0;
+
+    const badge = document.getElementById(badgeId);
+    if (badge) badge.textContent = `${ano - 1} vs ${ano} · ${variTotal>=0?"+":""}${variTotal.toFixed(1)}% total`;
+
+    if (this.graficos[canvasId]) { try { this.graficos[canvasId].destroy(); } catch(e){} this.graficos[canvasId] = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        this.graficos[canvasId] = new Chart(canvas, {
+          type: "bar",
+          data: {
+            labels: this.MESES.slice(1).map(m => m.slice(0, 3)),
+            datasets: [
+              { label: String(ano - 1), data: prevTotales.slice(1), backgroundColor: colorActual+"33", borderColor: colorActual+"88", borderWidth: 1.5, borderRadius: 4 },
+              { label: String(ano),     data: currTotales.slice(1), backgroundColor: colorActual, borderColor: colorActual, borderWidth: 1.5, borderRadius: 4 },
+            ],
+          },
+          options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins:{
+              legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                callbacks:{label:ctx=>` ${ctx.dataset.label}: ${this.moneda(ctx.raw)}`}},
+            },
+            scales:{
+              x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+              y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},callback:v=>"$"+this.compacto(v)}},
+            },
+          },
+        });
+      } catch (err) {
+        console.error(`Error en ${canvasId}:`, err);
+        if (badge) badge.textContent = "⚠️ Error: " + err.message;
+      }
+    });
+  },
+
   // ── CONTRATOS DE MANTENIMIENTO ──────────────────────────────────
   // ── SERVICIOS (Mano de Obra + Terceros) ─────────────────────────
   renderServicios(mes, ano) {
@@ -3374,8 +3512,17 @@ const D = {
     document.getElementById("servPct").textContent = obj ? this.pct(cumpl) : "sin objetivo";
     document.getElementById("servProgFill").style.width = Math.min(cumpl,100) + "%";
 
+    // Ticket promedio: solo sobre las OR que efectivamente tuvieron Servicios (>0), para no
+    // diluir el promedio con OR que fueron 100% repuestos/accesorios sin nada de M.O./Terceros.
+    const orsConServicio = this.fil.filter(r => val(r) > 0).length;
+    const ticketServ = orsConServicio ? Math.round(total / orsConServicio) : 0;
+    document.getElementById("servTicket").textContent = this.compacto(ticketServ);
+    document.getElementById("servTicketLbl").textContent = orsConServicio ? `Ticket promedio (sobre ${orsConServicio} OR)` : "Ticket promedio (por OR)";
+
+    this.renderInteranualGenerico(ano, sucSel, val, "chartServInteranual", "badgeServInteranual", "#e0c257");
+
     // Por asesor
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = obj / nAsesores;
     let verde=0, amarillo=0, rojo=0;
@@ -3554,8 +3701,15 @@ const D = {
     document.getElementById("repPct").textContent = obj ? this.pct(cumpl) : "sin objetivo";
     document.getElementById("repProgFill").style.width = Math.min(cumpl,100) + "%";
 
+    const orsConRepuesto = this.fil.filter(r => val(r) > 0).length;
+    const ticketRep = orsConRepuesto ? Math.round(total / orsConRepuesto) : 0;
+    document.getElementById("repTicket").textContent = this.compacto(ticketRep);
+    document.getElementById("repTicketLbl").textContent = orsConRepuesto ? `Ticket promedio (sobre ${orsConRepuesto} OR)` : "Ticket promedio (por OR)";
+
+    this.renderInteranualGenerico(ano, sucSel, val, "chartRepInteranual", "badgeRepInteranual", "#e34557");
+
     // Por asesor
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = obj / nAsesores;
     let verde=0, amarillo=0, rojo=0;
@@ -3733,7 +3887,7 @@ const D = {
     document.getElementById("accProgFill").style.width = Math.min(cumpl,100) + "%";
 
     // Por asesor
-    const byAsesor = this.grupo(this.fil.filter(r=>!this.EXCLUIR_SEMAFORO.includes(r.asesor)), "asesor");
+    const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
     const objInd = obj / nAsesores;
     let verde=0, amarillo=0, rojo=0;
@@ -3757,7 +3911,7 @@ const D = {
       </div>`).join("");
 
     // Tabla de muestra: OR detectadas como Accesorios, para validar que la palabra clave funciona bien
-    const detectadas = this.fil.filter(r => this.esAccesorio(r)).sort((a,b) => b.importe - a.importe).slice(0, 30);
+    const detectadas = this.mapearPDI(this.fil).filter(r => this.esAccesorio(r)).sort((a,b) => b.importe - a.importe).slice(0, 30);
     document.getElementById("accTablaMuestra").innerHTML = detectadas.length
       ? detectadas.map(r => `<tr><td>${r.or || "—"}</td><td>${r.servicio || "—"}</td><td>${r.asesor}</td><td class="r">${this.moneda(r.importe)}</td></tr>`).join("")
       : "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Ninguna OR con \"ACC\"/\"ACCESORIOS\" en el Servicio, para este filtro</td></tr>";
@@ -3915,36 +4069,48 @@ const D = {
     document.getElementById("cmMesActualLbl").textContent = ultimoMes;
 
     // ── Gráfico: evolución mensual (barras, total de todos los vendedores por mes) ──
-    if (this.graficos.chartCMMes) { try { this.graficos.chartCMMes.destroy(); } catch(e){} }
+    if (this.graficos.chartCMMes)      { try { this.graficos.chartCMMes.destroy(); } catch(e){} this.graficos.chartCMMes = null; }
+    if (this.graficos.chartCMVendedor) { try { this.graficos.chartCMVendedor.destroy(); } catch(e){} this.graficos.chartCMVendedor = null; }
     const totalesPorMes = meses.map(m => porVendedorMes.reduce((s, v) => s + (v.porMes[m] || 0), 0));
-    this.graficos.chartCMMes = new Chart(document.getElementById("chartCMMes"), {
-      type: "bar",
-      data: { labels: meses, datasets: [{ label: "Contratos", data: totalesPorMes, backgroundColor: "#1fb8d4", borderRadius: 4 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
-        scales:{
-          x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
-          y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},precision:0}},
-        },
-      },
-    });
-
-    // ── Gráfico: participación por vendedor (donut) ──
-    if (this.graficos.chartCMVendedor) { try { this.graficos.chartCMVendedor.destroy(); } catch(e){} }
     const vendOrd = [...porVendedorMes].sort((a,b) => b.total - a.total);
-    this.graficos.chartCMVendedor = new Chart(document.getElementById("chartCMVendedor"), {
-      type: "doughnut",
-      data: { labels: vendOrd.map(v=>v.vendedor), datasets: [{ data: vendOrd.map(v=>v.total), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
-      options: {
-        responsive:true, maintainAspectRatio:false, cutout:"60%",
-        plugins:{
-          legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
-          tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
-            callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
-        },
-      },
+    requestAnimationFrame(() => {
+      try {
+        const canvasCMMes = document.getElementById("chartCMMes");
+        if (canvasCMMes) {
+          this.graficos.chartCMMes = new Chart(canvasCMMes, {
+            type: "bar",
+            data: { labels: meses, datasets: [{ label: "Contratos", data: totalesPorMes, backgroundColor: "#1fb8d4", borderRadius: 4 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false,
+              plugins:{ legend:{display:false},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8}},
+              scales:{
+                x:{grid:{display:false},ticks:{color:CHART_MUTED,font:{size:10,weight:"700"}}},
+                y:{grid:{color:CHART_BORDER},ticks:{color:CHART_MUTED,font:{size:9},precision:0}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error chartCMMes:", err); }
+
+      // ── Gráfico: participación por vendedor (donut) ──
+      try {
+        const canvasCMVend = document.getElementById("chartCMVendedor");
+        if (canvasCMVend) {
+          this.graficos.chartCMVendedor = new Chart(canvasCMVend, {
+            type: "doughnut",
+            data: { labels: vendOrd.map(v=>v.vendedor), datasets: [{ data: vendOrd.map(v=>v.total), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+            options: {
+              responsive:true, maintainAspectRatio:false, cutout:"60%",
+              plugins:{
+                legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+                tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                  callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+              },
+            },
+          });
+        }
+      } catch (err) { console.error("Error chartCMVendedor:", err); }
     });
 
     // ── Tabla: por vendedor y mes ──
