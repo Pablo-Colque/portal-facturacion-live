@@ -800,6 +800,32 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Motivo de Ingreso — por qué entró el vehículo (service periódico vs campaña/defecto) -->
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div class="card-title">🔎 Motivo de Ingreso — por Tipo de Servicio</div>
+        <div class="card-badge" id="garBadgeMotivo">—</div>
+      </div>
+      <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+        <div class="chart-wrap" style="height:230px"><canvas id="chartGarMotivo"></canvas></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Motivo</th><th class="r">OR</th><th class="r">Importe</th><th class="r">% del total</th></tr></thead>
+            <tbody id="garTablaMotivo"></tbody>
+          </table>
+        </div>
+      </div>
+      <details style="font-size:11px;color:var(--muted)">
+        <summary style="cursor:pointer">Ver muestra de OR para validar la clasificación</summary>
+        <div class="table-wrap" style="margin-top:8px">
+          <table>
+            <thead><tr><th>OR</th><th>Cód. Servicio</th><th>Modelo</th><th>Motivo asignado</th><th class="r">Importe</th></tr></thead>
+            <tbody id="garTablaMotivoMuestra"></tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
     <!-- Pendiente de Facturar a VW (Reclamos - hoja de Benicio) -->
     <div class="card" style="margin-top:18px">
       <div class="card-head">
@@ -2654,6 +2680,47 @@ const D = {
     document.getElementById("garResDebito").textContent = totalDebito > 0 ? "−" + this.moneda(totalDebito) : "$0";
     document.getElementById("garResNeto").textContent = this.moneda(neto);
 
+    // ── Motivo de Ingreso: por qué entró el vehículo (service periódico vs campaña/defecto) ──
+    const byMotivo = {};
+    arrGar.forEach(r => {
+      const mot = this.categorizarMotivoGarantia(r);
+      if (!byMotivo[mot]) byMotivo[mot] = { cant: 0, importe: 0 };
+      byMotivo[mot].cant++;
+      byMotivo[mot].importe += r.importe;
+    });
+    const motivoOrd = Object.entries(byMotivo).sort((a,b) => b[1].importe - a[1].importe);
+    const totalMotivo = motivoOrd.reduce((s,[,v]) => s + v.importe, 0) || 1;
+
+    document.getElementById("garBadgeMotivo").textContent = arrGar.length ? `${arrGar.length} OR` : "Sin datos";
+    document.getElementById("garTablaMotivo").innerHTML = motivoOrd.length
+      ? motivoOrd.map(([mot,v]) => `<tr><td>${mot}</td><td class="r">${v.cant}</td><td class="r">${this.moneda(v.importe)}</td><td class="r">${this.pct(v.importe/totalMotivo*100)}</td></tr>`).join("")
+      : "<tr><td colspan='4' style='text-align:center;color:var(--muted)'>Sin OR de Garantía para este período</td></tr>";
+
+    const muestraMotivo = [...arrGar].sort((a,b) => b.importe - a.importe).slice(0, 40);
+    document.getElementById("garTablaMotivoMuestra").innerHTML = muestraMotivo.length
+      ? muestraMotivo.map(r => `<tr><td>${r.or || "—"}</td><td>${r.codServ || "—"}</td><td>${r.modelo || "—"}</td><td>${this.categorizarMotivoGarantia(r)}</td><td class="r">${this.moneda(r.importe)}</td></tr>`).join("")
+      : "<tr><td colspan='5' style='text-align:center;color:var(--muted)'>Sin datos</td></tr>";
+
+    if (this.graficos.chartGarMotivo) { try { this.graficos.chartGarMotivo.destroy(); } catch(e){} this.graficos.chartGarMotivo = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvasMot = document.getElementById("chartGarMotivo");
+        if (!canvasMot) return;
+        this.graficos.chartGarMotivo = new Chart(canvasMot, {
+          type: "doughnut",
+          data: { labels: motivoOrd.map(([mot])=>mot), datasets: [{ data: motivoOrd.map(([,v])=>v.importe), backgroundColor: this.PALETA, borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }]},
+          options: {
+            responsive:true, maintainAspectRatio:false, cutout:"60%",
+            plugins:{
+              legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:9,weight:"700"},padding:6,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${this.moneda(ctx.parsed)} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartGarMotivo:", err); }
+    });
+
     this.renderGarReclamos();
   },
 
@@ -3428,6 +3495,30 @@ const D = {
   esAccesorio(r) {
     if (r.tipo === "Garantía") return false;
     return !!(r.servicio && /acc/i.test(r.servicio));
+  },
+
+  // Categoriza el motivo de ingreso de una OR de Garantía por su Código de Servicio (SIAC),
+  // no por el texto libre (que cada uno escribe distinto). SPxxx = service periódico por
+  // kilometraje, GTIA = campaña/defecto puntual de fábrica. Lo que no matchea queda como
+  // "Sin código (verificar)" — se ve en la tabla de validación del módulo, para no esconder casos raros.
+  //
+  // El tipo de vehículo (Camioneta/Auto) se lee directo del Modelo real, no se infiere del
+  // km — el service de 30.000 km es compartido por autos y camionetas, así que adivinar por
+  // el número solo se equivocaría la mitad de las veces. Con el Modelo es 100% exacto.
+  esCamioneta(r) {
+    return /AMAROK/i.test(r.modelo || "");
+  },
+  categorizarMotivoGarantia(r) {
+    const cod = String(r.codServ || "").toUpperCase().trim();
+    const tipoVeh = r.modelo ? (this.esCamioneta(r) ? "Camioneta" : "Auto") : "";
+    const sufijo = tipoVeh ? ` (${tipoVeh})` : "";
+    if (!cod) return "Sin código (verificar)";
+    const mKm = cod.match(/^SP0?(\d+)/);
+    if (mKm) return `Service ${parseInt(mKm[1], 10)}.000 km${sufijo}`;
+    if (cod.includes("GTIA")) return "Campaña / Defecto puntual";
+    if (cod.startsWith("DE"))  return "Diagnóstico Electrónico";
+    if (cod.startsWith("REP")) return "Reparación repetitiva";
+    return `Otro (${cod})`;
   },
 
   // Comparativa Interanual reutilizable: recibe una función val(r) que define qué se está
