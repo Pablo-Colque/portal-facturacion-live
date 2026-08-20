@@ -1271,7 +1271,7 @@ tr:last-child td{border-bottom:0}
 
     <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
       <div class="h-title">🔧 Servicios — Mano de Obra + Terceros</div>
-      <div class="h-sub" id="servSubtitulo">Trabajo propio + trabajo tercerizado (chapa/pintura), sin repuestos ni accesorios</div>
+      <div class="h-sub" id="servSubtitulo">Trabajo propio + trabajo tercerizado (chapa/pintura) + M.O. de Garantía facturada por lote, sin repuestos ni accesorios</div>
     </div>
 
     <!-- KPIs principales -->
@@ -3580,10 +3580,12 @@ const D = {
   // ── SERVICIOS (Mano de Obra + Terceros) ─────────────────────────
   renderServicios(mes, ano) {
     const sucSel  = document.getElementById("fSuc").value;
-    // Excluye Garantía (no compite contra el objetivo comercial) y también las OR de
-    // Accesorios (se cuentan aparte, en su propio módulo — si no, quedarían contadas
-    // dos veces: acá y en Accesorios).
-    const val = r => (r.tipo === "Garantía" || this.esAccesorio(r)) ? 0 : (r.mo || 0) + (r.terceros || 0);
+    // Servicios = M.O.+Terceros de OR comerciales (Cliente/Interna/Mixto) + la M.O. de las
+    // OR de Garantía que ya se facturaron por lote a VW (confirmado por Jorge: la M.O. del
+    // lote SÍ suma como Servicios de Taller, aunque el resto de Garantía siga aparte, sin
+    // competir contra el objetivo comercial). Se excluyen las OR de Accesorios (van en su
+    // propio módulo, para no contarlas dos veces).
+    const val = r => this.esAccesorio(r) ? 0 : (r.mo || 0) + (r.terceros || 0);
 
     const total = this.fil.reduce((s,r) => s + val(r), 0);
     const obj   = this.objetivoDe(sucSel, mes, ano, "Servicios");
