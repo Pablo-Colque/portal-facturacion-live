@@ -55,6 +55,7 @@
 [data-modulo="servicios"]{--accent:var(--yellow)}
 [data-modulo="repuestos"]{--accent:var(--red)}
 [data-modulo="accesorios"]{--accent:var(--pink)}
+[data-modulo="resumen"]{--accent:var(--vw-light)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"tnum" 1,"cv11" 1}
@@ -483,7 +484,8 @@ tr:last-child td{border-bottom:0}
   </div>
   <nav class="nav">
     <div class="nav-sec">Módulos</div>
-    <button onclick="D.navTo('facturacion',this)" class="active"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
+    <button onclick="D.navTo('resumen',this)" class="active"><span class="ico">🧭</span><span class="lbl">Resumen</span></button>
+    <button onclick="D.navTo('facturacion',this)"><span class="ico">💰</span><span class="lbl">Facturación</span></button>
     <button onclick="D.navTo('servicios',this)"><span class="ico">🔧</span><span class="lbl">Servicios</span></button>
     <button onclick="D.navTo('repuestos',this)"><span class="ico">🔩</span><span class="lbl">Repuestos</span></button>
     <button onclick="D.navTo('accesorios',this)"><span class="ico">📦</span><span class="lbl">Accesorios</span></button>
@@ -557,6 +559,64 @@ tr:last-child td{border-bottom:0}
     <button class="btn-clr" onclick="D.limpiar()">✕ Limpiar filtros</button>
     <span class="f-cnt" id="fCnt"></span>
   </div>
+
+  <!-- ═══════════ RESUMEN ═══════════ -->
+  <div class="content" id="panelResumen" style="display:none">
+
+    <div class="header" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px">
+      <div class="h-title">🧭 Resumen</div>
+      <div class="h-sub">Lo más importante de cada módulo, de un vistazo</div>
+    </div>
+
+    <!-- Velocímetros: Servicios / Repuestos / Accesorios -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">Cumplimiento por Categoría</div>
+      </div>
+      <div class="charts-row" style="grid-template-columns:1fr 1fr 1fr">
+        <div style="text-align:center">
+          <div class="chart-wrap" style="height:150px"><canvas id="gaugeServicios"></canvas></div>
+          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-top:-8px">🔧 Servicios</div>
+          <div style="font-size:10px;color:var(--muted)" id="gaugeServiciosSub">—</div>
+        </div>
+        <div style="text-align:center">
+          <div class="chart-wrap" style="height:150px"><canvas id="gaugeRepuestos"></canvas></div>
+          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-top:-8px">🔩 Repuestos</div>
+          <div style="font-size:10px;color:var(--muted)" id="gaugeRepuestosSub">—</div>
+        </div>
+        <div style="text-align:center">
+          <div class="chart-wrap" style="height:150px"><canvas id="gaugeAccesorios"></canvas></div>
+          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-top:-8px">📦 Accesorios</div>
+          <div style="font-size:10px;color:var(--muted)" id="gaugeAccesoriosSub">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lo más relevante de cada módulo, un dato por tarjeta -->
+    <div class="kpis" id="resumenChips">
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">🛡️</div>
+        <div class="kpi-val" id="resGarantia">—</div>
+        <div class="kpi-lbl">Garantía facturada este mes</div>
+      </div>
+      <div class="kpi-card c-int">
+        <div class="kpi-ico">🚗</div>
+        <div class="kpi-val" id="resTaller">—</div>
+        <div class="kpi-lbl">Pasos por Taller este mes</div>
+      </div>
+      <div class="kpi-card c-cli">
+        <div class="kpi-ico">📈</div>
+        <div class="kpi-val" id="resAmp">—</div>
+        <div class="kpi-lbl" id="resAmpLbl">$ generado en Ampliaciones</div>
+      </div>
+      <div class="kpi-card c-main">
+        <div class="kpi-ico">⚠️</div>
+        <div class="kpi-val" id="resGarantiaVieja">—</div>
+        <div class="kpi-lbl">OR de Garantía sin seguimiento (+21 días)</div>
+      </div>
+    </div>
+
+  </div><!-- /panelResumen -->
 
   <div class="content">
     <div class="error-banner" id="errBanner"></div>
@@ -1717,15 +1777,15 @@ const D = {
   fil: [],   // registros filtrados
   graficos: {},
   HOY: new Date(),
-  vistaActual: "facturacion",
+  vistaActual: "resumen",
 
   // ── NAVEGACIÓN ────────────────────────────────────────────────
   navTo(vista, btn) {
     this.vistaActual = vista;
-    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : vista === "servicios" ? "servicios" : vista === "repuestos" ? "repuestos" : vista === "accesorios" ? "accesorios" : "facturacion");
+    document.documentElement.setAttribute("data-modulo", vista === "garantias" ? "garantias" : vista === "taller" ? "taller" : vista === "or" ? "or" : vista === "amp" ? "amp" : vista === "cm" ? "cm" : vista === "servicios" ? "servicios" : vista === "repuestos" ? "repuestos" : vista === "accesorios" ? "accesorios" : vista === "resumen" ? "resumen" : "facturacion");
     document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM):not(#panelServicios):not(#panelRepuestos):not(#panelAccesorios)");
+    const panelFac    = document.querySelector(".content:not(#panelGarantias):not(#panelTaller):not(#panelOR):not(#panelAmp):not(#panelCM):not(#panelServicios):not(#panelRepuestos):not(#panelAccesorios):not(#panelResumen)");
     const panelGar    = document.getElementById("panelGarantias");
     const panelTaller = document.getElementById("panelTaller");
     const panelOR     = document.getElementById("panelOR");
@@ -1734,11 +1794,12 @@ const D = {
     const panelServ   = document.getElementById("panelServicios");
     const panelRep    = document.getElementById("panelRepuestos");
     const panelAcc    = document.getElementById("panelAccesorios");
+    const panelRes    = document.getElementById("panelResumen");
     const filtersBar  = document.getElementById("filtersBar");
     const mes = parseInt(document.getElementById("fMes").value);
     const ano = parseInt(document.getElementById("fAno").value);
     // Ocultar todos
-    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM, panelServ, panelRep, panelAcc].forEach(p => { if (p) p.style.display = "none"; });
+    [panelFac, panelGar, panelTaller, panelOR, panelAmp, panelCM, panelServ, panelRep, panelAcc, panelRes].forEach(p => { if (p) p.style.display = "none"; });
     // La barra de filtros (mes/año/suc/asesor/tipo) no aplica a OR Abiertas ni Contratos de Mant. — son foto/serie histórica propia
     if (filtersBar) filtersBar.style.display = (vista === "or" || vista === "cm") ? "none" : "flex";
     if (vista === "garantias") {
@@ -1762,6 +1823,9 @@ const D = {
     } else if (vista === "accesorios") {
       panelAcc.style.display = "flex";
       this.renderAccesorios(mes, ano);
+    } else if (vista === "resumen") {
+      panelRes.style.display = "flex";
+      this.renderResumen(mes, ano);
     } else if (vista === "cm") {
       panelCM.style.display = "flex";
       this.renderCM();
@@ -1846,6 +1910,7 @@ const D = {
       this.actualizarTickerTiempo();
       if (!this._tickerIniciado) { this._tickerIniciado = true; setInterval(() => this.actualizarTickerTiempo(), 5000); }
       this.aplicar();
+      this.navTo("resumen", document.querySelector(".nav button"));
     } catch(err) {
       const b = document.getElementById("errBanner");
       b.textContent = "⚠️ No se pudieron cargar los datos: " + err.message + " — Revisá la conexión o el Apps Script.";
@@ -1970,6 +2035,7 @@ const D = {
     if (this.vistaActual === "servicios") this.renderServicios(mes, ano);
     if (this.vistaActual === "repuestos") this.renderRepuestos(mes, ano);
     if (this.vistaActual === "accesorios") this.renderAccesorios(mes, ano);
+    if (this.vistaActual === "resumen") this.renderResumen(mes, ano);
   },
 
   limpiar() {
@@ -4132,6 +4198,100 @@ const D = {
           });
         }
       } catch (err) { console.error("Error gráficos Accesorios (diario/semanal):", err); }
+    });
+  },
+
+  // ── RESUMEN — lo más relevante de cada módulo, sin repetir lo que ya existe ──
+  renderResumen(mes, ano) {
+    const sucSel = document.getElementById("fSuc").value;
+
+    // Servicios / Repuestos / Accesorios — misma lógica exacta que cada módulo, para que
+    // el número acá coincida siempre con el de su propio módulo.
+    const valServ = r => this.esAccesorio(r) ? 0 : (r.mo || 0) + (r.terceros || 0);
+    const valRep  = r => (r.tipo === "Garantía" || this.esAccesorio(r)) ? 0 : r.importe - (r.mo || 0) - (r.terceros || 0);
+    const valAcc  = r => this.esAccesorio(r) ? r.importe : 0;
+
+    const categorias = [
+      { val: valServ, categoria: "Servicios",  gauge: "gaugeServicios",  sub: "gaugeServiciosSub"  },
+      { val: valRep,  categoria: "Repuestos",  gauge: "gaugeRepuestos",  sub: "gaugeRepuestosSub"  },
+      { val: valAcc,  categoria: "Accesorios", gauge: "gaugeAccesorios", sub: "gaugeAccesoriosSub" },
+    ];
+    categorias.forEach(c => {
+      const total = this.fil.reduce((s,r) => s + c.val(r), 0);
+      const obj   = this.objetivoDe(sucSel, mes, ano, c.categoria);
+      const cumpl = obj ? total/obj*100 : 0;
+      document.getElementById(c.sub).textContent = obj ? `${this.compacto(total)} de ${this.compacto(obj)}` : "Sin objetivo cargado";
+      this.dibujarGauge(c.gauge, obj ? cumpl : null);
+    });
+
+    // Garantía facturada este mes — mismo criterio que el módulo Garantía
+    const arrGar = this.raw.filter(r => r.mes === mes && r.ano === ano && r.tipo === "Garantía" &&
+      (sucSel === "todas" ? true : r.suc === sucSel)
+    );
+    document.getElementById("resGarantia").textContent = this.compacto(arrGar.reduce((s,r) => s + r.importe, 0));
+
+    // Pasos por Taller este mes — mismo criterio que el módulo Paso por Taller
+    const asesorSel = document.getElementById("fAsesor").value;
+    const tipoSel    = document.getElementById("fTipo").value;
+    const pasosTaller = (this.pptData || []).filter(r => r.mes === mes && r.ano === ano &&
+      (sucSel === "todas" ? true : r.suc === sucSel) &&
+      (asesorSel === "todos" ? true : r.asesor === asesorSel) &&
+      (tipoSel === "todos" ? true : r.cargo === tipoSel)
+    ).length;
+    document.getElementById("resTaller").textContent = pasosTaller;
+
+    // $ generado en Ampliaciones (aprobadas) del mes filtrado
+    const datosAmp = (this.ampData || []).filter(r => r.mes === mes && r.ano === ano);
+    const ampGenerado = datosAmp.filter(r => r.estado === "Aprobada").reduce((s,r) => s + (r.importe || 0), 0);
+    document.getElementById("resAmp").textContent = this.compacto(ampGenerado);
+
+    // OR de Garantía sin seguimiento (+21 días hábiles) — mismo umbral que OR sin Facturar
+    const garantiaVieja = (this.orData || []).filter(r => r.cargo === "Garantía" && (r.diasHab || 0) >= 21).length;
+    document.getElementById("resGarantiaVieja").textContent = garantiaVieja;
+  },
+
+  // Velocímetro simple (semicírculo): arco de fondo gris + arco de valor coloreado según
+  // zona (rojo <70% / amarillo 70-95% / verde 95%+), con el número en el centro.
+  // Tope visual en 150% — si el real es mayor, el arco queda lleno pero el número real igual.
+  dibujarGauge(canvasId, valorPct) {
+    if (this.graficos[canvasId]) { try { this.graficos[canvasId].destroy(); } catch(e){} this.graficos[canvasId] = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const TOPE = 150;
+        const sinDato = valorPct === null || valorPct === undefined;
+        const v = sinDato ? 0 : Math.max(0, Math.min(valorPct, TOPE));
+        const color = sinDato ? "#6b92b8" : v >= 95*TOPE/100 ? "#00d97e" : v >= 70*TOPE/100 ? "#e5a020" : "#ff3b52";
+        this.graficos[canvasId] = new Chart(canvas, {
+          type: "doughnut",
+          data: { labels: ["Avance","Resto"], datasets: [{
+            data: [v, TOPE - v],
+            backgroundColor: [color, "rgba(107,146,184,.12)"],
+            borderWidth: 0,
+          }]},
+          options: {
+            responsive:true, maintainAspectRatio:false,
+            circumference: 180, rotation: -90, cutout: "72%",
+            plugins: {
+              legend: { display:false },
+              tooltip: { enabled:false },
+            },
+          },
+          plugins: [{
+            id: "textoCentro-" + canvasId,
+            afterDraw(chart) {
+              const { ctx, chartArea: { width, height, top } } = chart;
+              ctx.save();
+              ctx.textAlign = "center"; ctx.textBaseline = "middle";
+              ctx.font = "700 20px sans-serif";
+              ctx.fillStyle = CHART_TITLE;
+              ctx.fillText(sinDato ? "—" : `${Math.round(valorPct)}%`, width/2, top + height*0.78);
+              ctx.restore();
+            },
+          }],
+        });
+      } catch (err) { console.error(`Error ${canvasId}:`, err); }
     });
   },
 
