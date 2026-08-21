@@ -592,6 +592,35 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Composición de la Facturación + Tendencia mensual -->
+    <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Composición de la Facturación</div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartResumenComposicion"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Tendencia Mensual — Todos los meses</div>
+          <div class="card-badge" id="badgeResumenTendencia">—</div>
+        </div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chartResumenTendencia"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Mapa de calor Sucursal x Categoría -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">🔥 Mapa de Calor — Sucursal × Categoría</div>
+        <div class="card-badge">% de cumplimiento del mes</div>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaMapaCalor">
+          <thead><tr><th>Sucursal</th><th class="r">🔧 Servicios</th><th class="r">🔩 Repuestos</th><th class="r">📦 Accesorios</th></tr></thead>
+          <tbody id="tablaMapaCalorBody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Lo más relevante de cada módulo, un dato por tarjeta -->
     <div class="kpis" id="resumenChips">
       <div class="kpi-card c-gar">
@@ -4224,11 +4253,59 @@ const D = {
       this.dibujarGauge(c.gauge, obj ? cumpl : null);
     });
 
-    // Garantía facturada este mes — mismo criterio que el módulo Garantía
+    // Garantía facturada este mes — mismo criterio que el módulo Garantía (necesario acá arriba
+    // porque la Composición también la usa)
     const arrGar = this.raw.filter(r => r.mes === mes && r.ano === ano && r.tipo === "Garantía" &&
       (sucSel === "todas" ? true : r.suc === sucSel)
     );
-    document.getElementById("resGarantia").textContent = this.compacto(arrGar.reduce((s,r) => s + r.importe, 0));
+    const garantiaTotal = arrGar.reduce((s,r) => s + r.importe, 0);
+    document.getElementById("resGarantia").textContent = this.compacto(garantiaTotal);
+
+    // ── Composición de la Facturación: Servicios / Repuestos / Accesorios / Garantía ──
+    const totServ = this.fil.reduce((s,r) => s + valServ(r), 0);
+    const totRep  = this.fil.reduce((s,r) => s + valRep(r), 0);
+    const totAcc  = this.fil.reduce((s,r) => s + valAcc(r), 0);
+    if (this.graficos.chartResumenComposicion) { try { this.graficos.chartResumenComposicion.destroy(); } catch(e){} this.graficos.chartResumenComposicion = null; }
+    requestAnimationFrame(() => {
+      try {
+        const canvasComp = document.getElementById("chartResumenComposicion");
+        if (!canvasComp) return;
+        this.graficos.chartResumenComposicion = new Chart(canvasComp, {
+          type: "doughnut",
+          data: {
+            labels: ["Servicios", "Repuestos", "Accesorios", "Garantía"],
+            datasets: [{ data: [totServ, totRep, totAcc, garantiaTotal], backgroundColor: ["#e0c257","#e34557","#e56b9f","#9b7aeb"], borderColor: CHART_BG, borderWidth: 3, hoverOffset: 5 }],
+          },
+          options: {
+            responsive:true, maintainAspectRatio:false, cutout:"60%",
+            plugins:{
+              legend:{display:true,position:"bottom",labels:{color:CHART_MUTED,font:{size:10,weight:"700"},padding:8,usePointStyle:true,pointStyle:"circle",boxWidth:7}},
+              tooltip:{backgroundColor:CHART_BG,borderColor:CHART_BORDER,borderWidth:1,titleColor:CHART_TITLE,bodyColor:CHART_MUTED,padding:9,cornerRadius:8,
+                callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${this.moneda(ctx.parsed)} (${this.pct(tot?ctx.parsed/tot*100:0)})`;}}},
+            },
+          },
+        });
+      } catch (err) { console.error("Error chartResumenComposicion:", err); }
+    });
+
+    // ── Tendencia Mensual — reutiliza la misma función genérica que ya usan Servicios/Repuestos ──
+    this.renderInteranualGenerico(ano, sucSel, r => r.importe, "chartResumenTendencia", "badgeResumenTendencia", "#4d9fff");
+
+    // ── Mapa de Calor: Sucursal × Categoría (% de cumplimiento del mes, sin importar el filtro de Sucursal) ──
+    const SUCURSALES_MAPA = ["Jujuy", "Santa Fe", "Taller Express", "Taller Móvil", "Tartagal"];
+    const colorCumpl = pct => pct === null ? "var(--muted)" : pct >= 95 ? "var(--green)" : pct >= 70 ? "var(--orange)" : "var(--red)";
+    const bgCumpl    = pct => pct === null ? "transparent" : pct >= 95 ? "rgba(0,217,126,.12)" : pct >= 70 ? "rgba(229,160,32,.12)" : "rgba(255,59,82,.12)";
+    document.getElementById("tablaMapaCalorBody").innerHTML = SUCURSALES_MAPA.map(suc => {
+      const celdas = ["Servicios","Repuestos","Accesorios"].map(cat => {
+        const valFn = cat === "Servicios" ? valServ : cat === "Repuestos" ? valRep : valAcc;
+        const totSuc = this.raw.filter(r => r.mes === mes && r.ano === ano && r.suc === suc).reduce((s,r) => s + valFn(r), 0);
+        const objSuc = this.objetivoDe(suc, mes, ano, cat);
+        const cumplSuc = objSuc ? totSuc/objSuc*100 : null;
+        const texto = cumplSuc === null ? "sin obj." : this.pct(cumplSuc);
+        return `<td class="r" style="background:${bgCumpl(cumplSuc)};color:${colorCumpl(cumplSuc)};font-weight:800">${texto}</td>`;
+      }).join("");
+      return `<tr><td>${suc}</td>${celdas}</tr>`;
+    }).join("");
 
     // Pasos por Taller este mes — mismo criterio que el módulo Paso por Taller
     const asesorSel = document.getElementById("fAsesor").value;
