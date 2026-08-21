@@ -1390,6 +1390,11 @@ tr:last-child td{border-bottom:0}
         <div class="kpi-val" id="servTicket">—</div>
         <div class="kpi-lbl" id="servTicketLbl">Ticket promedio (por OR)</div>
       </div>
+      <div class="kpi-card c-gar">
+        <div class="kpi-ico">🛡️</div>
+        <div class="kpi-val" id="servMOGarantia">—</div>
+        <div class="kpi-lbl" id="servMOGarantiaLbl">M.O. de Garantía (ya incluida arriba)</div>
+      </div>
     </div>
 
     <!-- Barra de avance -->
@@ -3707,6 +3712,14 @@ const D = {
     const ticketServ = orsConServicio ? Math.round(total / orsConServicio) : 0;
     document.getElementById("servTicket").textContent = this.compacto(ticketServ);
     document.getElementById("servTicketLbl").textContent = orsConServicio ? `Ticket promedio (sobre ${orsConServicio} OR)` : "Ticket promedio (por OR)";
+
+    // M.O. de Garantía: la porción del total que viene de lotes ya facturados a VW —
+    // es un desglose informativo, ya está contada dentro de "servTotal" arriba, no se suma aparte.
+    const moGarantia = this.fil.filter(r => r.tipo === "Garantía").reduce((s,r) => s + val(r), 0);
+    document.getElementById("servMOGarantia").textContent = this.compacto(moGarantia);
+    document.getElementById("servMOGarantiaLbl").textContent = total > 0
+      ? `M.O. de Garantía (${this.pct(moGarantia/total*100)} del total de arriba)`
+      : "M.O. de Garantía (ya incluida arriba)";
 
     this.renderInteranualGenerico(ano, sucSel, val, "chartServInteranual", "badgeServInteranual", "#e0c257");
 
