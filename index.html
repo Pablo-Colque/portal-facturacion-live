@@ -3368,8 +3368,9 @@ const D = {
       } catch (err) { console.error("Error chartAmpCategoria:", err); }
     });
 
-    // ── Tabla: por Asesor (del mes filtrado) ──
-    document.getElementById("ampTablaAsesor").innerHTML = this.tablaAmpPorGrupo(datos, "asesor");
+    // ── Tabla: por Asesor (del mes filtrado) — agrupa Pablo Colque/Javier Reynoso/Marcelo
+    // Tejerina/Ernesto Garamendi bajo "PDI", igual criterio que en el resto del portal.
+    document.getElementById("ampTablaAsesor").innerHTML = this.tablaAmpPorGrupo(this.mapearPDI(datos), "asesor");
 
     // ── Tabla: por Técnico (del mes filtrado) ──
     document.getElementById("ampTablaTecnico").innerHTML = this.tablaAmpPorGrupo(datos, "tecnico");
