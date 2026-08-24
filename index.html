@@ -1382,7 +1382,7 @@ tr:last-child td{border-bottom:0}
       <div class="kpi-card c-gar">
         <div class="kpi-ico">📊</div>
         <div class="kpi-val" id="servCumpl">—</div>
-        <div class="kpi-lbl">Cumplimiento</div>
+        <div class="kpi-lbl">Cumplimiento a la fecha</div>
       </div>
       <div class="kpi-card c-int">
         <div class="kpi-ico">📐</div>
@@ -1482,7 +1482,7 @@ tr:last-child td{border-bottom:0}
       <div class="kpi-card c-gar">
         <div class="kpi-ico">📊</div>
         <div class="kpi-val" id="repCumpl">—</div>
-        <div class="kpi-lbl">Cumplimiento</div>
+        <div class="kpi-lbl">Cumplimiento a la fecha</div>
       </div>
       <div class="kpi-card c-int">
         <div class="kpi-ico">📐</div>
@@ -1577,7 +1577,7 @@ tr:last-child td{border-bottom:0}
       <div class="kpi-card c-gar">
         <div class="kpi-ico">📊</div>
         <div class="kpi-val" id="accCumpl">—</div>
-        <div class="kpi-lbl">Cumplimiento</div>
+        <div class="kpi-lbl">Cumplimiento a la fecha</div>
       </div>
       <div class="kpi-card c-int">
         <div class="kpi-ico">📐</div>
@@ -3605,6 +3605,18 @@ const D = {
     return this.objetivoDeUnaSuc(suc, mes, ano, categoria);
   },
 
+  // Objetivo "a la fecha" — el objetivo mensual prorrateado por los días hábiles ya
+  // transcurridos (objetivo diario × días trabajados). Es el mismo criterio que usa Jorge
+  // en sus mails semanales para medir ritmo, no el objetivo del mes completo — por eso el
+  // % que él reporta no coincidía con el nuestro aunque la plata estuviera bien.
+  objetivoAFecha(suc, mes, ano, categoria) {
+    const objMensual = this.objetivoDe(suc, mes, ano, categoria);
+    if (!objMensual) return 0;
+    const cd = this.calcDias(mes, ano);
+    if (!cd.diasHabMes) return objMensual;
+    return objMensual / cd.diasHabMes * cd.diasHabTrans;
+  },
+
   // Identifica una OR como "Accesorios" buscando la palabra en el texto del Servicio
   // (SIAC no tiene una columna propia para esto — es una aproximación por palabra clave,
   // confirmada por Pablo: usa OR con "ACC"/"ACCESORIOS" en el servicio, ej. "COLOCACION DE ACCESORIOS").
@@ -3706,7 +3718,8 @@ const D = {
 
     const total = this.fil.reduce((s,r) => s + val(r), 0);
     const obj   = this.objetivoDe(sucSel, mes, ano, "Servicios");
-    const cumpl = obj ? total/obj*100 : 0;
+    const objAFecha = this.objetivoAFecha(sucSel, mes, ano, "Servicios");
+    const cumpl = objAFecha ? total/objAFecha*100 : 0;
     const cd    = this.calcDias(mes, ano);
     const ritmo = cd.diasHabTrans > 0 ? total/cd.diasHabTrans : 0;
     const proyeccion = ritmo * cd.diasHabMes;
@@ -3742,7 +3755,7 @@ const D = {
     // Por asesor
     const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
-    const objInd = obj / nAsesores;
+    const objInd = objAFecha / nAsesores;
     let verde=0, amarillo=0, rojo=0;
     const filas = Object.entries(byAsesor).map(([a, arr]) => {
       const totAs = arr.reduce((s,r)=>s+val(r),0);
@@ -3903,7 +3916,8 @@ const D = {
 
     const total = this.fil.reduce((s,r) => s + val(r), 0);
     const obj   = this.objetivoDe(sucSel, mes, ano, "Repuestos");
-    const cumpl = obj ? total/obj*100 : 0;
+    const objAFecha = this.objetivoAFecha(sucSel, mes, ano, "Repuestos");
+    const cumpl = objAFecha ? total/objAFecha*100 : 0;
     const cd    = this.calcDias(mes, ano);
     const ritmo = cd.diasHabTrans > 0 ? total/cd.diasHabTrans : 0;
     const proyeccion = ritmo * cd.diasHabMes;
@@ -3929,7 +3943,7 @@ const D = {
     // Por asesor
     const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
-    const objInd = obj / nAsesores;
+    const objInd = objAFecha / nAsesores;
     let verde=0, amarillo=0, rojo=0;
     const filas = Object.entries(byAsesor).map(([a, arr]) => {
       const totAs = arr.reduce((s,r)=>s+val(r),0);
@@ -4088,7 +4102,8 @@ const D = {
 
     const total = this.fil.reduce((s,r) => s + val(r), 0);
     const obj   = this.objetivoDe(sucSel, mes, ano, "Accesorios");
-    const cumpl = obj ? total/obj*100 : 0;
+    const objAFecha = this.objetivoAFecha(sucSel, mes, ano, "Accesorios");
+    const cumpl = objAFecha ? total/objAFecha*100 : 0;
     const cd    = this.calcDias(mes, ano);
     const ritmo = cd.diasHabTrans > 0 ? total/cd.diasHabTrans : 0;
     const proyeccion = ritmo * cd.diasHabMes;
@@ -4107,7 +4122,7 @@ const D = {
     // Por asesor
     const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
-    const objInd = obj / nAsesores;
+    const objInd = objAFecha / nAsesores;
     let verde=0, amarillo=0, rojo=0;
     const filas = Object.entries(byAsesor).map(([a, arr]) => {
       const totAs = arr.reduce((s,r)=>s+val(r),0);
@@ -4277,7 +4292,8 @@ const D = {
     categorias.forEach(c => {
       const total = this.fil.reduce((s,r) => s + c.val(r), 0);
       const obj   = this.objetivoDe(sucSel, mes, ano, c.categoria);
-      const cumpl = obj ? total/obj*100 : 0;
+      const objAFecha = this.objetivoAFecha(sucSel, mes, ano, c.categoria);
+      const cumpl = objAFecha ? total/objAFecha*100 : 0;
       document.getElementById(c.sub).textContent = obj ? `${this.compacto(total)} de ${this.compacto(obj)}` : "Sin objetivo cargado";
       this.dibujarGauge(c.gauge, obj ? cumpl : null);
     });
@@ -4328,7 +4344,7 @@ const D = {
       const celdas = ["Servicios","Repuestos","Accesorios"].map(cat => {
         const valFn = cat === "Servicios" ? valServ : cat === "Repuestos" ? valRep : valAcc;
         const totSuc = this.raw.filter(r => r.mes === mes && r.ano === ano && r.suc === suc).reduce((s,r) => s + valFn(r), 0);
-        const objSuc = this.objetivoDe(suc, mes, ano, cat);
+        const objSuc = this.objetivoAFecha(suc, mes, ano, cat);
         const cumplSuc = objSuc ? totSuc/objSuc*100 : null;
         const texto = cumplSuc === null ? "sin obj." : this.pct(cumplSuc);
         return `<td class="r" style="background:${bgCumpl(cumplSuc)};color:${colorCumpl(cumplSuc)};font-weight:800">${texto}</td>`;
