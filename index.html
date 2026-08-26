@@ -3617,12 +3617,17 @@ const D = {
     return objMensual / cd.diasHabMes * cd.diasHabTrans;
   },
 
-  // Identifica una OR como "Accesorios" buscando la palabra en el texto del Servicio
-  // (SIAC no tiene una columna propia para esto — es una aproximación por palabra clave,
-  // confirmada por Pablo: usa OR con "ACC"/"ACCESORIOS" en el servicio, ej. "COLOCACION DE ACCESORIOS").
+  // Identifica una OR como "Accesorios" de dos formas distintas, confirmadas por Pablo:
+  // 1) Por palabra clave en el texto del Servicio (SIAC no tiene columna propia para esto)
+  //    — ej. "COLOCACION DE ACCESORIOS".
+  // 2) Toda OR de Pre-Entrega (SPE-OR / tipoServ "PreEntr") — Repuestos le vende internamente
+  //    a Ventas la alfombra + manual de cada unidad nueva (cargo "Interna"), y esa plata es
+  //    venta de Accesorios aunque el texto solo diga "SERVICIO PRE-ENTREGA" (sin la palabra).
+  //    Si no se detectara así, esa plata quedaría mal metida dentro de Repuestos por la resta.
   // Nunca aplica a Garantía (VW no clasifica así sus reclamos).
   esAccesorio(r) {
     if (r.tipo === "Garantía") return false;
+    if (r.esPreEntrega || r.tipoServ === "PreEntr") return true;
     return !!(r.servicio && /acc/i.test(r.servicio));
   },
 
