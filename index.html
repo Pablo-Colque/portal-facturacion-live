@@ -1948,7 +1948,14 @@ const D = {
       this.actualizarTickerTiempo();
       if (!this._tickerIniciado) { this._tickerIniciado = true; setInterval(() => this.actualizarTickerTiempo(), 5000); }
       this.aplicar();
-      this.navTo("resumen", document.querySelector(".nav button"));
+      // Solo activar la visibilidad del panel Resumen y el botón — aplicar() ya lo
+      // renderizó internamente (vistaActual ya es "resumen" por defecto). Si acá también
+      // llamáramos a navTo(), se dispara un segundo render en el mismo instante y Chart.js
+      // choca al crear el mismo gráfico dos veces sobre el mismo <canvas>.
+      document.getElementById("panelResumen").style.display = "flex";
+      const btnResumen = document.querySelector(".nav button");
+      if (btnResumen) btnResumen.classList.add("active");
+      document.documentElement.setAttribute("data-modulo", "resumen");
     } catch(err) {
       const b = document.getElementById("errBanner");
       b.textContent = "⚠️ No se pudieron cargar los datos: " + err.message + " — Revisá la conexión o el Apps Script.";
@@ -3676,9 +3683,13 @@ const D = {
     const badge = document.getElementById(badgeId);
     if (badge) badge.textContent = `${ano - 1} vs ${ano} · ${variTotal>=0?"+":""}${variTotal.toFixed(1)}% total`;
 
-    if (this.graficos[canvasId]) { try { this.graficos[canvasId].destroy(); } catch(e){} this.graficos[canvasId] = null; }
     requestAnimationFrame(() => {
       try {
+        // El destroy va acá adentro (no antes del rAF) para que siempre chequee el estado
+        // más reciente de this.graficos — si esta función se llama dos veces seguidas antes
+        // de que el primer rAF corra, la segunda destruye el gráfico real que ya existe,
+        // en vez de destruir "nada" y después chocar al crear dos gráficos sobre el mismo canvas.
+        if (this.graficos[canvasId]) { try { this.graficos[canvasId].destroy(); } catch(e){} this.graficos[canvasId] = null; }
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
         this.graficos[canvasId] = new Chart(canvas, {
@@ -4381,9 +4392,9 @@ const D = {
   // zona (rojo <70% / amarillo 70-95% / verde 95%+), con el número en el centro.
   // Tope visual en 150% — si el real es mayor, el arco queda lleno pero el número real igual.
   dibujarGauge(canvasId, valorPct) {
-    if (this.graficos[canvasId]) { try { this.graficos[canvasId].destroy(); } catch(e){} this.graficos[canvasId] = null; }
     requestAnimationFrame(() => {
       try {
+        if (this.graficos[canvasId]) { try { this.graficos[canvasId].destroy(); } catch(e){} this.graficos[canvasId] = null; }
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
         const TOPE = 150;
