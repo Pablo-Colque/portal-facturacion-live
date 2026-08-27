@@ -394,7 +394,13 @@ tr:last-child td{border-bottom:0}
 
 @media(max-width:1400px){.kpis{grid-template-columns:repeat(4,1fr)}.semaforo-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr 1fr}.suc-row{grid-template-columns:1fr}}
 @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.charts-row2{grid-template-columns:1fr}.charts-row3{grid-template-columns:1fr}.semaforo-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}}
+@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}
+  /* En celular, todos los recuadros de gráficos/KPI se apilan sin importar el ancho de columnas
+     fijo que traiga cada módulo en línea — el !important es necesario porque un estilo en línea
+     (style="...") siempre le gana a una regla de clase normal, media query o no. */
+  .charts-row,.charts-row2,.charts-row3{grid-template-columns:1fr!important}
+  .kpis,.suc-kpis{grid-template-columns:repeat(2,1fr)!important}
+}
 
 /* ── GARANTÍAS VIÑETA ──────────────────────────────────────── */
 .gar-header{background:linear-gradient(90deg,rgba(168,126,255,.12),rgba(0,0,0,0));border:1px solid rgba(168,126,255,.25);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -1951,7 +1957,10 @@ const D = {
       // Solo activar la visibilidad del panel Resumen y el botón — aplicar() ya lo
       // renderizó internamente (vistaActual ya es "resumen" por defecto). Si acá también
       // llamáramos a navTo(), se dispara un segundo render en el mismo instante y Chart.js
-      // choca al crear el mismo gráfico dos veces sobre el mismo <canvas>.
+      // choca al crear el mismo gráfico dos veces sobre el mismo <canvas>. Pero sí hay que
+      // ocultar el resto de los paneles a mano (el de Facturación queda visible por defecto
+      // si no se lo oculta explícitamente).
+      document.querySelectorAll(".content").forEach(p => { p.style.display = "none"; });
       document.getElementById("panelResumen").style.display = "flex";
       const btnResumen = document.querySelector(".nav button");
       if (btnResumen) btnResumen.classList.add("active");
