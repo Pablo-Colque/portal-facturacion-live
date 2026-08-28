@@ -280,7 +280,13 @@ body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13p
 .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .card-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted)}
 .card-badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:6px;background:rgba(77,159,255,.1);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent)}
-.chart-wrap{position:relative}
+.chart-wrap{position:relative;width:100%;min-width:0;overflow:hidden}
+/* Los hijos de un grid/flex tienen min-width:auto por defecto: la celda no puede achicarse
+   por debajo del ancho intrínseco del <canvas>, y en pantallas chicas el gráfico se desborda
+   de la tarjeta. Con min-width:0 la celda sí puede encogerse y el canvas acompaña. */
+.charts-row>*,.charts-row2>*,.charts-row3>*,.kpis>*,.suc-row>*,.semaforo-grid>*,.hist-grid>*,.cdec-metricas>*{min-width:0}
+.card,.kpi{min-width:0;overflow:hidden}
+.chart-wrap>canvas{display:block;max-width:100%}
 
 /* TABLA */
 .tablewrap,.table-wrap{overflow:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
@@ -394,7 +400,7 @@ tr:last-child td{border-bottom:0}
 
 @media(max-width:1400px){.kpis{grid-template-columns:repeat(4,1fr)}.semaforo-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr 1fr}.suc-row{grid-template-columns:1fr}}
 @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.charts-row2{grid-template-columns:1fr}.charts-row3{grid-template-columns:1fr}.semaforo-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}
+@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.content{padding:10px}.header,.filters{padding:8px 12px}.charts-row,.charts-row2,.charts-row3{grid-template-columns:1fr}.hist-grid{grid-template-columns:repeat(4,1fr)}.cdec-metricas{grid-template-columns:repeat(2,1fr)}.suc-kpis{grid-template-columns:repeat(2,1fr)}
   /* En celular, todos los recuadros de gráficos/KPI se apilan sin importar el ancho de columnas
      fijo que traiga cada módulo en línea — el !important es necesario porque un estilo en línea
      (style="...") siempre le gana a una regla de clase normal, media query o no. */
@@ -1415,6 +1421,18 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Bloque formato informe Jorge -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📋 Servicios — formato informe de Jefatura</div></div>
+      <div class="tablewrap"><table id="tablaJorgeServ"></table></div>
+    </div>
+
+    <!-- Comportamiento semanal -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📆 Comportamiento semanal</div><span class="badge b-blue" id="badgeSemServ">—</span></div>
+      <div class="chart-wrap" style="height:230px"><canvas id="chartSemServ"></canvas></div>
+    </div>
+
     <!-- Comparativa Interanual -->
     <div class="card" style="margin-bottom:18px">
       <div class="card-head">
@@ -1519,6 +1537,18 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <!-- Bloque formato informe Jorge -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📋 Repuestos — formato informe de Jefatura</div></div>
+      <div class="tablewrap"><table id="tablaJorgeRep"></table></div>
+    </div>
+
+    <!-- Comportamiento semanal -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📆 Comportamiento semanal</div><span class="badge b-blue" id="badgeSemRep">—</span></div>
+      <div class="chart-wrap" style="height:230px"><canvas id="chartSemRep"></canvas></div>
+    </div>
+
     <!-- Gráficos -->
     <div class="charts-row" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
       <div class="card">
@@ -1598,6 +1628,24 @@ tr:last-child td{border-bottom:0}
         <div class="suc-prog-meta"><span>Avance hacia el objetivo de Accesorios</span><span id="accPct">0%</span></div>
         <div class="suc-prog-track"><div class="suc-prog-fill" id="accProgFill" style="width:0%"></div></div>
       </div>
+    </div>
+
+    <!-- Bloque formato informe Jorge -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📋 Accesorios — formato informe de Jefatura</div></div>
+      <div class="tablewrap"><table id="tablaJorgeAcc"></table></div>
+    </div>
+
+    <!-- Comportamiento semanal -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📆 Comportamiento semanal</div><span class="badge b-blue" id="badgeSemAcc">—</span></div>
+      <div class="chart-wrap" style="height:230px"><canvas id="chartSemAcc"></canvas></div>
+    </div>
+
+    <!-- Comparativa interanual -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-head"><div class="card-title">📊 Accesorios — año actual vs anterior</div><span class="badge b-blue" id="badgeAccInteranual">—</span></div>
+      <div class="chart-wrap" style="height:230px"><canvas id="chartAccInteranual"></canvas></div>
     </div>
 
     <!-- Gráficos -->
@@ -1820,6 +1868,15 @@ const D = {
   raw: [],   // todos los registros cargados una vez
   fil: [],   // registros filtrados
   graficos: {},
+
+  // Al rotar el teléfono o cambiar el ancho, Chart.js conserva el tamaño con el que se creó
+  // el canvas. Si además el panel estaba oculto al crearse, ese tamaño es basura y el gráfico
+  // se dibuja fuera de la tarjeta. Este resize los reajusta a la medida real del contenedor.
+  reajustarGraficos() {
+    Object.values(this.graficos || {}).forEach(g => {
+      if (g && typeof g.resize === "function") { try { g.resize(); } catch(e){} }
+    });
+  },
   HOY: new Date(),
   vistaActual: "resumen",
 
@@ -1876,6 +1933,8 @@ const D = {
     } else {
       panelFac.style.display = "flex";
     }
+    // El panel recién se hizo visible: recién ahora el contenedor tiene ancho real.
+    requestAnimationFrame(() => this.reajustarGraficos());
   },
 
   // ── DÍAS HÁBILES ──────────────────────────────────────────────
@@ -2129,24 +2188,42 @@ const D = {
     const cd        = this.calcDias(mes, ano);
     const sucSel    = document.getElementById("fSuc").value;
     const objetivo  = this.objetivoDe(sucSel, mes, ano) || 92700000;
+
+    // ── Las tres categorías, con la MISMA definición que usan sus módulos ──
+    // Jorge fija el objetivo abierto en Servicios + Repuestos + Accesorios, así que el
+    // facturado que se compara contra él tiene que ser la suma de esas tres y nada más.
+    // Una OR de Accesorios va entera a Accesorios y se excluye de las otras dos.
+    const catServicios  = arr.reduce((s,r) => s + (this.esAccesorio(r) ? 0 : (r.mo || 0) + (r.terceros || 0)), 0);
+    const catRepuestos  = arr.reduce((s,r) => s + ((this.esAccesorio(r) || r.tipo === "Garantía") ? 0 : Math.max(r.importe - (r.mo || 0) - (r.terceros || 0), 0)), 0);
+    const catAccesorios = arr.reduce((s,r) => s + (this.esAccesorio(r) ? r.importe : 0), 0);
+    const comparable    = catServicios + catRepuestos + catAccesorios;
+
+    // Objetivo a la fecha (mensual ÷ días hábiles del mes × días hábiles transcurridos):
+    // es el criterio real de los mails de Jorge. Comparar contra el objetivo mensual
+    // completo a mitad de mes muestra rojo aunque la sucursal esté en ritmo.
+    const objetivoAFecha = this.objetivoAFecha(sucSel, mes, ano) || objetivo;
+
     const diasHabT  = cd.diasHabTrans || 1;
-    const ritmo     = totalComercial / diasHabT;
+    const ritmo     = comparable / diasHabT;
     const proyeccion= ritmo * cd.diasHabMes;
     return {
       total,
       totalComercial,
-      // Mano de Obra y Terceros: Cliente+Interna+Mixto, SIN Garantía — misma regla
-      // que usa el módulo Servicios, para que los dos números siempre cierren igual.
-      mo:        arr.reduce((s,r) => s + (r.tipo === "Garantía" ? 0 : (r.mo || 0)), 0),
+      catServicios, catRepuestos, catAccesorios, comparable, objetivoAFecha,
+      // Mano de Obra y Terceros: TODAS las OR, garantía incluida — la M.O. de garantía
+      // suma como Servicios de Taller (criterio de Belén y de Jorge). Excluirla dejaba
+      // afuera cerca de un tercio de los Servicios del mes.
+      mo:        arr.reduce((s,r) => s + (r.mo || 0), 0),
       cliente:   arr.reduce((s,r) => s + (r.cliente  || 0), 0),
       garantia:  arr.reduce((s,r) => s + (r.garantia || 0), 0),
       interna:   arr.reduce((s,r) => s + (r.interna  || 0), 0),
       repuestos: arr.reduce((s,r) => s + (r.repuestos|| 0), 0),
-      terceros:  arr.reduce((s,r) => s + (r.tipo === "Garantía" ? 0 : (r.terceros || 0)), 0),
+      terceros:  arr.reduce((s,r) => s + (r.terceros || 0), 0),
       ors:       arr.length,
-      ticket:    arr.length ? Math.round(total / arr.length) : 0,
+      ticket:    arr.length ? Math.round(comparable / arr.length) : 0,
       objetivo,
-      cumpl:     objetivo ? totalComercial / objetivo * 100 : 0,
+      cumpl:     objetivoAFecha ? comparable / objetivoAFecha * 100 : 0,
+      cumplMensual: objetivo ? comparable / objetivo * 100 : 0,
       ritmo,
       ritmoIdeal:objetivo / cd.diasHabMes,
       proyeccion,
@@ -2157,10 +2234,10 @@ const D = {
   // ── CENTRO DE DECISIONES ─────────────────────────────────────
   renderCentroDecisiones(mes, ano, t) {
     const panel = document.getElementById("cdecPanel");
-    const falta = Math.max(t.objetivo - t.totalComercial, 0);
+    const falta = Math.max(t.objetivo - t.comparable, 0);
     const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
     const prob = this.calcProbabilidad(t);
-    const desvio = t.totalComercial - t.objetivo;
+    const desvio = t.comparable - t.objetivo;
 
     // Estado
     let estado = "estado-ok", label = "✅ EN OBJETIVO";
@@ -2193,7 +2270,7 @@ const D = {
       </div>
       <div class="cdec-met ${t.cumpl>=90?"positivo":t.cumpl>=60?"warn":"negativo"}">
         <div class="lbl">Facturado</div>
-        <div class="val">${this.compacto(t.totalComercial)}</div>
+        <div class="val">${this.compacto(t.comparable)}</div>
         <div class="sub">${t.cumpl.toFixed(1)}% del objetivo</div>
       </div>
       <div class="cdec-met ${t.proyeccion>=t.objetivo?"positivo":"negativo"}">
@@ -2216,7 +2293,7 @@ const D = {
     const pct = Math.min(t.cumpl, 100);
     document.getElementById("cdecBarraFill").style.width   = pct + "%";
     document.getElementById("cdecBarraMarker").style.left  = pct + "%";
-    document.getElementById("cdecBarraIzq").textContent    = "Facturado: " + this.moneda(t.totalComercial);
+    document.getElementById("cdecBarraIzq").textContent    = "Facturado: " + this.moneda(t.comparable);
     document.getElementById("cdecBarraDer").textContent    = "Objetivo: " + this.moneda(t.objetivo);
   },
 
@@ -2229,7 +2306,7 @@ const D = {
     const diasRestPct = t.diasHabRest / t.diasHabMes;
     let prob = Math.min(ratio * 100 * (1 - diasRestPct) + t.cumpl * diasRestPct, 100);
     // Penalizar si ritmo actual < ritmo necesario
-    if (t.ritmo < (t.objetivo - t.totalComercial) / Math.max(t.diasHabRest, 1)) {
+    if (t.ritmo < (t.objetivo - t.comparable) / Math.max(t.diasHabRest, 1)) {
       prob = prob * 0.6;
     }
     return Math.max(Math.round(prob), 0);
@@ -2238,7 +2315,7 @@ const D = {
   // ── INTELIGENCIA GERENCIAL ────────────────────────────────────
   renderInteligencia(mes, ano, t) {
     const alertas = [];
-    const falta   = Math.max(t.objetivo - t.totalComercial, 0);
+    const falta   = Math.max(t.objetivo - t.comparable, 0);
     const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
     if (t.esMesActual) {
       if (t.diasHabRest <= 3)
@@ -2303,7 +2380,7 @@ const D = {
     const el = document.getElementById("alertaDias");
     if (!t.esMesActual) { el.style.display = "none"; return; }
     el.style.display = "flex";
-    const falta    = Math.max(t.objetivo - t.totalComercial, 0);
+    const falta    = Math.max(t.objetivo - t.comparable, 0);
     const ritmoNec = t.diasHabRest > 0 ? falta / t.diasHabRest : 0;
     const clsRest  = t.diasHabRest <= 3 ? "urgente" : t.diasHabRest <= 8 ? "warn" : "ok";
     const ritmoOk  = t.ritmo >= ritmoNec;
@@ -2433,11 +2510,12 @@ const D = {
     const cls = pc>=90?"on-track":pc>=60?"at-risk":"behind";
     const bdg = pc>=90?"b-green":pc>=60?"b-orange":"b-red";
     const cards = [
-      {label:"Facturación Comercial",val:this.moneda(t.totalComercial),sub:this.pct(t.cumpl)+" del objetivo",ico:"💰",cls:"c-main",
-       extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. ${this.compacto(t.objetivo)}</span><span class="badge ${bdg}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div></div>`},
-      {label:"Facturación Total",val:this.moneda(t.total),sub:"incluye Garantía · sin objetivo propio",ico:"📊",cls:"c-blue"},
-      {label:"Mano de Obra",val:this.moneda(t.mo),sub:this.pct(t.total?t.mo/t.total*100:0)+" del total",ico:"🔧",cls:"c-blue"},
-      {label:"Terceros",val:this.moneda(t.terceros),sub:this.pct(t.total?t.terceros/t.total*100:0)+" del total",ico:"🤝",cls:"c-cyan"},
+      {label:"Facturado vs Objetivo",val:this.moneda(t.comparable),sub:this.pct(t.cumpl)+" del objetivo a la fecha",ico:"💰",cls:"c-main",
+       extra:`<div class="prog-wrap"><div class="prog-meta"><span>Obj. a la fecha ${this.compacto(t.objetivoAFecha)}</span><span class="badge ${bdg}">${this.pct(t.cumpl)}</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${Math.min(t.cumpl,100)}%"></div></div><div style="font-size:9px;color:var(--muted);margin-top:3px">Servicios + Repuestos + Accesorios · obj. mensual ${this.compacto(t.objetivo)}</div></div>`},
+      {label:"🔧 Servicios",val:this.moneda(t.catServicios),sub:"M.O. + Terceros (incluye M.O. de Garantía)",ico:"🔧",cls:"c-blue"},
+      {label:"🔩 Repuestos",val:this.moneda(t.catRepuestos),sub:"repuestos y lubricantes de taller · sin mostrador/mayorista",ico:"🔩",cls:"c-teal"},
+      {label:"📦 Accesorios",val:this.moneda(t.catAccesorios),sub:"OR de accesorios + Pre-Entrega",ico:"📦",cls:"c-pink"},
+      {label:"Facturación Total",val:this.moneda(t.total),sub:"incluye Garantía completa · sin objetivo propio",ico:"📊",cls:"c-blue"},
       {label:"Garantía",val:this.moneda(t.garantia),sub:this.pct(t.total?t.garantia/t.total*100:0)+" del total",ico:"🛡️",cls:"c-purple",
        extra: (() => {
          const mes = parseInt(document.getElementById("fMes").value);
@@ -2447,7 +2525,7 @@ const D = {
          return debs.map(d => `<div style="font-size:9px;color:var(--red);font-weight:700;margin-top:2px">🔻 Débito lote ${d.lote}: ${this.compacto(d.monto)}</div>`).join("");
        })()},
       {label:"Interna",val:this.moneda(t.interna),sub:this.pct(t.total?t.interna/t.total*100:0)+" del total",ico:"🏭",cls:"c-orange"},
-      {label:"Repuestos",val:this.compacto(t.repuestos),sub:"informativo · no suma",ico:"🔩",cls:"c-teal"},
+      {label:"Terceros",val:this.moneda(t.terceros),sub:"trabajo tercerizado · ya contado en Servicios",ico:"🤝",cls:"c-cyan"},
       {label:"OR Facturadas",val:t.ors,sub:"órdenes del período",ico:"📋",cls:"c-green"},
       {label:"Proyección fin mes",val:this.compacto(t.proyeccion),sub:t.proyeccion>=t.objetivo?"✅ Objetivo alcanzable":"⚠️ En riesgo",ico:"📐",cls:t.proyeccion>=t.objetivo?"c-green":"c-red",
        extra:`<div class="prog-wrap"><div class="prog-track"><div class="prog-fill ${t.proyeccion>=t.objetivo?"on-track":"behind"}" style="width:${Math.min(t.proyeccion/t.objetivo*100,100)}%"></div></div></div>`},
@@ -3625,6 +3703,100 @@ const D = {
   // transcurridos (objetivo diario × días trabajados). Es el mismo criterio que usa Jorge
   // en sus mails semanales para medir ritmo, no el objetivo del mes completo — por eso el
   // % que él reporta no coincidía con el nuestro aunque la plata estuviera bien.
+  // ── BLOQUE FORMATO INFORME DE JORGE ───────────────────────────
+  // Replica exactamente las columnas de su planilla quincenal: Objetivo Mensual,
+  // Avance a Fecha, Cumplimiento a la fecha, Cumplimiento a cierre, Objetivo Diario,
+  // Prom. Diario, Desvío a Fecha y Dif. días de operación.
+  // Semáforo del informe: verde ≥95%, amarillo 90–95%, rojo ≤90%.
+  renderBloqueJorge(pref, categoria, total, mes, ano) {
+    const el = document.getElementById("tablaJorge" + pref);
+    if (!el) return;
+    const sucSel   = document.getElementById("fSuc").value;
+    const objMes   = this.objetivoDe(sucSel, mes, ano, categoria) || 0;
+    const cd       = this.calcDias(mes, ano);
+    const diasMes  = cd.diasHabMes  || 1;
+    const diasTran = cd.diasHabTrans || 0;
+    const objAFecha = objMes / diasMes * diasTran;
+    const objDiario = objMes / diasMes;
+    const promDiario= diasTran ? total / diasTran : 0;
+    const cumplFecha= objAFecha ? total / objAFecha * 100 : 0;
+    const cumplCierre = objMes ? total / objMes * 100 : 0;
+    const desvio    = total - objAFecha;
+    // "Dif. días de operación": cuántos días de producción se lleva de ventaja o de atraso
+    // respecto del ritmo objetivo. Positivo = atrasado, negativo = adelantado (igual que Jorge).
+    const difDias   = objDiario ? Math.round((objAFecha - total) / objDiario) : 0;
+
+    const luz = p => p >= 95 ? "🟢" : p > 90 ? "🟡" : "🔴";
+    const cls = p => p >= 95 ? "b-green" : p > 90 ? "b-orange" : "b-red";
+    const neg = v => v < 0 ? ' style="color:var(--red);font-weight:700"' : ' style="color:var(--green);font-weight:700"';
+
+    el.innerHTML = `
+      <thead><tr>
+        <th>Categoría</th><th class="r">Objetivo Mensual</th><th class="r">Avance a Fecha</th>
+        <th class="r">Cumpl. a la fecha</th><th class="r">Cumpl. a cierre</th>
+        <th class="r">Objetivo Diario</th><th class="r">Prom. Diario</th>
+        <th class="r">Desvío a Fecha</th><th class="r">Dif. días op.</th>
+      </tr></thead>
+      <tbody><tr>
+        <td><b>Facturación ${categoria}</b></td>
+        <td class="r">${objMes ? this.moneda(objMes) : "Sin cargar"}</td>
+        <td class="r"><b>${this.moneda(total)}</b></td>
+        <td class="r">${objMes ? `${luz(cumplFecha)} <span class="badge ${cls(cumplFecha)}">${cumplFecha.toFixed(1)}%</span>` : "—"}</td>
+        <td class="r">${objMes ? cumplCierre.toFixed(0) + "%" : "—"}</td>
+        <td class="r">${objMes ? this.moneda(objDiario) : "—"}</td>
+        <td class="r">${this.moneda(promDiario)}</td>
+        <td class="r"${neg(desvio)}>${this.moneda(desvio)}</td>
+        <td class="r">${objMes ? difDias : "—"}</td>
+      </tr></tbody>`;
+
+    const sub = document.getElementById("badgeSem" + pref);
+    if (sub) sub.textContent = `${diasTran} de ${diasMes} días hábiles · ${(diasTran/diasMes*100).toFixed(0)}% del mes`;
+  },
+
+  // ── COMPORTAMIENTO SEMANAL ────────────────────────────────────
+  // Barras por semana del mes elegido + línea del objetivo semanal, para ver si el ritmo
+  // se sostiene o se apoya en una sola semana fuerte.
+  renderSemanalGenerico(pref, categoria, val, mes, ano) {
+    const cv = document.getElementById("chartSem" + pref);
+    if (!cv) return;
+    const sucSel = document.getElementById("fSuc").value;
+    const objMes = this.objetivoDe(sucSel, mes, ano, categoria) || 0;
+
+    const semanas = [0,0,0,0,0];
+    this.fil.forEach(r => {
+      const i = Math.min(Math.max(parseInt(r.sem) || 1, 1), 5) - 1;
+      semanas[i] += val(r);
+    });
+    const nSem = semanas.some(v => v > 0) && semanas[4] > 0 ? 5 : 4;
+    const datos = semanas.slice(0, nSem);
+    const objSem = objMes ? objMes / nSem : 0;
+
+    const key = "chartSem" + pref;
+    requestAnimationFrame(() => {
+      if (this.graficos[key]) { try { this.graficos[key].destroy(); } catch(e){} this.graficos[key] = null; }
+      this.graficos[key] = new Chart(cv, {
+        type: "bar",
+        data: {
+          labels: datos.map((_,i) => "Semana " + (i+1)),
+          datasets: [
+            { label: categoria, data: datos, backgroundColor: "#3b82f6", borderRadius: 6, order: 2 },
+            ...(objSem ? [{ label: "Objetivo semanal", data: datos.map(() => objSem), type: "line",
+                            borderColor: "#e34557", borderDash: [6,4], borderWidth: 2, pointRadius: 0, order: 1 }] : [])
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { boxWidth: 10, font: { size: 10 } } },
+            tooltip: { callbacks: { label: c => c.dataset.label + ": " + this.moneda(c.parsed.y) } }
+          },
+          scales: { y: { beginAtZero: true, ticks: { callback: v => this.compacto(v), font: { size: 9 } } },
+                    x: { ticks: { font: { size: 10 } } } }
+        }
+      });
+    });
+  },
+
   objetivoAFecha(suc, mes, ano, categoria) {
     const objMensual = this.objetivoDe(suc, mes, ano, categoria);
     if (!objMensual) return 0;
@@ -3776,6 +3948,9 @@ const D = {
       : "M.O. de Garantía (ya incluida arriba)";
 
     this.renderInteranualGenerico(ano, sucSel, val, "chartServInteranual", "badgeServInteranual", "#e0c257");
+
+    this.renderBloqueJorge("Serv", "Servicios", total, mes, ano);
+    this.renderSemanalGenerico("Serv", "Servicios", val, mes, ano);
 
     // Por asesor
     const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
@@ -3965,6 +4140,9 @@ const D = {
 
     this.renderInteranualGenerico(ano, sucSel, val, "chartRepInteranual", "badgeRepInteranual", "#e34557");
 
+    this.renderBloqueJorge("Rep", "Repuestos", total, mes, ano);
+    this.renderSemanalGenerico("Rep", "Repuestos", val, mes, ano);
+
     // Por asesor
     const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
     const nAsesores = Math.max(Object.keys(byAsesor).length, 1);
@@ -4143,6 +4321,10 @@ const D = {
       : "Proyección fin de mes";
     document.getElementById("accPct").textContent = obj ? this.pct(cumpl) : "sin objetivo";
     document.getElementById("accProgFill").style.width = Math.min(cumpl,100) + "%";
+
+    this.renderBloqueJorge("Acc", "Accesorios", total, mes, ano);
+    this.renderSemanalGenerico("Acc", "Accesorios", val, mes, ano);
+    this.renderInteranualGenerico(ano, sucSel, val, "chartAccInteranual", "badgeAccInteranual", "#ec4899");
 
     // Por asesor
     const byAsesor = this.grupo(this.mapearPDI(this.fil), "asesor");
@@ -4542,6 +4724,14 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("loginPass").focus();
   }
 });
+
+// Reajuste de gráficos al rotar el celular o redimensionar (debounced).
+(function(){
+  let t = null;
+  const go = () => { clearTimeout(t); t = setTimeout(() => { if (window.D && D.reajustarGraficos) D.reajustarGraficos(); }, 150); };
+  window.addEventListener("resize", go);
+  window.addEventListener("orientationchange", go);
+})();
 </script>
 </body>
 </html>
