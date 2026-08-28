@@ -285,7 +285,11 @@ body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13p
    por debajo del ancho intrínseco del <canvas>, y en pantallas chicas el gráfico se desborda
    de la tarjeta. Con min-width:0 la celda sí puede encogerse y el canvas acompaña. */
 .charts-row>*,.charts-row2>*,.charts-row3>*,.kpis>*,.suc-row>*,.semaforo-grid>*,.hist-grid>*,.cdec-metricas>*{min-width:0}
-.card,.kpi{min-width:0;overflow:hidden}
+/* Los paneles son hijos de un flex en columna con scroll: sin flex-shrink:0 se encogen
+   para entrar en la altura de la ventana y el contenido de abajo queda inalcanzable. */
+.content>*{flex-shrink:0}
+.card,.kpi{min-width:0}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .chart-wrap>canvas{display:block;max-width:100%}
 
 /* TABLA */
@@ -2074,7 +2078,7 @@ const D = {
 
   // ── LOGIN ──────────────────────────────────────────────────────
   login() {
-    const CLAVE = "1122334455";
+    const CLAVE = "Autosol 26";
     const val = document.getElementById("loginPass").value.trim();
     if (val === CLAVE) {
       localStorage.setItem("portalAuth", "ok");
