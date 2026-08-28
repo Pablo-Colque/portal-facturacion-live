@@ -1975,9 +1975,11 @@ const D = {
     document.getElementById("loaderOverlay").classList.remove("hidden");
     document.getElementById("errBanner").classList.remove("show");
     try {
-      const res = await fetch(this.API_URL, { method:"GET", redirect:"follow" });
+      const token = localStorage.getItem("portalToken") || "";
+      const res = await fetch(this.API_URL + "?token=" + encodeURIComponent(token), { method:"GET", redirect:"follow" });
       const text = await res.text();
       const json = JSON.parse(text.trim().replace(/^\uFEFF/,""));
+      if (!json.ok && json.error === "SIN_AUTORIZACION") { this.cerrarSesion(); return; }
       if (!json.ok) throw new Error(json.error || "Error desconocido");
 
       this.raw = json.detalle || [];
@@ -2077,18 +2079,42 @@ const D = {
   },
 
   // ── LOGIN ──────────────────────────────────────────────────────
-  login() {
-    const CLAVE = "Autosol 26";
-    const val = document.getElementById("loginPass").value.trim();
-    if (val === CLAVE) {
-      localStorage.setItem("portalAuth", "ok");
+  // Para dar de baja a todos: cambiá CLAVE_PORTAL en las Propiedades del Script.
+  // Si además querés cortar los tokens ya emitidos sin esperar las 12 h, cambiá SECRETO_TOKEN.
+  // La clave ya no está en este archivo. Se la mandamos al Apps Script, que la valida
+  // y devuelve un token con vencimiento. Sin ese token el backend no entrega datos.
+  async login() {
+    const val  = document.getElementById("loginPass").value.trim();
+    const err  = document.getElementById("loginErr");
+    const btn  = document.querySelector("#loginOverlay button");
+    if (!val) { err.textContent = "Ingresá la clave"; return; }
+    err.textContent = "Verificando…";
+    if (btn) btn.disabled = true;
+    try {
+      const url = this.API_URL + "?accion=login&clave=" + encodeURIComponent(val);
+      const res = await fetch(url, { method:"GET", redirect:"follow" });
+      const json = JSON.parse((await res.text()).trim().replace(/^\uFEFF/,""));
+      if (!json.ok) throw new Error(json.error || "Clave incorrecta");
+      localStorage.setItem("portalToken", json.token);
+      err.textContent = "";
       document.getElementById("loginOverlay").classList.add("hidden");
       this.cargar();
-    } else {
-      document.getElementById("loginErr").textContent = "Clave incorrecta";
+    } catch (ex) {
+      err.textContent = ex.message === "Clave incorrecta" ? "Clave incorrecta" : "No se pudo verificar: " + ex.message;
       document.getElementById("loginPass").value = "";
       document.getElementById("loginPass").focus();
+    } finally {
+      if (btn) btn.disabled = false;
     }
+  },
+
+  // Token vencido o inválido: limpiamos y volvemos a pedir la clave.
+  cerrarSesion(motivo) {
+    localStorage.removeItem("portalToken");
+    document.getElementById("loginOverlay").classList.remove("hidden");
+    document.getElementById("loaderOverlay").classList.add("hidden");
+    const err = document.getElementById("loginErr");
+    if (err) err.textContent = motivo || "Tu sesión venció. Ingresá la clave de nuevo.";
   },
 
   // ── DROPDOWNS DINÁMICOS ───────────────────────────────────────
@@ -4720,7 +4746,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const temaGuardado = localStorage.getItem("portalTema") === "light" ? "light" : "dark";
   D.aplicarTema(temaGuardado, false);
 
-  if (localStorage.getItem("portalAuth") === "ok") {
+  if (localStorage.getItem("portalToken")) {
     document.getElementById("loginOverlay").classList.add("hidden");
     D.cargar();
   } else {
