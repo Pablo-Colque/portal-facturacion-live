@@ -3752,9 +3752,13 @@ const D = {
     const cumplFecha= objAFecha ? total / objAFecha * 100 : 0;
     const cumplCierre = objMes ? total / objMes * 100 : 0;
     const desvio    = total - objAFecha;
-    // "Dif. días de operación": cuántos días de producción se lleva de ventaja o de atraso
-    // respecto del ritmo objetivo. Positivo = atrasado, negativo = adelantado (igual que Jorge).
-    const difDias   = objDiario ? Math.round((objAFecha - total) / objDiario) : 0;
+    // "Dif. días de operación" (fórmula verificada contra la planilla de Jorge):
+    // al ritmo diario actual, cuántos días harían falta para llegar al objetivo mensual,
+    // menos los días hábiles que tiene el mes. Positivo = atraso, negativo = adelanto.
+    // Ej. Taller Móvil Servicios: 12.000.000 / 158.904 = 75,5 días − 22 = 54.
+    const difDias   = (objMes && promDiario > 0)
+      ? Math.round(objMes / promDiario - diasMes)
+      : null;
 
     const luz = p => p >= 95 ? "🟢" : p > 90 ? "🟡" : "🔴";
     const cls = p => p >= 95 ? "b-green" : p > 90 ? "b-orange" : "b-red";
@@ -3776,7 +3780,7 @@ const D = {
         <td class="r">${objMes ? this.moneda(objDiario) : "—"}</td>
         <td class="r">${this.moneda(promDiario)}</td>
         <td class="r"${neg(desvio)}>${this.moneda(desvio)}</td>
-        <td class="r">${objMes ? difDias : "—"}</td>
+        <td class="r"${difDias !== null && difDias > 0 ? ' style="color:var(--red);font-weight:700"' : (difDias !== null ? ' style="color:var(--green);font-weight:700"' : '')}>${difDias === null ? "—" : difDias}</td>
       </tr></tbody>`;
 
     const sub = document.getElementById("badgeSem" + pref);
